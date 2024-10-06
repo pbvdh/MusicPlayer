@@ -10,10 +10,6 @@ body {
     background-attachment: fixed;
 }
 
-h1 {
-    color: white;
-}
-
 div, span {
     border: 0;
     margin: 0;
@@ -28,7 +24,7 @@ span {
 }
 
 /* classes */
-/* Create a navbar at the bottom of the page */
+/* Create a footer at the bottom of the page for playing music */
 .tracknav {
     background-color: #333;
     overflow: hidden;
@@ -52,9 +48,8 @@ span {
 }
   
 
-
 /* ids */
-
+/* now playing - left aligned section of footer */
 #nowplaying {
     width: 25%;
     min-width: 155px;
@@ -70,8 +65,7 @@ span {
     height: 96px;
     width: 96px;
     display: flex;
-    justify-content: flex-start;
-    
+    justify-content: flex-start;    
 }
 
 #nowplayingimagecontainer {
@@ -112,6 +106,7 @@ span {
     font-size: medium;
 }
 
+/* play controls - centrepiece of footer */
 #playcontrols {
     width: 50%;
     min-width: 310px;
@@ -121,7 +116,7 @@ span {
     align-items: center;
 }
 
-
+/* queue controls - right aligned section of footer */
 #queuecontrols {
     width: 25%;
     min-width: 155px;
