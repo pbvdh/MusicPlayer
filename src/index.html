@@ -15,7 +15,7 @@
 	</head>
 	<body>
 			<h1><a class="nes-btn" href="http://localhost:3000/">API default endpoint</a></h1>
-
+  
 			<!--footer for controlling playback-->
 			<footer class="tracknav">
 				<div id="nowplaying">
@@ -36,9 +36,32 @@
 						</div>
 				</div> 				
   				<div id="playcontrols">
-						<a draggable= false href="#">Play/Pause</a>
-						<a draggable= false href="#">Previous</a>
-						<a draggable= false href="#">Next</a>
+						<div id = playcontrolsbuttons>
+							<a draggable= false href="#">Previous</a>
+							<!-- once js is up and running, clicking should alternate between the two images. use pixel art or replace with svg-->
+							<a draggable= false href="#"><img src="images/placeholderplaybutton.png" alt="Play" onclick="this.src='images/placeholderpausebutton.png'; this.alt='Pause'"></a>
+							<a draggable= false href="#">Next</a>
+						</div>					
+						<div id="playcontrolsslider">
+							<div id="playbackposition" class="playbackdata">
+								0:00
+							</div>
+							<input type="range" min="0" max="100" value="50" class="slider" id="trackslider">
+							<div id="playbackduration" class="playbackdata">
+								1:40
+							</div>	
+						</div>		
+						<!--placeholder script for slider
+						When doing this for real, multiply to get a higher range, values and appearance of higher fidelity-->
+						<script>
+							var slider = document.getElementById("trackslider");
+							var output = document.getElementById("playbackposition");
+							output.innerHTML =  Math.floor(slider.value / 60) + ":" + String(slider.value % 60).padStart(2, '0');
+							
+							slider.oninput = function() {		
+								output.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
+							}
+						</script>									
 				</div>
 				<div id="queuecontrols">
 						<a draggable= false href="#">Shuffle</a>
@@ -47,7 +70,7 @@
 				</div>
 			</footer>
 
-			
+
 	</body>
 
 </html>

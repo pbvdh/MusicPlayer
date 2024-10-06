@@ -46,6 +46,50 @@ span {
     background-color: #ddd;
     color: black;
 }
+
+/* The slider itself */
+.slider {
+    width: 100%; /* Full-width */
+    height: 15px; /* Specified height */
+    border-radius: 7px;
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+    cursor: inherit;
+  }
+  
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+    cursor: inherit;
+  }
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    border-radius: 50%;
+    background: white;
+    cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
+}
+  
+  .slider::-moz-range-thumb {
+    width: 25px; 
+    height: 25px; 
+    border-radius: 50%;
+    background: white;
+    cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
+}
+
+  .playbackdata {
+    min-width: 40px;
+    font-size: smaller;
+    color: white;
+    box-sizing: border-box;
+    margin-block: 0;
+  }
   
 
 /* ids */
@@ -86,7 +130,6 @@ span {
     justify-self: start;
     width: 100%;
     overflow: hidden;
-    position: relative;
     display: flex;
     white-space: nowrap;
     padding-inline-start: 6px;
@@ -98,7 +141,6 @@ span {
     justify-self: start;
     width: 100%;
     overflow: hidden;
-    position: relative;
     display: flex;
     white-space: nowrap;
     padding-inline-start: 6px;
@@ -111,9 +153,39 @@ span {
     width: 50%;
     min-width: 310px;
     display: inline-flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#playcontrolsbuttons {
+    width: 100%;
+    flex-flow: row nowrap;
+    gap: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+}
+
+#playbackposition {
+    text-align: left;
+}
+
+#playbackduration {
+    text-align: right;
+}
+
+#playcontrolsslider {
+    width: 100%;
+    display: flex;
+    flex: 1 auto;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+#trackslider {
+
 }
 
 /* queue controls - right aligned section of footer */
