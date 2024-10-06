@@ -1,0 +1,14 @@
+{
+  "name": "musicplayer",
+  "version": "1.0.0",
+  "description": "Music player for MP3 files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pieter Brassey-Van Der Haas",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
