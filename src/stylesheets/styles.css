@@ -1,0 +1,136 @@
+html, body, pre, code, kbd, samp {
+    font-family: "Press Start 2P";
+}
+
+body {
+    background-image: url("../images/bg_placeholder.jpg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+h1 {
+    color: white;
+}
+
+div, span {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+span {
+    user-select: none;
+    vertical-align: baseline;
+    text-wrap: nowrap;
+    text-decoration: none;
+}
+
+/* classes */
+/* Create a navbar at the bottom of the page */
+.tracknav {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    min-width: 620px;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    user-select: none;
+}
+
+.tracknav div {
+    padding: 14px 16px;
+}
+
+.tracknav div:hover {
+    background-color: #ddd;
+    color: black;
+}
+  
+
+
+/* ids */
+
+#nowplaying {
+    width: 25%;
+    min-width: 155px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+#nowplayingimage {
+    margin-inline-end: 8px;
+    border-radius: 4px;
+    background-color: #04AA6D;
+    height: 96px;
+    width: 96px;
+    display: flex;
+    justify-content: flex-start;
+    
+}
+
+#nowplayingimagecontainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#nowplayingdetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#nowplayingsongname {
+    display: flex;
+    justify-self: start;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    white-space: nowrap;
+    padding-inline-start: 6px;
+    padding-bottom: 0;
+    font-size: large;
+}
+
+#nowplayingartistname {
+    justify-self: start;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    white-space: nowrap;
+    padding-inline-start: 6px;
+    padding-top: 4px;
+    font-size: medium;
+}
+
+#playcontrols {
+    width: 50%;
+    min-width: 310px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#queuecontrols {
+    width: 25%;
+    min-width: 155px;
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-grow: 1;
+}
+
+
+
+

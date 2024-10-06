@@ -10,5 +10,5 @@ Plan:
 - The application will simply be accessed through a web browser, locally hosted, as I am to practice UI test automation on it in the future.
 
 
-Tools used
+Additional Tools used
 - Postman to test POST requests

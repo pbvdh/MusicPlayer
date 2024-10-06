@@ -9,6 +9,7 @@
   "author": "Pieter Brassey-Van Der Haas",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "nes.css": "^2.3.0"
   }
 }
