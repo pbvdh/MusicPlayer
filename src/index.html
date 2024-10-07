@@ -20,6 +20,7 @@
 			<footer class="tracknav">
 				<div id="nowplaying">
 						<div id="nowplayingimagecontainer">
+							<!-- replace div with image-->
 							<div id="nowplayingimage"></div>
 						</div>
 						<div id="nowplayingdetails">
@@ -37,10 +38,10 @@
 				</div> 				
   				<div id="playcontrols">
 						<div id = playcontrolsbuttons>
-							<a draggable= false href="#">Previous</a>
+							<button id="previousbutton">Last</button>
 							<!-- once js is up and running, clicking should alternate between the two images. use pixel art or replace with svg-->
-							<a draggable= false href="#"><img src="images/placeholderplaybutton.png" alt="Play" onclick="this.src='images/placeholderpausebutton.png'; this.alt='Pause'"></a>
-							<a draggable= false href="#">Next</a>
+							<button id="playbutton" draggable= false href="#"><img src="images/placeholderplaybutton.png" alt="Play" onclick="this.src='images/placeholderpausebutton.png'; this.alt='Pause'"></button>
+							<button id="nextbutton">Next</button>												
 						</div>					
 						<div id="playcontrolsslider">
 							<div id="playbackposition" class="playbackdata">
@@ -64,9 +65,15 @@
 						</script>									
 				</div>
 				<div id="queuecontrols">
-						<a draggable= false href="#">Shuffle</a>
-						<a draggable= false href="#"> queue</a>
-						<a draggable= false href="#">volume</a>
+					<div id="queuecontrolsbuttons">
+						<button id="shuffle" role="switch">S
+						</button>
+						<button id="queuebutton">
+							<span>Q</span>
+						</button>
+						<button id="queuebutton">M</button>
+						<input type="range" min="0" max="1" step="0.1" value="0.7" class="slider" id="volumeslider">
+					</div>
 				</div>
 			</footer>
 

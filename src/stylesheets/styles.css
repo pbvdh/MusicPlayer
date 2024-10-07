@@ -50,7 +50,7 @@ span {
 /* The slider itself */
 .slider {
     width: 100%; /* Full-width */
-    height: 15px; /* Specified height */
+    height: 10px; /* Specified height */
     border-radius: 7px;
     background: #d3d3d3; /* Grey background */
     outline: none; /* Remove outline */
@@ -60,46 +60,44 @@ span {
     cursor: inherit;
   }
   
-  /* Mouse-over effects */
-  .slider:hover {
+/* Mouse-over effects */
+.slider:hover {
     opacity: 1; /* Fully shown on mouse-over */
     cursor: inherit;
-  }
+}
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .slider::-webkit-slider-thumb {
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
     border-radius: 50%;
     background: white;
     cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
 }
   
-  .slider::-moz-range-thumb {
-    width: 25px; 
-    height: 25px; 
+.slider::-moz-range-thumb {
     border-radius: 50%;
     background: white;
     cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
 }
 
-  .playbackdata {
+.playbackdata {
     min-width: 40px;
     font-size: smaller;
     color: white;
     box-sizing: border-box;
     margin-block: 0;
-  }
+}
   
 
 /* ids */
 /* now playing - left aligned section of footer */
+
 #nowplaying {
     width: 25%;
     min-width: 155px;
     display: inline-flex;
     flex-direction: row;
     justify-content: flex-start;
+    align-items: center;
 }
 
 #nowplayingimage {
@@ -108,13 +106,6 @@ span {
     background-color: #04AA6D;
     height: 96px;
     width: 96px;
-    display: flex;
-    justify-content: flex-start;    
-}
-
-#nowplayingimagecontainer {
-    display: flex;
-    flex-direction: column;
 }
 
 #nowplayingdetails {
@@ -160,12 +151,11 @@ span {
 
 #playcontrolsbuttons {
     width: 100%;
-    flex-flow: row nowrap;
     gap: 16px;
-    margin-bottom: 8px;
+    margin-bottom: -10px;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
+    justify-content: center;
+    align-items: center;
 }
 
 #playbackposition {
@@ -184,10 +174,6 @@ span {
     box-sizing: border-box;
 }
 
-#trackslider {
-
-}
-
 /* queue controls - right aligned section of footer */
 #queuecontrols {
     width: 25%;
@@ -196,6 +182,23 @@ span {
     justify-content: flex-end;
     align-items: center;
     flex-grow: 1;
+    flex-direction: row;
+}
+
+#queuecontrolsbuttons {
+    width: 100%;
+    gap: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#volumeslider {
+    width: 30%;
+    min-width: 50;
+    margin-inline-start: -10px;
 }
 
 
