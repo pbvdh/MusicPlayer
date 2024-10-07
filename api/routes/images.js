@@ -17,6 +17,7 @@ router.get('/:url', (req, res, next) => {
     const s = fs.createReadStream('./src/images/'+ url);
 
     s.on('open', function () {
+        res.statusCode = 200;
         res.setHeader('Content-Type', filetype);
         s.pipe(res);
     })

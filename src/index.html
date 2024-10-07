@@ -1,19 +1,21 @@
 <!doctype html>
 <html lang="en">
 	<head>
+		<title>Music Player</title>
 		<meta charset="utf-8">
+		<link rel="icon" type="image/x-icon" href="http://localhost:3000/images/favicon.ico">
 
 		<!--fonts-->
 		<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 
 		<!--stylesheets-->
 		<link href='http://localhost:3000/stylesheets/styles.css' rel='stylesheet'>
-		<link href='stylesheets\styles.css' rel='stylesheet'>
 			<!--frameworks-->
 			<link href="http://localhost:3000/stylesheets/nes.css" rel="stylesheet" />
-			<link href="stylesheets\nes.css" rel="stylesheet" />
 
-		<title>Music Player</title>
+		<!--scripts-->
+		<script src="http://localhost:3000/scripts/script.js"></script>
+
 	</head>
 	<body>
   
@@ -26,13 +28,13 @@
 						</div>
 						<div id="nowplayingdetails">
 							<div id="nowplayingsongname">
-								<span draggable= true>
-									<a draggable= false href="#" class="active">Song name</a>
+								<span draggable=false>
+									<a draggable=false href="#" class="active">Song name</a>
 								</span>
 							</div>
 							<div id="nowplayingartistname">
-							<span draggable= true>
-								<a draggable= false href="#">Artist</a>
+							<span draggable=false>
+								<a draggable=false href="#">Artist</a>
 							</span>
 							</div>
 						</div>
@@ -41,7 +43,7 @@
 						<div id = playcontrolsbuttons>
 							<button id="previousbutton">Last</button>
 							<!-- once js is up and running, clicking should alternate between the two images. use pixel art or replace with svg-->
-							<button id="playbutton" draggable= false href="#"><img src="http://localhost:3000/images/placeholderplaybutton.png" alt="Play" onerror="this.onerror = null; this.src='images/placeholderplaybutton.png'"></button>
+							<button id="playbutton" draggable= false href="#"><img draggable = false src="http://localhost:3000/images/placeholderplaybutton.png" alt="Play" onerror="this.onerror = null; this.src='images/placeholderplaybutton.png'"></button>
 							<button id="nextbutton">Next</button>												
 						</div>					
 						<div id="playcontrolsslider">

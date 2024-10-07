@@ -10,6 +10,7 @@ const playlistRoutes = require('./api/routes/playlists');
 const webpageRoutes = require('./api/routes/webpage')
 const stylesheetRoutes = require('./api/routes/stylesheets')
 const imageRoutes = require('./api/routes/images')
+const scriptRoutes = require('./api/routes/scripts')
 
 //Funnel requests through this middleware to log incoming requests
 //Forwarded through 'next'
@@ -23,6 +24,7 @@ app.use('/playlists', playlistRoutes);
 app.use('/index', webpageRoutes);
 app.use('/stylesheets', stylesheetRoutes);
 app.use('/images', imageRoutes);
+app.use('/scripts', scriptRoutes);
 
 //Handle any request that hasn't been handled by an existing route
 app.use((req, res, next) => {

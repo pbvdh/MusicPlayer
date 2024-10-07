@@ -4,7 +4,6 @@ html, body, pre, code, kbd, samp {
 
 body {
     background-image: url("http://localhost:3000/images/bg_placeholder.jpg");
-    background-image: url("../images/bg_placeholder.jpg");
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
@@ -22,6 +21,10 @@ span {
     vertical-align: baseline;
     text-wrap: nowrap;
     text-decoration: none;
+}
+
+a {
+    color: white;
 }
 
 /* classes */

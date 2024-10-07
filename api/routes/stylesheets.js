@@ -7,7 +7,8 @@ router.get('/:url', (req, res, next) => {
     const url = req.params.url;
     const s = fs.createReadStream('./src/stylesheets/'+ url);
     s.on('open', function () {
-        res.setHeader('Content-Type', 'css');
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/css');
         s.pipe(res);
     })
 
