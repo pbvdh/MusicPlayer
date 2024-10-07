@@ -4,12 +4,17 @@
   "description": "Music player for MP3 files",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "author": "Pieter Brassey-Van Der Haas",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.0",
+    "morgan": "^1.10.0",
     "nes.css": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
