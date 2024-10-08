@@ -1,6 +1,6 @@
 function searchSongByName() {
     // Declare variables
-    var input, filter, ul, li, a, i, txtValue;
+    let input, filter, ul, li, a, i, txtValue;
     input = document.getElementById('searchsongs');
     filter = input.value.toLowerCase();
     ul = document.getElementById("songlist");
@@ -17,5 +17,16 @@ function searchSongByName() {
       } else {
         li[i].style.display = "none";
       }
+    }
+  }
+
+  function showHidePanes(){
+    let panes = document.getElementsByClassName("maindivs");
+    for(i = 0; i < panes.length; i++){
+        if(panes[i].style.opacity == 0) {
+            panes[i].style.opacity = 0.9;
+        } else {
+            panes[i].style.opacity = 0;
+        }
     }
   }

@@ -172,6 +172,7 @@ footer button:focus {
     fill:  	 	#536878;
 }
 
+/* main panels */
 .maindivs {
     background-color: lavender;
     opacity: 0;
@@ -183,9 +184,10 @@ footer button:focus {
 }
 
 .maindivs:hover {
-    opacity: 0.9;
+    opacity: 0.9 !important; /*allows overwriting opacity value even after it was set by js*/
 }
 
+/*search songs panel */
 .searchwindow {
     border: 4px solid black;
     width: 90%;
@@ -197,54 +199,8 @@ footer button:focus {
     font-size: small;
 }
 .artistname{
-    font-size: smaller;
+    font-size: x-small;
     color: rgb(221, 221, 221);
-}
-
-#searchsongs {
-    width: 100%;
-    background-image: url("http://localhost:3000/images/searchicon.png");
-    background-repeat: no-repeat; /* Do not repeat the icon image */
-    padding: 12px 20px 12px 50px; /* Add some padding */
-    background-position: 8px 8px;
-    appearance: none;
-    border-style: none;
-    border: none;
-    border-bottom: 4px solid black;
-}
-
-#searchsongs:focus {
-    outline: none;
-}
-
-#songlist {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-}
-
-#songlist li{
-    background-color: #708090;
-    list-style: none;
-    border-bottom: 2px solid black;
-    padding-left: 1rem;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    display: block;
-    text-decoration: none;
-}
-
-#songlist li:hover {
-    background-color: #536878;
-}
-
-#songfolderdiv {
-    width: 90%;
-    margin-top: 5%;
-    margin-bottom: 5%;
 }
 
   
@@ -388,3 +344,51 @@ footer button:focus {
     align-items: center;
 }
 
+
+/* search songs panel */
+/* search bar input */
+#searchsongs {
+    width: 100%;
+    background-image: url("http://localhost:3000/images/searchicon.png");
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+    padding: 12px 20px 12px 50px; /* Add some padding */
+    background-position: 8px 8px;
+    appearance: none;
+    border-style: none;
+    border: none;
+    border-bottom: 4px solid black;
+}
+
+#searchsongs:focus {
+    outline: none;
+}
+
+#songlist {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#songlist li{
+    background-color: #708090;
+    list-style: none;
+    border-bottom: 2px solid black;
+    padding-left: 1rem;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    display: block;
+    text-decoration: none;
+}
+
+#songlist li:hover {
+    background-color: #536878;
+}
+
+#songfoldercontainer {
+    width: 90%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
