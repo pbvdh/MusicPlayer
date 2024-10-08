@@ -21,13 +21,16 @@
 		<main>
 			<div class="maindivs" id="songs">
 				<div id="songfoldercontainer">
-					<label class="nes-btn">
-						<span>Select MP3 Source Folder</span>
-						<input type="file">
+					<label id="selectsongfolder" class="nes-btn">
+						<span >Select MP3 Source Folder</span>
+						<input type="file" onclick="showHidePanes(true)">
 					</label>
 				</div>
 				<div class="searchwindow">
-					<input type="text" id="searchsongs" onkeyup="searchSongByName()" placeholder="Search for song or artist...">
+					<div class="searchbar">
+						<input type="text" id="searchsongs" oninput="searchSongByName()" placeholder="Search for song or artist...">
+						<span id="searchsongsclearbutton" class="clearButton" onclick="clearInput('searchsongs')"></span>
+					</div>
 					<ul id="songlist">
 						<li>
 							<a class="songname" href="#">Multiple facets of the same diamond</a>

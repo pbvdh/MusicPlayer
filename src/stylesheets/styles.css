@@ -62,6 +62,7 @@ footer button:focus {
     flex-direction: row;
     height: 16%;
     user-select: none;
+    overflow-y: hidden;
 }
 
 .tracknav div {
@@ -165,6 +166,8 @@ footer button:focus {
 /* functional buttons in footer such as skip, shuffle, queue */
 .tracknavicon {
     width: var(--encore-graphic-size-decorative-smaller,24px);
+    min-width: 16px;
+    min-height: 16px;
     height: var(--encore-graphic-size-decorative-smaller,24px);
     fill:  	 	#708090;
 }
@@ -194,6 +197,25 @@ footer button:focus {
     width: 90%;
     overflow: scroll;
     margin-bottom: 5%;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.searchbar {
+    display: flex;
+    align-items: center;
+}
+
+.clearButton {
+    background-image:  url("http://localhost:3000/images/cross.png");
+    position: absolute;
+    right: 5px;
+    top: 8px;
+    height: 32px;
+    width: 32px;
+    opacity: 0.5;
+    visibility: hidden;
 }
 
 .songname{
@@ -246,13 +268,13 @@ footer button:focus {
     justify-content: flex-start;
     margin-top: auto;
     margin-bottom: auto;
+    overflow: hidden;
 }
 
 #nowplayingsongname {
     display: flex;
     justify-self: start;
     width: 100%;
-    overflow: hidden;
     display: flex;
     white-space: nowrap;
     padding-inline-start: 6px;
@@ -263,7 +285,6 @@ footer button:focus {
 #nowplayingartistname {
     justify-self: start;
     width: 100%;
-    overflow: hidden;
     display: flex;
     white-space: nowrap;
     padding-inline-start: 6px;
@@ -389,6 +410,7 @@ footer button:focus {
     padding-bottom: 5px;
     overflow: hidden;
     white-space: nowrap;
+    text-overflow: ellipsis;
     display: block;
     text-decoration: none;
 }
@@ -401,4 +423,12 @@ footer button:focus {
     width: 90%;
     margin-top: 5%;
     margin-bottom: 5%;
+    display: inline-block;
+}
+
+#selectsongfolder {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

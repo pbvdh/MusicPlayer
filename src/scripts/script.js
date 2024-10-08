@@ -6,6 +6,13 @@ function searchSongByName() {
     filter = input.value.toLowerCase();
     ul = document.getElementById("songlist");
     li = ul.getElementsByTagName('li');
+    clearText = document.getElementById("searchsongsclearbutton");
+
+    if (input.value){
+      clearText.style.visibility = "visible"
+    } else {
+      clearText.style.visibility = "hidden"
+    }
   
     // Loop through all list items, and hide those who don't match the search query
     for (i = 0; i < li.length; i++) {
@@ -35,9 +42,14 @@ function searchSongByName() {
 
 //clicking a song or artist name inside <a>, automatically sends to search bar and makes pane visible
   function searchLinkedTrack(a){
-    searchTerm = a.textContent || a.innerText;
-    input = document.getElementById('searchsongs');
+    let searchTerm = a.textContent || a.innerText;
+    let input = document.getElementById('searchsongs');
     input.value = searchTerm;
     showHidePanes(true);
+    searchSongByName();
+  }
+
+  function clearInput(id) {
+    document.getElementById(id).value="";
     searchSongByName();
   }
