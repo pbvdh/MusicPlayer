@@ -7,7 +7,7 @@ router.get('/', (req, res, next) => {
     const s = fs.createReadStream('./src/index.html');
     s.on('open', function () {
         res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/html');
+        res.header('Content-Type', 'text/html');
         s.pipe(res);
     })
 

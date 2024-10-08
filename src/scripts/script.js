@@ -1,3 +1,4 @@
+//keyup search bar functionality
 function searchSongByName() {
     // Declare variables
     let input, filter, ul, li, a, i, txtValue;
@@ -20,13 +21,23 @@ function searchSongByName() {
     }
   }
 
-  function showHidePanes(){
+  //forcibly reveal or hide main panels, overriding hover effect
+  function showHidePanes(forceShow = false){  //can optionally pass value true to just show panes rather than toggle
     let panes = document.getElementsByClassName("maindivs");
     for(i = 0; i < panes.length; i++){
         if(panes[i].style.opacity == 0) {
             panes[i].style.opacity = 0.9;
-        } else {
+        } else if (forceShow == false) {
             panes[i].style.opacity = 0;
         }
     }
+  }
+
+//clicking a song or artist name inside <a>, automatically sends to search bar and makes pane visible
+  function searchLinkedTrack(a){
+    searchTerm = a.textContent || a.innerText;
+    input = document.getElementById('searchsongs');
+    input.value = searchTerm;
+    showHidePanes(true);
+    searchSongByName();
   }

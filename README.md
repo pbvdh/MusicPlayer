@@ -16,5 +16,7 @@ Additional Tools used
 
 To Do
 - finish designing basic layout of website; wireframe UI
+- add backup stylings to handle broken images
 - write script to make functionality clean
 - continue to build up API so that its robust before making it functional
+- write api documentation

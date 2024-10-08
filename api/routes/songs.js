@@ -8,8 +8,16 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+    const song = {
+        name: req.body.name,
+        duration: req.body.duration,
+        url: req.body.url,
+        genre: req.body.genre,
+        artist: req.body.artist
+    }
     res.status(201).json({
-        message: 'Handling POST requests to /songs'
+        message: 'Handling POST requests to /songs',
+        song: song
     })
 });
 

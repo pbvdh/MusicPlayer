@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
 
 //routes
 const songRoutes = require('./api/routes/songs');
@@ -12,9 +13,23 @@ const stylesheetRoutes = require('./api/routes/stylesheets')
 const imageRoutes = require('./api/routes/images')
 const scriptRoutes = require('./api/routes/scripts')
 
-//Funnel requests through this middleware to log incoming requests
-//Forwarded through 'next'
+//Funnel requests through this middleware (forwarded via 'next')
+//log incoming requests
 app.use(morgan('dev'));
+//parse bodies
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+//adjust headers for all responses
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', '*');
+    if (req.method == 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'POST, PATCH, DELETE, GET');
+        return res.status(200).json({});
+    }
+    next();    
+})
 
 //Routes which should handle requests 
 app.use('/songs', songRoutes);

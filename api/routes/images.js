@@ -18,7 +18,7 @@ router.get('/:url', (req, res, next) => {
 
     s.on('open', function () {
         res.statusCode = 200;
-        res.setHeader('Content-Type', filetype);
+        res.header('Content-Type', filetype);
         s.pipe(res);
     })
 

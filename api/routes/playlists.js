@@ -8,8 +8,13 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+    const playlist = {
+        name: req.body.name,
+        length: req.body.length
+    }
     res.status(201).json({
-        message: 'Playlist created'
+        message: 'Playlist created',
+        createdPlaylist: playlist
     })
 });
 
