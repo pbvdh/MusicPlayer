@@ -20,10 +20,94 @@
 	<body>
 		<main>
 			<div class="maindivs" id="songs">
+				<div id="songfolderdiv">
+					<label class="nes-btn">
+						<span>Select MP3 Source Folder</span>
+						<input type="file">
+					</label>
+				</div>
+				<div class="searchwindow">
+					<input type="text" id="searchsongs" onkeyup="searchSongByName()" placeholder="Search for song or artist...">
+
+					<ul id="songlist">
+						<li>
+							<a class="songname" href="#">Multiple facets of the same diamond</a>
+							<br>
+							<a class="artistname" href="#">Sticky fingers</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Agnes</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Multiple facets of the same diamond</a>
+							<br>
+							<a class="artistname" href="#">Sticky fingers</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Bob</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Calvin</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Christina</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Cindy</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Adele</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Agnes</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Billy</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Bob</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Calvin</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Christina</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+						<li>
+							<a class="songname" href="#">Cindy</a>
+							<br>
+							<a class="artistname" href="#">artist</a>
+						</li>
+					</ul> 
+				</div>
 			</div>
-			<div class="maindivs" id="search">
+			<div class="maindivs" id="playlists">
+				Search personal playlists. 
 			</div>
-			<div class="maindivs" id="activeplaylist">
+			<div class="maindivs" id="songqueue">
+				Current queue of songs.
 			</div>
 		</main>
 			<!--footer for controlling playback-->
