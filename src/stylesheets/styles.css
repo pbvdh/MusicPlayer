@@ -2,13 +2,42 @@ html, body, pre, code, kbd, samp {
     font-family: "Press Start 2P";
 }
 
+html {
+    height: 100%;
+    width: 100%;
+}
+
 body {
-    background-image: url("http://localhost:3000/images/bg_placeholder.jpg");
+    background-image: url("http://localhost:3000/images/bg1.jpg");
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
+    height: 100%;
+    width: 100%;
 }
+
+main {
+    height: 84%;
+    width: 100%;
+    padding: 1%;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 1%;
+}
+
+.maindivs {
+    background-color: lavender;
+    opacity: 0;
+    height: 100%;
+    width: 33.33%;
+}
+
+.maindivs:hover {
+    opacity: 0.5;
+}
+
 
 div, span {
     border: 0;
@@ -27,18 +56,21 @@ a {
     color: white;
 }
 
+footer button:focus {
+    outline: none;
+}
+
 /* classes */
 /* Create a footer at the bottom of the page for playing music */
 .tracknav {
-    background-color: #333;
-    overflow: hidden;
+    background-color: rgb(22, 22, 32);
     position: fixed;
     bottom: 0;
     width: 100%;
     min-width: 620px;
     display: flex;
     flex-direction: row;
-    height: auto;
+    height: 16%;
     user-select: none;
 }
 
@@ -121,32 +153,36 @@ a {
 .tracknavbutton {
     overflow-wrap: anywhere;
     box-sizing: border-box;
-  background-color: transparent;
-  border: 0px;
-  border-radius: var(--encore-button-corner-radius,9999px);
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  text-transform: none;
-  touch-action: manipulation;
-  user-select: none;
-  vertical-align: middle;
-  
-  min-inline-size: 0px;
-  min-block-size: var(--encore-control-size-smaller,48px);
-  padding-block: var(--encore-spacing-tighter-2,12px);
-  padding-inline: var(--encore-spacing-tighter-2,12px);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+    background-color: transparent;
+    border: 0px;
+    border-radius: var(--encore-button-corner-radius,9999px);
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    touch-action: manipulation;
+    user-select: none;
+    vertical-align: middle;
+    min-inline-size: 0px;
+    min-block-size: var(--encore-control-size-smaller,48px);
+    padding-block: var(--encore-spacing-tighter-2,12px);
+    padding-inline: var(--encore-spacing-tighter-2,12px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* functional buttons in footer such as skip, shuffle, queue */
 .tracknavicon {
     width: var(--encore-graphic-size-decorative-smaller,24px);
     height: var(--encore-graphic-size-decorative-smaller,24px);
-    fill: gray;
-
+    fill:  	 	#708090;
 }
+
+.tracknavicon:hover {
+    fill:  	 	#536878;
+}
+
   
 
 /* ids */
@@ -254,10 +290,6 @@ a {
     user-select: none;
 }
 
-#playbutton:focus {
-    outline: none;
-}
-
 
 /* queue controls - right aligned section of footer */
 #queuecontrols {
@@ -281,11 +313,14 @@ a {
 }
 
 #volumeslider {
-    width: 30%;
+    width: 60%;
     min-width: 50;
-    margin-inline-start: -10px;
 }
 
-
-
+#volumecontrols {
+    padding: 0 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 

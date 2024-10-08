@@ -15,7 +15,6 @@ Additional Tools used
 - Postman to test POST requests
 
 To Do
-- finish designing basic layout of website
-- source images for backgrounds, buttons, favicon and remove placeholders
+- finish designing basic layout of website; wireframe UI
 - write script to make functionality clean
 - continue to build up API so that its robust before making it functional
