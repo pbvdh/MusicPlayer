@@ -197,9 +197,10 @@ footer button:focus {
     width: 90%;
     overflow: scroll;
     margin-bottom: 5%;
+    margin-top: 5%;
     display: inline-block;
     position: relative;
-    overflow: hidden;
+    overflow: scroll;
 }
 
 .searchbar {
@@ -221,7 +222,8 @@ footer button:focus {
 .songname{
     font-size: small;
 }
-.artistname{
+
+#songlist .artistname{
     font-size: x-small;
     color: rgb(221, 221, 221);
 }
@@ -398,6 +400,7 @@ footer button:focus {
     width: 100%;
     padding: 0;
     margin: 0;
+    overflow: scroll;
     list-style-type: none;
 }
 
@@ -419,6 +422,7 @@ footer button:focus {
     background-color: #536878;
 }
 
+/*
 #songfoldercontainer {
     width: 90%;
     margin-top: 5%;
@@ -432,3 +436,4 @@ footer button:focus {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+    */

@@ -20,87 +20,89 @@
 	<body>
 		<main>
 			<div class="maindivs" id="songs">
+				<!--
 				<div id="songfoldercontainer">
 					<label id="selectsongfolder" class="nes-btn">
 						<span >Select MP3 Source Folder</span>
-						<input type="file" onclick="showHidePanes(true)">
+						<input type="file" webkitdirectory onclick="showHidePanes(true)">
 					</label>
 				</div>
+				-->
 				<div class="searchwindow">
 					<div class="searchbar">
-						<input type="text" id="searchsongs" oninput="searchSongByName()" placeholder="Search for song or artist...">
-						<span id="searchsongsclearbutton" class="clearButton" onclick="clearInput('searchsongs')"></span>
+						<input type="text" id="searchsongs" placeholder="Search for song or artist...">
+						<span id="searchsongsclearbutton" class="clearButton"></span>
 					</div>
 					<ul id="songlist">
 						<li>
 							<a class="songname" href="#">Multiple facets of the same diamond</a>
 							<br>
-							<a class="artistname" href="#">Sticky fingers</a>
+							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
 						</li>
 						<li>
-							<a class="songname" href="#">Agnes</a>
+							<a class="songname" href="#" >Agnes</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#" >artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Multiple facets of the same diamond</a>
 							<br>
-							<a class="artistname" href="#">Sticky fingers</a>
+							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Bob</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Calvin</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Christina</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Cindy</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Adele</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Agnes</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Billy</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Bob</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Calvin</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Christina</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 						<li>
 							<a class="songname" href="#">Cindy</a>
 							<br>
-							<a class="artistname" href="#">artist</a>
+							<a class="artistname songsearchlink" href="#">artist</a>
 						</li>
 					</ul> 
 				</div>
@@ -116,18 +118,18 @@
 			<footer class="tracknav">
 				<div id="nowplaying">
 						<div id="nowplayingimagecontainer">
-							<div id="nowplayingimage" onclick="showHidePanes()" alt="showhidepanes" title="Show/hide main panels">
+							<div id="nowplayingimage" alt="showhidepanes" title="Show/hide main panels">
 							</div>
 						</div>
 						<div id="nowplayingdetails">
 							<div id="nowplayingsongname">
 								<span draggable=false>
-									<a draggable=false href="#" onclick="searchLinkedTrack(this)">Song name</a>
+									<a draggable=false href="#" class="songsearchlink">Song name</a>
 								</span>
 							</div>
-							<div id="nowplayingartistname" >
+							<div id="nowplayingartistname">
 							<span draggable=false>
-								<a draggable=false href="#" onclick="searchLinkedTrack(this)">Artist</a>
+								<a draggable=false href="#" class="songsearchlink">Artist</a>
 							</span>
 							</div>
 						</div>
@@ -165,18 +167,7 @@
 							<div id="playbackduration" class="playbackdata">
 								1:40
 							</div>	
-						</div>		
-						<!--placeholder script for slider
-						When doing this for real, multiply to get a higher range, values and appearance of higher fidelity-->
-						<script>
-							var slider = document.getElementById("trackslider");
-							var output = document.getElementById("playbackposition");
-							output.innerHTML =  Math.floor(slider.value / 60) + ":" + String(slider.value % 60).padStart(2, '0');
-							
-							slider.oninput = function() {		
-								output.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
-							}
-						</script>									
+						</div>										
 				</div>
 				<div id="queuecontrols">
 					<div id="queuecontrolsbuttons">

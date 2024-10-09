@@ -1,8 +1,48 @@
+function init() {
+  /*event listeners for DOM*/
+  let artistNameLinks = document.getElementsByClassName("songsearchlink");
+  let togglePanes = document.getElementById("nowplayingimage");
+  let clearSongSearch = document.getElementById("searchsongsclearbutton");
+  let songSearchInput = document.getElementById("searchsongs");
+  let trackSlider = document.getElementById("trackslider");
+	let playbackPositionValue = document.getElementById("playbackposition");
+  let songList = document.getElementById("songlist");
+
+  for(i=0; i<artistNameLinks.length; i++){
+    artistNameLinks[i].addEventListener('click', function() {
+      searchLinkedTrack(this);
+    });
+  }
+  
+  togglePanes.addEventListener('click', function() {
+    showHidePanes();
+  });
+
+  clearSongSearch.addEventListener('click', function() {
+    clearInput(songSearchInput)
+  });
+
+  songSearchInput.addEventListener('input', function() {
+    searchSongByName()
+  });
+
+  playbackPositionValue.innerHTML =  Math.floor(trackSlider.value / 60) + ":" + String(trackSlider.value % 60).padStart(2, '0');
+  trackSlider.addEventListener('input', function() {
+    playbackPositionValue.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
+  });
+
+  sortSongList(songList);
+							
+							
+}
+
+
+
 //keyup search bar functionality
 function searchSongByName() {
     // Declare variables
     let input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById('searchsongs');
+    input = document.getElementById("searchsongs");
     filter = input.value.toLowerCase();
     ul = document.getElementById("songlist");
     li = ul.getElementsByTagName('li');
@@ -49,7 +89,21 @@ function searchSongByName() {
     searchSongByName();
   }
 
-  function clearInput(id) {
-    document.getElementById(id).value="";
+  function clearInput(input) {
+    input.value="";
     searchSongByName();
   }
+
+  function sortSongList(ul) {
+    const li =  ul.querySelectorAll("li");
+    ul.append(...sortList(li))
+  }
+
+  const sortList = list => [...list].sort((a, b) => {
+    const A = a.textContent, B = b.textContent;
+    return (A < B) ? -1 : (A > B) ? 1 : 0;
+  });
+  
+
+
+  window.onload=init;
