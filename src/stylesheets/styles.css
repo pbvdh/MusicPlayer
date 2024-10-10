@@ -219,17 +219,17 @@ footer button:focus {
     visibility: hidden;
 }
 
-.songname{
+/*tracklist class for both song list and playing queue*/
+.tracklist .songname{
     font-size: small;
 }
 
-.songlist .artistname{
+.tracklist .artistname{
     font-size: x-small;
     color: rgb(221, 221, 221);
 }
 
-
-.songlist {
+.tracklist {
     width: 100%;
     padding: 0;
     margin: 0;
@@ -237,30 +237,73 @@ footer button:focus {
     list-style-type: none;
 }
 
-.songlist li, .songlist lh{
-    background-color: #708090;
-    list-style: none;
-    border-bottom: 2px solid black;
-    padding-left: 1rem;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    display: block;
+.tracklistitem {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+    padding-bottom: 10px;
     text-decoration: none;
 }
 
-.songlist lh {
+
+.trackdetailscontainer {
+    display: inline-flex;
+    padding-left: 1rem;
+    overflow: hidden;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.overflowwrapper {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.actionmenucontainer {
+    display: inline-flex;
+    padding-right: 1rem;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.actionbutton {
+    vertical-align: middle;
+    color: inherit;
+    outline: none;
+    background: none;
+    margin: 0;
+    border: none;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    line-height: 0;
+}
+
+.actionbutton:focus {
+    outline: none;
+}
+
+.tracklist li, .tracklist lh{
+    background-color: #708090;
+    list-style: none;
+    border-bottom: 2px solid black;
+    display: block;
+}
+
+.tracklist lh {
     font-size: x-large;
     box-shadow: -10px 0px 5px 1px black;
     position: relative;
     border-bottom: 4px solid black;
     text-align: center;
     background-color: white;
+    padding: 0.5rem;
 }
 
-.songlist li:hover {
+.tracklist li:hover {
     background-color: #536878;
 }
 
@@ -336,6 +379,7 @@ footer button:focus {
     padding-inline-start: 6px;
     padding-top: 4px;
     font-size: medium;
+    opacity: 0.7;
 }
 
 /* play controls - centrepiece of footer */

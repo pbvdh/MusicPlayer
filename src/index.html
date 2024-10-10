@@ -11,7 +11,7 @@
 		<!--stylesheets-->
 		<link href='http://localhost:3000/stylesheets/styles.css' rel='stylesheet'>
 			<!--frameworks-->
-			<link href="http://localhost:3000/stylesheets/nes.css" rel="stylesheet" />
+			<link href="http://localhost:3000/stylesheets/nes.css" rel="stylesheet">
 
 		<!--scripts-->
 		<script src="http://localhost:3000/scripts/script.js"></script>
@@ -19,90 +19,167 @@
 	</head>
 	<body>
 		<main>
+			<!--searchable list of all songs-->
 			<div class="maindivs" id="songs">
-				<!--
-				<div id="songfoldercontainer">
-					<label id="selectsongfolder" class="nes-btn">
-						<span >Select MP3 Source Folder</span>
-						<input type="file" webkitdirectory onclick="showHidePanes(true)">
-					</label>
-				</div>
-				-->
 				<div class="listwindow">
 					<div class="searchbar">
 						<input type="text" id="searchsongs" placeholder="Search for song or artist...">
 						<span id="searchsongsclearbutton" class="clearButton"></span>
 					</div>
-					<ul id="songlist" class="songlist">
-						<li>
-							<a class="songname" href="#">Multiple facets of the same diamond</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+					<!--list of songs-->
+					<ul id="songlist" class="tracklist">
+						<li><!--single song li block-->
+							<div class="tracklistitem"><!--flex container-->
+								<div class="trackdetailscontainer"><!--track name and artist-->
+									<div class="overflowwrapper"><!--allow overflow ellipsis-->
+										<a class="songname" href="#">Multiple facets of the same diamond</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+									</div>
+								</div><div class="actionmenucontainer"><!--container for options button-->
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#" >Agnes</a>
-							<br>
-							<a class="artistname songsearchlink" href="#" >artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Norwegian Wood</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">The Beatles</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Multiple facets of the same diamond</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Crawling back to you</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Tom Petty</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Bob</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">If you don't know me by now</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Harold Melvin & The Blue Notes</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Calvin</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">The river</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Bruce Springsteen</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Christina</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Goodluck babe</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Chappel Roan</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Cindy</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Red wine supernova</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Chappel Roan</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Adele</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Guess I'm doing fine</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Beck</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li>
-							<a class="songname" href="#">Agnes</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
-						</li>
-						<li>
-							<a class="songname" href="#">Billy</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
-						</li>
-						<li>
-							<a class="songname" href="#">Bob</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
-						</li>
-						<li>
-							<a class="songname" href="#">Calvin</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
-						</li>
-						<li>
-							<a class="songname" href="#">Christina</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
-						</li>
-						<li>
-							<a class="songname" href="#">Cindy</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Don't fight it marsha, its bigger than both of us</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Blam Blam Blam!</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 					</ul> 
 				</div>
@@ -112,37 +189,160 @@
 			</div>
 			<div class="maindivs" id="songqueue">
 				<div class="listwindow">
-					<ul id="queuelist" class="songlist">
+					<ul id="queuelist" class="tracklist">
 						<lh>Playing Queue</lh>
-						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#" >Agnes</a>
-							<br>
-							<a class="artistname songsearchlink" href="#" >artist</a>
+						<li class="draggableQueue" draggable="true"><!--single song li block-->
+							<div class="tracklistitem"><!--flex container-->
+								<div class="trackdetailscontainer"><!--track name and artist-->
+									<div class="overflowwrapper"><!--allow overflow ellipsis-->
+										<a class="songname" href="#">Multiple facets of the same diamond</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+									</div>
+								</div><div class="actionmenucontainer"><!--container for options button-->
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#">Multiple facets of the same diamond</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Norwegian Wood</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">The Beatles</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#">Bob</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Crawling back to you</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Tom Petty</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#">Calvin</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">If you don't know me by now</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Harold Melvin & The Blue Notes</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#">Christina</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">The river</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Bruce Springsteen</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 						<li class="draggableQueue" draggable="true">
-							<a class="songname" href="#">Cindy</a>
-							<br>
-							<a class="artistname songsearchlink" href="#">artist</a>
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Goodluck babe</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Chappel Roan</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Red wine supernova</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Chappel Roan</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Guess I'm doing fine</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Beck</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<div class="tracklistitem">
+								<div class="trackdetailscontainer">
+									<div class="overflowwrapper">
+										<a class="songname" href="#">Don't fight it marsha, its bigger than both of us</a>
+										<br>
+										<a class="artistname songsearchlink" href="#">Blam Blam Blam!</a>
+									</div>
+								</div><div class="actionmenucontainer">
+									<button class="actionbutton">
+										<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24" focusable="false" style="pointer-events: none; display: inherit; width: 100%; height: 100%;">
+											<path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+										</svg>
+									</button>	
+								</div>
+							</div>
 						</li>
 					</ul>
 				</div>
@@ -152,7 +352,7 @@
 			<footer class="tracknav">
 				<div id="nowplaying">
 						<div id="nowplayingimagecontainer">
-							<div id="nowplayingimage" alt="showhidepanes" title="Show/hide main panels">
+							<div id="nowplayingimage" title="Show/hide main panels">
 							</div>
 						</div>
 						<div id="nowplayingdetails">
@@ -176,7 +376,7 @@
 								</svg>
 							</button>
 							<!--Play button-->
-							<button id="playbutton" draggable= false href="#">
+							<button id="playbutton" draggable= false>
 								<!--White circle-->
 								<span class="playbuttoninner">
 									<!--icon-->
