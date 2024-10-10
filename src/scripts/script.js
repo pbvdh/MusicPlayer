@@ -7,6 +7,7 @@ function init() {
   let trackSlider = document.getElementById("trackslider");
 	let playbackPositionValue = document.getElementById("playbackposition");
   let songList = document.getElementById("songlist");
+  let actionbuttons = document.querySelectorAll(".actionbutton");
   const queueDraggables = document.querySelectorAll(".draggableQueue");
   const queuelist = document.getElementById("queuelist");
 
@@ -69,6 +70,15 @@ function init() {
   trackSlider.addEventListener('input', function() {
     playbackPositionValue.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
   });
+
+
+  //handle options menus on song panels
+  actionbuttons.forEach(actionbutton => {
+    actionbutton.addEventListener('click', function (){
+      showActionMenu(actionbutton.parentElement.querySelector(".actionmenu"));
+    });
+  });
+
 
   sortSongList(songList);								
 }
@@ -157,5 +167,14 @@ function searchSongByName() {
     }, { offset: Number.NEGATIVE_INFINITY }).element; //ensure initial offset always gets overwritten; any offset is greater than default
   }
 
+
+  function showActionMenu(actionmenu) {
+    console.log("hi");
+    if (actionmenu.className.indexOf("showmenu") == -1) {
+      actionmenu.className += " showmenu";
+    } else { 
+      actionmenu.className = actionmenu.className.replace(" showmenu", "");
+    }
+  }
 
   window.onload=init;

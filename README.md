@@ -20,3 +20,4 @@ To Do
 - write script to make functionality clean
 - continue to build up API so that its robust before making it functional
 - write api documentation
+- add hovers for songs with long names

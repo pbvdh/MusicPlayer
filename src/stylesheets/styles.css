@@ -270,6 +270,7 @@ footer button:focus {
 .actionmenucontainer {
     display: inline-flex;
     padding-right: 1rem;
+    padding-left: 1rem;
     flex-direction: column;
     justify-content: center;
 }
@@ -316,9 +317,25 @@ footer button:focus {
     opacity: 0.5;
 }
 
-#queuelist li.over.dragging {
-    background-color: #536878;
-    box-shadow: 1px 1px 1px 1px #2e3942 inset;
+.actionbutton {
+    fill: white;
+}
+
+.actionbuttonicon {
+    pointer-events: none; 
+    display: inherit; 
+    width: 100%; 
+    height: 100%;
+}
+
+.actionmenu {
+    display: none;
+    position: fixed;
+}
+
+.showmenu {
+    display: flex;
+    flex-direction: column;
 }
   
 
@@ -489,20 +506,12 @@ footer button:focus {
     outline: none;
 }
 
-/*
-#songfoldercontainer {
-    width: 90%;
-    margin-top: 5%;
-    margin-bottom: 5%;
-    display: inline-block;
+/* animate while dragging elements in the playing queue*/
+#queuelist li.over.dragging {
+    background-color: #536878;
+    box-shadow: 1px 1px 1px 1px #2e3942 inset;
 }
 
-#selectsongfolder {
-    max-width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-    */
 
 
+ 
