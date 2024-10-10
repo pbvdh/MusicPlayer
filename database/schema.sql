@@ -1,5 +1,0 @@
-CREATE TABLE playlists (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  length REAL NOT NULL
-);

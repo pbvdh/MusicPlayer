@@ -28,12 +28,12 @@
 					</label>
 				</div>
 				-->
-				<div class="searchwindow">
+				<div class="listwindow">
 					<div class="searchbar">
 						<input type="text" id="searchsongs" placeholder="Search for song or artist...">
 						<span id="searchsongsclearbutton" class="clearButton"></span>
 					</div>
-					<ul id="songlist">
+					<ul id="songlist" class="songlist">
 						<li>
 							<a class="songname" href="#">Multiple facets of the same diamond</a>
 							<br>
@@ -111,7 +111,41 @@
 				Search personal playlists. 
 			</div>
 			<div class="maindivs" id="songqueue">
-				Current queue of songs.
+				<div class="listwindow">
+					<ul id="queuelist" class="songlist">
+						<lh>Playing Queue</lh>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#" >Agnes</a>
+							<br>
+							<a class="artistname songsearchlink" href="#" >artist</a>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#">Multiple facets of the same diamond</a>
+							<br>
+							<a class="artistname songsearchlink" href="#">Sticky fingers</a>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#">Bob</a>
+							<br>
+							<a class="artistname songsearchlink" href="#">artist</a>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#">Calvin</a>
+							<br>
+							<a class="artistname songsearchlink" href="#">artist</a>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#">Christina</a>
+							<br>
+							<a class="artistname songsearchlink" href="#">artist</a>
+						</li>
+						<li class="draggableQueue" draggable="true">
+							<a class="songname" href="#">Cindy</a>
+							<br>
+							<a class="artistname songsearchlink" href="#">artist</a>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</main>
 			<!--footer for controlling playback-->
