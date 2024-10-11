@@ -8,8 +8,9 @@ function init() {
 	let playbackPositionValue = document.getElementById("playbackposition");
   let songList = document.getElementById("songlist");
   let actionbuttons = document.querySelectorAll(".actionbutton");
-  const queueDraggables = document.querySelectorAll(".draggableQueue");
-  const queuelist = document.getElementById("queuelist");
+  let actionmenuoptions = document.querySelectorAll(".actionmenuoption");
+  let queueDraggables = document.querySelectorAll(".draggableQueue");
+  let queuelist = document.getElementById("queuelist");
 
   //allow songs in queue to be dragged
   queueDraggables.forEach(draggable => {
@@ -82,6 +83,12 @@ function init() {
     });
   });
 
+  actionmenuoptions.forEach(option => {
+    option.addEventListener('click', (event) => {
+      const selectedOption = event.currentTarget.getAttribute('data-option');
+      handleActionMenuOption(selectedOption);
+    });
+  });
 
   
   document.addEventListener('click', (event) => {
@@ -93,6 +100,12 @@ function init() {
   //sort lists of songs when app loads
   sortSongList(songList);								
 }
+
+
+
+
+
+
 
 //keyup search bar functionality
 function searchSongByName() {
@@ -179,17 +192,23 @@ function searchSongByName() {
   }
 
   //clear all open dropdown windows on the page
-  function removeOpenDropDowns (event) {
+  function removeOpenDropDowns (event = null) {
     const dropdown = document.getElementById("active-action-menu-dropdown");
     if (dropdown != null) {
       //if the user clicked anywhere on the page except on the button or menu themselves 
       //(prevents dropdown immediately opening and closing on initial click)
-      if(!dropdown.parentElement.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target)){
+      if(event==null || (!dropdown.parentElement.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))){
         dropdown.style.display = 'none'; 
         dropdown.removeAttribute("id");
-      }
-      
+      } 
     }
+  }
+
+
+  function handleActionMenuOption(option) {
+    //placeholder
+    console.log(option + 'selected');
+    removeOpenDropDowns();
   }
 
 
