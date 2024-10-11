@@ -206,6 +206,8 @@ footer button:focus {
 .searchresultswrapper {
     display: flex;
     overflow: scroll; 
+    height: 100%;
+    background-color: #bdc2c7;
 }
 
 .searchbar {
@@ -220,7 +222,7 @@ footer button:focus {
     top: 8px;
     height: 32px;
     width: 32px;
-    opacity: 0.5;
+    opacity: 0.3;
     visibility: hidden;
 }
 
@@ -273,24 +275,9 @@ footer button:focus {
     padding-left: 1rem;
     flex-direction: column;
     justify-content: center;
+    position: relative;
 }
 
-.actionbutton {
-    vertical-align: middle;
-    color: inherit;
-    outline: none;
-    background: none;
-    margin: 0;
-    border: none;
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    line-height: 0;
-}
-
-.actionbutton:focus {
-    outline: none;
-}
 
 .tracklist li, .tracklist lh{
     background-color: #708090;
@@ -317,10 +304,7 @@ footer button:focus {
     opacity: 0.5;
 }
 
-.actionbutton {
-    fill: white;
-}
-
+/*pop out dropdown action menu on each song card */
 .actionbuttonicon {
     pointer-events: none; 
     display: inherit; 
@@ -328,15 +312,49 @@ footer button:focus {
     height: 100%;
 }
 
-.actionmenu {
-    display: none;
-    position: fixed;
+.actionbutton {
+    vertical-align: middle;
+    color: inherit;
+    outline: none;
+    background: none;
+    margin: 0;
+    border: none;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    line-height: 0;
+    fill: white;
+    position: relative;
+    
 }
 
-.showmenu {
-    display: flex;
-    flex-direction: column;
+.actionbutton:focus {
+    outline: none;
 }
+
+.actionmenudropdown {
+    display: none; /* Hide menu options by default */
+    position: absolute; /* Position absolute within relative container */
+    top: 15px; 
+    right: 40px; 
+    background-color: white; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    z-index: 1000; /* Ensure the menu is above other content */
+    white-space: nowrap;
+}
+
+.actionmenuoption {
+    padding: 10px 15px; 
+    cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
+    user-select: none;
+}
+
+.actionmenuoption:hover {
+    background-color: #f0f0f0; 
+}
+
   
 
 /* ids */
@@ -494,7 +512,7 @@ footer button:focus {
     width: 100%;
     background-image: url("http://localhost:3000/images/searchicon.png");
     background-repeat: no-repeat; /* Do not repeat the icon image */
-    padding: 12px 20px 12px 50px; /* Add some padding */
+    padding: 12px 52px 12px 50px; /* Add some padding */
     background-position: 8px 8px;
     appearance: none;
     border-style: none;
@@ -506,6 +524,7 @@ footer button:focus {
     outline: none;
 }
 
+
 /* animate while dragging elements in the playing queue*/
 #queuelist li.over.dragging {
     background-color: #536878;
@@ -514,4 +533,3 @@ footer button:focus {
 
 
 
- 

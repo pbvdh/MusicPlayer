@@ -57,12 +57,12 @@ function init() {
 
   //clear search window button
   clearSongSearch.addEventListener('click', function() {
-    clearInput(songSearchInput)
+    clearInput(songSearchInput);
   });
 
   //handle searching for songs
   songSearchInput.addEventListener('input', function() {
-    searchSongByName()
+    searchSongByName();
   });
 
   //update the current position value for the track slider
@@ -72,14 +72,25 @@ function init() {
   });
 
 
-  //handle options menus on song panels
+  //pop up options menus on song panels
   actionbuttons.forEach(actionbutton => {
-    actionbutton.addEventListener('click', function (){
-      showActionMenu(actionbutton.parentElement.querySelector(".actionmenu"));
+    const dropdown = actionbutton.parentElement.querySelector('.actionmenudropdown');
+    actionbutton.addEventListener('click', (event) => {
+      removeOpenDropDowns(event); //clear existing pop ups if there are any
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
     });
   });
 
 
+  
+  document.addEventListener('click', (event) => {
+    //hide pop up options menus when you click outside them
+    removeOpenDropDowns(event);
+  });
+  
+
+  //sort lists of songs when app loads
   sortSongList(songList);								
 }
 
@@ -167,14 +178,19 @@ function searchSongByName() {
     }, { offset: Number.NEGATIVE_INFINITY }).element; //ensure initial offset always gets overwritten; any offset is greater than default
   }
 
-
-  function showActionMenu(actionmenu) {
-    console.log("hi");
-    if (actionmenu.className.indexOf("showmenu") == -1) {
-      actionmenu.className += " showmenu";
-    } else { 
-      actionmenu.className = actionmenu.className.replace(" showmenu", "");
+  //clear all open dropdown windows on the page
+  function removeOpenDropDowns (event) {
+    const dropdown = document.getElementById("active-action-menu-dropdown");
+    if (dropdown != null) {
+      //if the user clicked anywhere on the page except on the button or menu themselves 
+      //(prevents dropdown immediately opening and closing on initial click)
+      if(!dropdown.parentElement.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target)){
+        dropdown.style.display = 'none'; 
+        dropdown.removeAttribute("id");
+      }
+      
     }
   }
+
 
   window.onload=init;
