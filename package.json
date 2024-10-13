@@ -10,7 +10,6 @@
   "author": "Pieter Brassey-Van Der Haas",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.20.3",
     "express": "^4.21.1",
     "morgan": "^1.10.0",
     "nes.css": "^2.3.0",

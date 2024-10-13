@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
-const bodyParser = require('body-parser');
 
 //routes
 const songRoutes = require('./api/routes/songs');
@@ -17,8 +16,8 @@ const scriptRoutes = require('./api/routes/scripts')
 //log incoming requests
 app.use(morgan('dev'));
 //parse bodies
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
 //adjust headers for all responses
 app.use((req, res, next) => {
