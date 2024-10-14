@@ -5,12 +5,16 @@ from tinytag import TinyTag
  #loop through mp3 files in server directory, and record the metadata we want to use to form our records in the database
 mp3Files = []
 
-directory = ("../mp3_library")
+directory = ("..\\mp3_library")
 for name in os.listdir(directory):
     filepath = os.path.join(directory, name)
     file = TinyTag.get(filepath)
+    filename = file.title
+    #some songs have no title metadata, relying on filename. So if this is the case, we extract that instead
+    if filename is None:
+        filename = filepath[filepath.rindex("\\")+1:]
     audio = {
-        "name": file.title,
+        "name": filename,
         "path": filepath,
         "duration": file.duration,
         "artist": file.artist
