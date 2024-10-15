@@ -4,10 +4,10 @@ Desktop music player for all my unsorted MP3 files. A user will be able to add a
 As the purpose of this is in part to practice my development skills, I will design the architecture to allow me to try a bunch of different stuff.
 
 Plan:
-- MP3s will be stored in a local folder but their file paths will be tracked with a DB 
+- MP3s will be stored in a server folder but their file paths will be tracked with a DB 
 - This will also track other information such as playlists and artists
 - The application will make RESTful API calls to retrieve this information (using node.js)
-- The application will simply be accessed through a web browser, locally hosted, as I am to practice UI test automation on it in the future.
+- The application will simply be accessed through a web browser, locally hosted, as I aim to practice UI test automation on it in the future.
 
 
 Additional Tools used
@@ -15,9 +15,7 @@ Additional Tools used
 - Postman to test POST requests
 
 To Do
-- finish designing basic layout of website; wireframe UI
 - add backup stylings to handle broken images
-- write script to make functionality clean
-- continue to build up API so that its robust before making it functional
 - write api documentation
 - add hovers for songs with long names
+- use test driven development to hone API error codes

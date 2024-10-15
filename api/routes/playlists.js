@@ -8,9 +8,13 @@ const {createPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist
 router.get('/', (req, res, next) => {
     selectAllPlaylists((err, rows) => {
         if (err) {
-            res.status(500).json({error: err});
+            res.status(500).json({error: err.message});
         } else {      
-            res.status(200).json(rows);
+            const response = {
+                count: rows.length,
+                songs: rows
+            }
+            res.status(200).json(response);
         }
     });
 });
@@ -19,13 +23,13 @@ router.get('/:name', (req, res, next) => {
     const name = req.params.name;
     selectSongsOnPlaylist(name, (err, rows) => {
         if (err) {
-            res.status(500).json({error: err});
-        } else {
-            if(rows.length < 1) {
-                res.status(404).json({message: `The playlist '${name}' could not be found`});
-            } else {          
-                res.status(200).json(rows);
-            } 
+            res.status(500).json({error: err.message});
+        } else {   
+            const response = {
+                count: rows.length,
+                songs: rows
+            }
+            res.status(200).json(response); 
         }
     });
 });
@@ -33,22 +37,7 @@ router.get('/:name', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
     const name = req.body.name;
-    if (name==null) {
-        return res.status(400).json({message: "A required field is missing. Please check request body."});
-    }
-    createPlaylist(name, (err, data) => {
-        if(err){
-            res.status(500).json({error: err});
-        } else {
-            res.status(201).json({message: `Playlist created with ID: ${data.id}`});
-        }
-    });
-});
-
-router.patch('/', (req, res, next) => {
-    const id = req.body.id;
-    const name = req.body.name;
-    updatePlaylist(id, name, (err) => {
+    createPlaylist(name, (err, rows) => {
         if(err){
             if(err.code=="PARAMETER_ERROR"){
                 res.status(400).json({error: err.message});
@@ -56,7 +45,36 @@ router.patch('/', (req, res, next) => {
                 res.status(500).json({error: err.message});
             }
         } else {
-            res.status(200).json({message: "Updated Playlist"});
+            res.status(201).json({
+                message: "Playlist created successfully",
+                createdPlaylist: rows
+            });
+        }
+    });
+});
+
+router.patch('/', (req, res, next) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    updatePlaylist(id, name, (err, rows) => {
+        if(err){
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({error: err.message});
+            } else {
+                res.status(500).json({error: err.message});
+            }
+        } else {
+            res.status(200).json({
+                message: `Updated Playlist with id: ${id}`,
+                updatedPlaylist: {
+                    id: rows.id,
+                    name: rows.name,
+                    songs: {
+                        type: 'GET',
+                        url: `http://localhost:3000/playlists/${id}`
+                    }
+                }
+            });
         }
     });
 });
@@ -64,15 +82,11 @@ router.patch('/', (req, res, next) => {
 
 router.delete('/:id', (req, res, next) => {
     const id = req.params.id;
-    deletePlaylist(id, (err, rows) => {
+    deletePlaylist(id, (err) => {
         if (err) {
-            res.status(500).json({error: err});
+            res.status(500).json({error: err.message});
         } else {
-            if (rows != null) {
-                res.status(200).json({message: "Deleted"});
-            } else {
-                res.status(404).json({message: "No playlist found with this id"});
-            }
+            res.status(200).json({message: `Deleted playlist with id: ${id}`});
         }
     });
 });
