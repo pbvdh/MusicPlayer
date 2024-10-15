@@ -21,8 +21,15 @@ const selectSongsOnPlaylist = (name, callback) => {
 
 //UPDATE
 const updatePlaylist = (id, name, callback) => {
-    const sql = `UPDATE playlist SET name = ? WHERE id = ?`;
-    db.run(sql, [name, id], callback)
+    if (id==null) {
+        return callback({message: "ID field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
+    if(name == null){
+        return callback({message: "No valid parameters received", code: "PARAMETER_ERROR"});
+    } else {
+        const sql = `UPDATE playlist SET name = ? WHERE id = ?`;
+        db.run(sql, [name, id], callback);
+    }
 }
 
 //DELETE

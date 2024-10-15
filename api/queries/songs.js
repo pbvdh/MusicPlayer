@@ -15,9 +15,9 @@ const selectAllSongs = (callback) => {
     db.all(sql, [], callback);//callback holds the error, could rename variable as err
 }
 
-const selectSongsByName = (name, callback) => {
-    const sql = `SELECT * FROM song WHERE name = ?`;
-    db.all(sql, [name], callback);
+const selectSongById = (id, callback) => {
+    const sql = `SELECT * FROM song WHERE id = ?`;
+    db.all(sql, [id], callback);
 }
 
 const selectSongByNames = (name, artist_name, callback) => {
@@ -27,8 +27,24 @@ const selectSongByNames = (name, artist_name, callback) => {
 
 //UPDATE
 const updateSongDetails = (id, number_of_plays, genre, callback) => {
-    const sql = `UPDATE song SET number_of_plays = ?, genre = ? WHERE id = ?`;
-    db.run(sql, [number_of_plays, genre, id], callback);
+    //different query depending on which parameters are passed
+    if (id==null) {
+        return callback({message: "ID field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
+    if(number_of_plays == null) {
+        if(genre == null) {
+            return callback({message: "No valid parameters received", code: "PARAMETER_ERROR"});
+        }else {
+            const sql = `UPDATE song SET genre = ? WHERE id = ?`;
+            db.close(sql, [genre, id], callback);
+        }     
+    } else if(genre == null) {
+        const sql = `UPDATE song SET number_of_plays = ? WHERE id = ?`;
+        db.run(sql, [number_of_plays, id], callback);
+    } else {
+        const sql = `UPDATE song SET number_of_plays = ?, genre = ? WHERE id = ?`;
+        db.run(sql, [number_of_plays, genre, id], callback);
+    }
 }
 
 
@@ -38,4 +54,4 @@ const deleteSong = (id, callback) => {
     db.run(sql, [id], callback);
 }
 
-module.exports = {createSong, selectAllSongs, selectSongByNames, selectSongsByName, deleteSong, updateSongDetails};
+module.exports = {createSong, selectAllSongs, selectSongByNames, selectSongById, deleteSong, updateSongDetails};
