@@ -1,40 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const {createPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, deletePlaylist} = require('../queries/playlists.js');
+const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist} = require('../queries/playlists.js');
 
 
 //Call corresponding query based on API call method, passing parameters and handling errors
 
-router.get('/', (req, res, next) => {
-    selectAllPlaylists((err, rows) => {
-        if (err) {
-            res.status(500).json({error: err.message});
-        } else {      
-            const response = {
-                count: rows.length,
-                songs: rows
-            }
-            res.status(200).json(response);
-        }
-    });
-});
-
-router.get('/:name', (req, res, next) => {
-    const name = req.params.name;
-    selectSongsOnPlaylist(name, (err, rows) => {
-        if (err) {
-            res.status(500).json({error: err.message});
-        } else {   
-            const response = {
-                count: rows.length,
-                songs: rows
-            }
-            res.status(200).json(response); 
-        }
-    });
-});
-
-
+//CREATE
 router.post('/', (req, res, next) => {
     const name = req.body.name;
     createPlaylist(name, (err, rows) => {
@@ -53,6 +24,80 @@ router.post('/', (req, res, next) => {
     });
 });
 
+//add song to playlist
+router.post('/addSong', (req, res, next) => {
+    const playlistId = req.body.playlistId;
+    const songId = req.body.songId;
+
+    addSongToPlaylist(playlistId, songId, (err, rows) => {
+        if (err) {
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({error: err.message});
+            } else {
+                res.status(500).json({error: err.message});
+            }
+        } else {
+            res.status(201).json({
+                message: `Song ${songId} added to playlist ${playlistId}`
+            });
+        }
+    });
+});
+
+//READ
+router.get('/', (req, res, next) => {
+    selectAllPlaylists((err, rows) => {
+        if (err) {
+            res.status(500).json({error: err.message});
+        } else {      
+            const response = {
+                count: rows.length,
+                songs: rows
+            }
+            res.status(200).json(response);
+        }
+    });
+});
+
+router.get('/:name', (req, res, next) => {
+    const name = req.params.name;
+    selectPlaylist(name, (err, rows) => {
+        if (err) {
+            res.status(500).json({error: err.message});
+        } else {   
+            if (rows == null) {
+                res.status(404).json({
+                    message: `No playlist found with name: ${name}`,
+                    searchByIdInstead: {
+                        type: 'GET',
+                        url: `http://localhost:3000/playlists/songs/:id`
+                    }
+                });
+            } else {
+                res.status(200).json(rows); 
+            }
+        }
+    });
+});
+
+router.get('/songs/:id', (req, res, next) => {
+    const id = req.params.id;
+    selectSongsOnPlaylist(id, (err, rows) => {
+        if (err) {
+            res.status(500).json({error: err.message});
+        } else {   
+            const response = {
+                playlistId: id,
+                count: rows.length,
+                songs: rows
+            }
+            res.status(200).json(response); 
+        }
+    });
+});
+
+
+//UPDATE
 router.patch('/', (req, res, next) => {
     const id = req.body.id;
     const name = req.body.name;
@@ -79,12 +124,16 @@ router.patch('/', (req, res, next) => {
     });
 });
 
-
+//DELETE
 router.delete('/:id', (req, res, next) => {
     const id = req.params.id;
     deletePlaylist(id, (err) => {
         if (err) {
-            res.status(500).json({error: err.message});
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({error: err.message});
+            } else {
+                res.status(500).json({error: err.message});
+            }
         } else {
             res.status(200).json({message: `Deleted playlist with id: ${id}`});
         }

@@ -21,8 +21,6 @@ DROP TABLE IF EXISTS "song_in_playlist";
 CREATE TABLE "song_in_playlist" (
 	"song_id"	INTEGER,
 	"playlist_id"	INTEGER,
-	"position"	INTEGER NOT NULL,
-	UNIQUE("playlist_id","position"),
 	PRIMARY KEY("song_id","playlist_id"),
 	FOREIGN KEY("playlist_id") REFERENCES "playlist"("id"),
 	FOREIGN KEY("song_id") REFERENCES "song"("id")

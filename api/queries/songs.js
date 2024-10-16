@@ -64,6 +64,9 @@ const updateSongDetails = (id, number_of_plays, genre, callback) => {
 
 //DELETE
 const deleteSong = (id, callback) => {
+    if (id==null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
     const sql = `DELETE FROM song WHERE id = ?`;
     db.run(sql, [id], callback);
 }

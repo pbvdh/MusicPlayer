@@ -11,15 +11,31 @@ const createPlaylist = (name, callback) => {
     });
 }
 
+const addSongToPlaylist = (playlistId, songId, callback) => {
+    if(playlistId == null || songId == null){
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
+    const sql = `INSERT INTO song_in_playlist (song_id, playlist_id) VALUES (?, ?)`;
+    db.serialize(() => {
+        db.run(`PRAGMA foreign_keys=on`); //force sqlite3 to adhere to foreign key constraints
+        db.run(sql, [songId, playlistId], callback);
+    });
+}
+
 //READ
 const selectAllPlaylists = (callback) => {
     const sql = 'SELECT * FROM playlist';
     db.all(sql, [], callback);
 }
 
-const selectSongsOnPlaylist = (name, callback) => {
-    const sql = `SELECT s.* FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.name = ?`
-    db.all(sql, [name], callback)
+const selectSongsOnPlaylist = (id, callback) => {
+    const sql = `SELECT s.* FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.id = ?`;
+    db.all(sql, [id], callback);
+}
+
+const selectPlaylist = (name, callback) => {
+    const sql = `SELECT * FROM playlist WHERE name = ?`
+    db.get(sql, [name], callback);
 }
 
 //UPDATE
@@ -36,8 +52,11 @@ const updatePlaylist = (id, name, callback) => {
 
 //DELETE
 const deletePlaylist = (id, callback) => {
+    if (id==null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
     const sql = `DELETE FROM playlist WHERE id = ?`;
     db.run(sql, id, callback);
 }
 
-module.exports = {createPlaylist, selectAllPlaylists, selectSongsOnPlaylist, updatePlaylist, deletePlaylist};
+module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist};
