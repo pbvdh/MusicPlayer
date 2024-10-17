@@ -14,6 +14,7 @@ async function init() {
   let songSearchInput = document.getElementById("searchsongs");
   let trackSlider = document.getElementById("trackslider");
 	let playbackPositionValue = document.getElementById("playbackposition");
+  let playbackDurationValue = document.getElementById("playbackduration");
   let actionbuttons = document.querySelectorAll(".actionbutton");
   let actionmenuoptions = document.querySelectorAll(".actionmenuoption");
   let queueDraggables = document.querySelectorAll(".draggableQueue");
@@ -78,9 +79,9 @@ async function init() {
   });
 
   //update the current position value for the track slider
-  playbackPositionValue.innerHTML =  Math.floor(trackSlider.value / 60) + ":" + String(trackSlider.value % 60).padStart(2, '0');
   trackSlider.addEventListener('input', function() {
-    playbackPositionValue.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
+    updatePlaybackPositionValue(trackSlider);
+    song.currentTime = trackSlider.value;
   });
 
   //pop up options menus on song panels
@@ -102,7 +103,7 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'), playButton, volumeSlider);
+      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationValue);
     });
   });
 
@@ -110,7 +111,6 @@ async function init() {
     if(song){
       togglePlayButton(this, volumeSlider);
     }
-    
   });
 
   muteButton.addEventListener('click', function() {
@@ -277,7 +277,7 @@ function searchSongByName() {
         return listItems;
   }
 
-  async function playSong(id, playButton, volumeSlider){
+  async function playSong(id, playButton, volumeSlider, trackSlider, playbackDuration){
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -289,21 +289,22 @@ function searchSongByName() {
     nowPlayingArtist.innerText = data.artist_name;
     if(song){
       if (!song.paused) {
-        await togglePlayButton(playButton);
+        await togglePlayButton(playButton, volumeSlider);
       }
       song = null;
     };
     song = await new Audio(filepath);
     song.load();
-    //handle when song ends
-    song.addEventListener('ended', function() {
-      //TO DO if there is another song in queue, play that song,  else:
-      togglePlayButton(playButton, volumeSlider);
-    });
+    addSongEventListeners(playButton, volumeSlider, trackSlider);
     await togglePlayButton(playButton, volumeSlider);
+    trackSlider.value = 0;
+    updatePlaybackPositionValue(trackSlider);
+    trackSlider.max = song.duration;
+    playbackDuration.innerText = Math.floor(song.duration / 60) + ":" + String(Math.floor(song.duration % 60)).padStart(2, '0');
+
   }
 
-  async function togglePlayButton (playButton, volumeSlider) {
+  async function togglePlayButton(playButton, volumeSlider) {
     const pauseIcon = 
       `<svg role="img" viewBox="0 0 16 16" class="playicon">
 					<path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
@@ -381,5 +382,25 @@ function searchSongByName() {
     }
   }
 
+  function addSongEventListeners(playButton, volumeSlider, trackSlider) {
+    song.addEventListener('timeupdate', function() {
+      trackSlider.value = song.currentTime;
+      updatePlaybackPositionValue(trackSlider);
+    })
+    
+    //handle when song ends
+    song.addEventListener('ended', function() {
+      //TO DO if there is another song in queue, play that song,  else:
+      trackSlider.value = 0;
+      updatePlaybackPositionValue(trackSlider);
+      togglePlayButton(playButton, volumeSlider);
+    });
+
+  }
+
+  function updatePlaybackPositionValue(trackSlider) {
+    playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
+    playbackPositionValue.innerHTML =  Math.floor(trackSlider.value / 60) + ":" + String(Math.floor(trackSlider.value % 60)).padStart(2, '0');
+  }
 
   window.onload=init;
