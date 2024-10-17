@@ -1,5 +1,7 @@
+let song;
+
 async function init() {
-  
+
   /*Generate HTML that needs to be created before event listeners are added */
   let songList = document.getElementById("songlist");
   let listItems = await loadSongList(songList);
@@ -17,6 +19,7 @@ async function init() {
   let queueDraggables = document.querySelectorAll(".draggableQueue");
   let queuelist = document.getElementById("queuelist");
   let songNames = document.querySelectorAll(".songname");
+  let playButton = document.getElementById("playbutton");
 
   //allow songs in queue to be dragged
   queueDraggables.forEach(draggable => {
@@ -97,8 +100,12 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'));
+      playSong(songName.getAttribute('songid'), playButton);
     });
+  });
+
+  playButton.addEventListener('click', function() {
+    togglePlayButton(this);
   });
 
   document.addEventListener('click', (event) => {
@@ -257,7 +264,7 @@ function searchSongByName() {
         return listItems;
   }
 
-  async function playSong(id){
+  async function playSong(id, playButton){
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -267,8 +274,37 @@ function searchSongByName() {
     let nowPlayingArtist = document.getElementById('nowplayingartistname').getElementsByClassName('songsearchlink')[0];
     nowPlayingSong.innerText = data.name;
     nowPlayingArtist.innerText = data.artist_name;
-    let song = await new Audio(filepath);
-    song.play();
+    if(song){
+      if (!song.paused) {
+        await togglePlayButton(playButton);
+      }
+      song = null;
+    };
+    song = await new Audio(filepath);
+    song.load();
+    await togglePlayButton(playButton);
+  }
+
+  async function togglePlayButton (playButton) {
+    const pauseIcon = 
+      `<svg role="img" viewBox="0 0 16 16" class="playicon">
+					<path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
+				</svg>`;
+    const playIcon = 
+      `<svg role="img" viewBox="0 0 16 16" class="playicon">
+        <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z"></path>
+      </svg>`;
+
+    const playButtonInner = playButton.getElementsByClassName('playbuttoninner')[0].getElementsByClassName('playiconwrapper')[0];
+    if (playButton.getAttribute('status') == "paused") {
+      playButton.setAttribute('status', 'playing');
+      playButtonInner.innerHTML = pauseIcon;
+      await song.play();
+    } else if (playButton.getAttribute('status') == "playing") {
+      playButton.setAttribute('status', 'paused');
+      playButtonInner.innerHTML = playIcon;
+      await song.pause();
+    }
   }
 
 

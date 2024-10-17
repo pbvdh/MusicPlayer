@@ -15,7 +15,7 @@ const scriptRoutes = require('./api/routes/scripts')
 //Funnel requests through this middleware (forwarded via 'next')
 //log incoming requests
 app.use(morgan('dev'));
-//make mp3 folder publicly accessible once you know the filepath
+//make mp3 folder publicly accessible
 app.use(express.static('../mp3_library'));
 //parse bodies
 app.use(express.urlencoded({extended: false}));
