@@ -280,21 +280,22 @@ footer button:focus {
 }
 
 
-.tracklist li, .tracklist lh{
+.tracklist li {
     background-color: #708090;
     list-style: none;
     border-bottom: 2px solid black;
     display: block;
 }
 
-.tracklist lh {
+.queueheader {
     font-size: x-large;
-    box-shadow: -10px 0px 5px 1px black;
+    box-shadow: 0px 0px 5px 1px black;
     position: relative;
     border-bottom: 4px solid black;
     text-align: center;
     background-color: white;
     padding: 0.5rem;
+    display: block;
 }
 
 .tracklist li:hover {

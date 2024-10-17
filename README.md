@@ -22,3 +22,4 @@ To Do
 - env file for port number and other variables
 - stop window resizing on search
 - scroll song name on hover
+- search artists

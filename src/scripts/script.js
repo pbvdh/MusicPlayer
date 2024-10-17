@@ -1,4 +1,4 @@
-let song;
+let song; //global variable to hold song that is currently playing, if any.
 
 async function init() {
 
@@ -20,6 +20,8 @@ async function init() {
   let queuelist = document.getElementById("queuelist");
   let songNames = document.querySelectorAll(".songname");
   let playButton = document.getElementById("playbutton");
+  let muteButton = document.getElementById("mutebutton");
+  let volumeSlider = document.getElementById("volumeslider");
 
   //allow songs in queue to be dragged
   queueDraggables.forEach(draggable => {
@@ -100,20 +102,31 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'), playButton);
+      playSong(songName.getAttribute('songid'), playButton, volumeSlider);
     });
   });
 
   playButton.addEventListener('click', function() {
-    togglePlayButton(this);
+    if(song){
+      togglePlayButton(this, volumeSlider);
+    }
+    
   });
+
+  muteButton.addEventListener('click', function() {
+    toggleMuteButton(this, volumeSlider);
+  });
+
+  volumeSlider.addEventListener('input', function() {
+    adjustSongVolume(this, muteButton);
+  });
+
 
   document.addEventListener('click', (event) => {
     //hide pop up options menus when you click outside them
     removeOpenDropDowns(event);
   });
   
-
   //sort lists of songs when app loads
   sortSongList(songList);								
 }
@@ -264,7 +277,7 @@ function searchSongByName() {
         return listItems;
   }
 
-  async function playSong(id, playButton){
+  async function playSong(id, playButton, volumeSlider){
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -282,10 +295,15 @@ function searchSongByName() {
     };
     song = await new Audio(filepath);
     song.load();
-    await togglePlayButton(playButton);
+    //handle when song ends
+    song.addEventListener('ended', function() {
+      //TO DO if there is another song in queue, play that song,  else:
+      togglePlayButton(playButton, volumeSlider);
+    });
+    await togglePlayButton(playButton, volumeSlider);
   }
 
-  async function togglePlayButton (playButton) {
+  async function togglePlayButton (playButton, volumeSlider) {
     const pauseIcon = 
       `<svg role="img" viewBox="0 0 16 16" class="playicon">
 					<path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
@@ -299,11 +317,67 @@ function searchSongByName() {
     if (playButton.getAttribute('status') == "paused") {
       playButton.setAttribute('status', 'playing');
       playButtonInner.innerHTML = pauseIcon;
+      song.volume = volumeSlider.value;
       await song.play();
     } else if (playButton.getAttribute('status') == "playing") {
       playButton.setAttribute('status', 'paused');
       playButtonInner.innerHTML = playIcon;
       await song.pause();
+    }
+  }
+
+  function toggleMuteButton(muteButton, volumeSlider) {
+    const unmutedIcon = 
+      `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
+					<path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
+					<path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
+			  </svg>`;
+    const mutedIcon =
+      `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
+        <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
+      </svg>`;
+
+    if (muteButton.getAttribute('status') == "muted") {
+      muteButton.setAttribute('status', 'unmuted');
+      muteButton.innerHTML = unmutedIcon;
+      volumeSlider.value = song.volume;
+      song.muted = false;
+    } else if (muteButton.getAttribute('status') == "unmuted") {
+      muteButton.setAttribute('status', 'muted');
+      muteButton.innerHTML = mutedIcon;
+      volumeSlider.value = 0;
+      song.muted = true;
+    }
+    
+  }
+
+
+  function adjustSongVolume(volumeSlider, muteButton) {
+    if(song){song.volume = volumeSlider.value};
+    //if volume slider value is under certain thresholds, change volume icon to represent a lower volume.
+    const lowVolume =
+      `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
+        <path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 6.087a4.502 4.502 0 0 0 0-8.474v1.65a2.999 2.999 0 0 1 0 5.175v1.649z"></path>
+      </svg>`;
+    const highVolume = 
+      `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
+					<path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
+					<path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
+			</svg>`;
+
+      const muted =
+      `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
+        <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
+        <path d="M10.116 1.5A.75.75 0 0 0 8.991.85l-6.925 4a3.642 3.642 0 0 0-1.33 4.967 3.639 3.639 0 0 0 1.33 1.332l6.925 4a.75.75 0 0 0 1.125-.649v-1.906a4.73 4.73 0 0 1-1.5-.694v1.3L2.817 9.852a2.141 2.141 0 0 1-.781-2.92c.187-.324.456-.594.78-.782l5.8-3.35v1.3c.45-.313.956-.55 1.5-.694V1.5z"></path>
+      </svg>`;
+    if (volumeSlider.value == 0) {
+      muteButton.innerHTML = muted;
+    }
+    else if (volumeSlider.value < 0.5) {
+      muteButton.innerHTML = lowVolume;
+    } else { 
+      muteButton.innerHTML = highVolume;
     }
   }
 
