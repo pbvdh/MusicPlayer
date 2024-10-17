@@ -229,6 +229,7 @@ footer button:focus {
 /*tracklist class for both song list and playing queue*/
 .tracklist .songname{
     font-size: small;
+
 }
 
 .tracklist .artistname{
@@ -361,7 +362,7 @@ footer button:focus {
 
 /* now playing - left aligned section of footer */
 #nowplaying {
-    width: 25%;
+    width: 30%;
     min-width: 155px;
     display: inline-flex;
     flex-direction: row;
@@ -398,6 +399,7 @@ footer button:focus {
     margin-top: auto;
     margin-bottom: auto;
     overflow: hidden;
+    padding-left: 0;
 }
 
 #nowplayingsongname {
@@ -408,7 +410,7 @@ footer button:focus {
     white-space: nowrap;
     padding-inline-start: 6px;
     padding-bottom: 0;
-    font-size: large;
+    font-size: small;
 }
 
 #nowplayingartistname {
@@ -418,13 +420,13 @@ footer button:focus {
     white-space: nowrap;
     padding-inline-start: 6px;
     padding-top: 4px;
-    font-size: medium;
+    font-size: smaller;
     opacity: 0.7;
 }
 
 /* play controls - centrepiece of footer */
 #playcontrols {
-    width: 50%;
+    width: 40%;
     min-width: 310px;
     display: inline-flex;
     flex-direction: column;
@@ -474,7 +476,7 @@ footer button:focus {
 
 /* queue controls - right aligned section of footer */
 #queuecontrols {
-    width: 25%;
+    width: 30%;
     min-width: 155px;
     display: inline-flex;
     justify-content: flex-end;

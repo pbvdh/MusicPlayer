@@ -12,12 +12,13 @@ for name in os.listdir(directory):
     filename = file.title
     #some songs have no title metadata, relying on filename. So if this is the case, we extract that instead
     if filename is None:
-        filename = filepath[filepath.rindex("\\")+1:]
+        filename = filepath[filepath.rindex("\\")+1:filepath.rindex(".")]
     audio = {
         "name": filename,
-        "path": filepath,
-        "duration": file.duration,
-        "artist": file.artist
+        "filepath": filepath,
+        "duration_seconds": file.duration,
+        "artist_name": file.artist,
+        "genre": ""
     }
     mp3Files.append(audio)
 

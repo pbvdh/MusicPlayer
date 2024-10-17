@@ -16,7 +16,7 @@ const createSong = (name, filepath, genre, duration_seconds, artist_name, callba
 
 //READ
 const selectAllSongs = (callback) => {
-    const sql = 'SELECT * FROM song';
+    const sql = 'SELECT id, name, artist_name FROM song';
     db.all(sql, [], callback);
 }
 

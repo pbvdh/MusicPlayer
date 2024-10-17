@@ -29,7 +29,7 @@ router.post('/addSong', (req, res, next) => {
     const playlistId = req.body.playlistId;
     const songId = req.body.songId;
 
-    addSongToPlaylist(playlistId, songId, (err, rows) => {
+    addSongToPlaylist(playlistId, songId, (err) => {
         if (err) {
             if(err.code=="PARAMETER_ERROR"){
                 res.status(400).json({error: err.message});

@@ -1,4 +1,10 @@
-function init() {
+async function init() {
+  
+  /*Generate HTML that needs to be created before event listeners are added */
+  let songList = document.getElementById("songlist");
+  let listItems = await loadSongList(songList);
+  songList.innerHTML = listItems;
+
   /*event listeners for DOM*/
   let songSearchLinks = document.querySelectorAll(".songsearchlink");
   let togglePanes = document.getElementById("nowplayingimage");
@@ -6,11 +12,11 @@ function init() {
   let songSearchInput = document.getElementById("searchsongs");
   let trackSlider = document.getElementById("trackslider");
 	let playbackPositionValue = document.getElementById("playbackposition");
-  let songList = document.getElementById("songlist");
   let actionbuttons = document.querySelectorAll(".actionbutton");
   let actionmenuoptions = document.querySelectorAll(".actionmenuoption");
   let queueDraggables = document.querySelectorAll(".draggableQueue");
   let queuelist = document.getElementById("queuelist");
+  let songNames = document.querySelectorAll(".songname");
 
   //allow songs in queue to be dragged
   queueDraggables.forEach(draggable => {
@@ -72,7 +78,6 @@ function init() {
     playbackPositionValue.innerHTML =  Math.floor(this.value / 60) + ":" + String(this.value % 60).padStart(2, '0');
   });
 
-
   //pop up options menus on song panels
   actionbuttons.forEach(actionbutton => {
     const dropdown = actionbutton.parentElement.querySelector('.actionmenudropdown');
@@ -90,7 +95,12 @@ function init() {
     });
   });
 
-  
+  songNames.forEach(songName => {
+    songName.addEventListener('click', function() {
+      playSong(songName.getAttribute('songid'));
+    });
+  });
+
   document.addEventListener('click', (event) => {
     //hide pop up options menus when you click outside them
     removeOpenDropDowns(event);
@@ -209,6 +219,56 @@ function searchSongByName() {
     //placeholder
     console.log(option + 'selected');
     removeOpenDropDowns();
+  }
+
+  async function loadSongList(songList) {
+    //get json of all songs via GET request
+    const getAllSongsUrl = "http://localhost:3000/songs";
+    let listItems = "";
+    let response = await fetch(getAllSongsUrl);
+    let data = await response.json();
+    data.songs.forEach(song => {
+      //add each to the block of html we will add
+          listItems +=
+            `<li>
+                <div class="tracklistitem">
+                  <div class="trackdetailscontainer">
+                    <div class="overflowwrapper">
+                      <a class="songname" draggable=false href="#" songId ="${song.id}">${song.name}</a>
+                      <br>
+                      <a class="artistname songsearchlink" href="#">${song.artist_name}</a>
+                    </div>
+                  </div>
+                  <div class="actionmenucontainer">
+                    <button class="actionbutton">
+                      <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" focusable="false" class="actionbuttonicon">
+                        <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+                      </svg>
+                    </button>
+                    <div class="actionmenudropdown">
+                      <div class="actionmenuoption" data-option="Play next">Play next</div>
+                      <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
+                      <div class="actionmenuoption" data-option="Add to playlist">Add to playlist</div>
+                    </div>	
+                  </div>
+                </div>
+              </li>`;
+        });
+        return listItems;
+  }
+
+  async function playSong(id){
+    const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
+    let response = await fetch(getSongDetailsUrl);
+    let data = await response.json();
+    //make strings appropriate for browser & static reference
+    let filepath = 'http://localhost:3000/' + encodeURIComponent(data.filepath.slice(data.filepath.lastIndexOf("\\")+1));
+    let nowPlayingSong = document.getElementById('nowplayingsongname').getElementsByClassName('songsearchlink')[0];
+    let nowPlayingArtist = document.getElementById('nowplayingartistname').getElementsByClassName('songsearchlink')[0];
+    nowPlayingSong.innerText = data.name;
+    nowPlayingArtist.innerText = data.artist_name;
+    let song = await new Audio(filepath);
+    song.play();
   }
 
 

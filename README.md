@@ -20,3 +20,5 @@ To Do
 - add hovers for songs with long names
 - use test driven development to hone API error codes
 - env file for port number and other variables
+- stop window resizing on search
+- scroll song name on hover
