@@ -23,3 +23,7 @@ To Do
 - stop window resizing on search
 - scroll song name on hover
 - search artists
+- allow queue of 3000+
+- currently playing should be in queue and highlighted
+- keep queue history
+- make margins above and below song list equivalent

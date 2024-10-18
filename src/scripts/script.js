@@ -1,4 +1,8 @@
 let song; //global variable to hold song that is currently playing, if any.
+let queue = []; //global variable to hold the current queue
+
+
+//EVENT LISTENERS AND DYNAMIC GENERATION
 
 async function init() {
 
@@ -13,46 +17,24 @@ async function init() {
   let clearSongSearch = document.getElementById("searchsongsclearbutton");
   let songSearchInput = document.getElementById("searchsongs");
   let trackSlider = document.getElementById("trackslider");
-	let playbackPositionValue = document.getElementById("playbackposition");
-  let playbackDurationValue = document.getElementById("playbackduration");
+  let playbackDurationField = document.getElementById("playbackduration");
   let actionbuttons = document.querySelectorAll(".actionbutton");
   let actionmenuoptions = document.querySelectorAll(".actionmenuoption");
-  let queueDraggables = document.querySelectorAll(".draggableQueue");
-  let queuelist = document.getElementById("queuelist");
+  let queueList = document.getElementById("queuelist");
   let songNames = document.querySelectorAll(".songname");
   let playButton = document.getElementById("playbutton");
   let muteButton = document.getElementById("mutebutton");
   let volumeSlider = document.getElementById("volumeslider");
 
-  //allow songs in queue to be dragged
-  queueDraggables.forEach(draggable => {
-    //add dragging class to an item when you start dragging it, after a delay
-    draggable.addEventListener('dragstart', () => {
-      setTimeout(() => draggable.classList.add('dragging'), 0);
-    });
-    //remove dragging class when you let go
-    draggable.addEventListener('dragend', () => {
-      draggable.classList.remove('dragging');
-    });
-
-    draggable.addEventListener('dragenter', () => {
-      draggable.classList.add('over');
-    });
-
-    draggable.addEventListener('dragleave', () => {
-      draggable.classList.remove('over');
-    });
-  });
-
   //handle a song getting dragged within the song queue
-  queuelist.addEventListener('dragover', e => {
+  queueList.addEventListener('dragover', e => {
     e.preventDefault();
     const afterElement = getDragAfterElement(queuelist, e.clientY);
     const draggable = document.querySelector('.dragging');
     if (afterElement == null) {
-      queuelist.appendChild(draggable);
+      queueList.appendChild(draggable);
     } else {
-      queuelist.insertBefore(draggable, afterElement);
+      queueList.insertBefore(draggable, afterElement);
     }
   });
 
@@ -103,22 +85,23 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationValue);
+      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField);
+      initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
     });
   });
 
   playButton.addEventListener('click', function() {
     if(song){
-      togglePlayButton(this, volumeSlider);
+      togglePlayButton(playButton, volumeSlider);
     }
   });
 
   muteButton.addEventListener('click', function() {
-    toggleMuteButton(this, volumeSlider);
+    toggleMuteButton(muteButton, volumeSlider);
   });
 
   volumeSlider.addEventListener('input', function() {
-    adjustSongVolume(this, muteButton);
+    adjustSongVolume(volumeSlider, muteButton);
   });
 
 
@@ -134,8 +117,7 @@ async function init() {
 
 
 
-
-
+//MENU OPERATIONS
 
 //keyup search bar functionality
 function searchSongByName() {
@@ -234,7 +216,6 @@ function searchSongByName() {
     }
   }
 
-
   function handleActionMenuOption(option) {
     //placeholder
     console.log(option + 'selected');
@@ -277,7 +258,13 @@ function searchSongByName() {
         return listItems;
   }
 
-  async function playSong(id, playButton, volumeSlider, trackSlider, playbackDuration){
+
+  
+
+  //SONG CONTROLS
+
+
+  async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurationField){
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -287,20 +274,28 @@ function searchSongByName() {
     let nowPlayingArtist = document.getElementById('nowplayingartistname').getElementsByClassName('songsearchlink')[0];
     nowPlayingSong.innerText = data.name;
     nowPlayingArtist.innerText = data.artist_name;
+    //stop the currently playing song
     if(song){
       if (!song.paused) {
         await togglePlayButton(playButton, volumeSlider);
       }
       song = null;
     };
+    //reassign song variable to the new song that was just triggered
     song = await new Audio(filepath);
     song.load();
-    addSongEventListeners(playButton, volumeSlider, trackSlider);
-    await togglePlayButton(playButton, volumeSlider);
+    //if we are still in playing state, dont toggle to off state - we are likely in the middle of a queue.
+    if(playButton.getAttribute('status') == "playing"){
+      song.volume = volumeSlider.value;
+      await song.play();
+    } else {
+      await togglePlayButton(playButton, volumeSlider);
+    }
+    addSongEventListeners(id, playButton, volumeSlider, trackSlider, playbackDurationField);
     trackSlider.value = 0;
     updatePlaybackPositionValue(trackSlider);
     trackSlider.max = song.duration;
-    playbackDuration.innerText = Math.floor(song.duration / 60) + ":" + String(Math.floor(song.duration % 60)).padStart(2, '0');
+    playbackDurationField.innerText = Math.floor(song.duration / 60) + ":" + String(Math.floor(song.duration % 60)).padStart(2, '0');
 
   }
 
@@ -342,13 +337,19 @@ function searchSongByName() {
     if (muteButton.getAttribute('status') == "muted") {
       muteButton.setAttribute('status', 'unmuted');
       muteButton.innerHTML = unmutedIcon;
-      volumeSlider.value = song.volume;
-      song.muted = false;
+      if(song){
+        volumeSlider.value = song.volume;
+        song.muted = false;
+      } else {
+        volumeSlider.value = 0;
+      }
     } else if (muteButton.getAttribute('status') == "unmuted") {
       muteButton.setAttribute('status', 'muted');
       muteButton.innerHTML = mutedIcon;
       volumeSlider.value = 0;
-      song.muted = true;
+      if(song) {
+        song.muted = true;
+      }
     }
     
   }
@@ -382,7 +383,7 @@ function searchSongByName() {
     }
   }
 
-  function addSongEventListeners(playButton, volumeSlider, trackSlider) {
+  function addSongEventListeners(songId, playButton, volumeSlider, trackSlider, playbackDurationField) {
     song.addEventListener('timeupdate', function() {
       trackSlider.value = song.currentTime;
       updatePlaybackPositionValue(trackSlider);
@@ -390,10 +391,14 @@ function searchSongByName() {
     
     //handle when song ends
     song.addEventListener('ended', function() {
-      //TO DO if there is another song in queue, play that song,  else:
-      trackSlider.value = 0;
-      updatePlaybackPositionValue(trackSlider);
-      togglePlayButton(playButton, volumeSlider);
+      //if there are more songs in the queue:
+      if (queue.length > 0){
+        playSong(queue.shift(), playButton, volumeSlider, trackSlider, playbackDurationField);
+      } else {
+        trackSlider.value = 0;
+        updatePlaybackPositionValue(trackSlider);
+        togglePlayButton(playButton, volumeSlider);
+      }
     });
 
   }
@@ -401,6 +406,91 @@ function searchSongByName() {
   function updatePlaybackPositionValue(trackSlider) {
     playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
     playbackPositionValue.innerHTML =  Math.floor(trackSlider.value / 60) + ":" + String(Math.floor(trackSlider.value % 60)).padStart(2, '0');
+  }
+
+  async function initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField) {
+    //clear queue and prepare to populate with subsequent songs in search field
+    queue = [];
+    let allSongs = songList.querySelectorAll('li');
+    let index = Array.prototype.indexOf.call(allSongs, songName.closest('li')); //how far down the list of all songs is the selected one?
+
+    //using all subsequent songs that are visible in the current search field, form a queue
+    for (i = index+1; i < allSongs.length; i++) {
+      if (allSongs[i].style.display != "none") {       
+        queue.push(allSongs[i].querySelector('.songname').getAttribute("songid"));
+      }
+    }
+
+    //populate queue window with list items
+    queueList.innerHTML = "" //clear current queue
+    let listItems = await generateQueueListItems(); 
+    queueList.innerHTML = listItems;
+    addQueueEventListeners(queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
+  }
+
+  async function generateQueueListItems() {
+      let listItems = "";
+      for (i = 0; (i < queue.length) && (i < 100); i++) { //Max queue size until efficient way of making thousands of requests
+        let id = queue[i];
+        const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
+        let response = await fetch(getSongDetailsUrl);
+        let data = await response.json();
+        listItems +=
+                  `<li class="draggableQueue" draggable="true"><!--single song li block-->
+                    <div class="tracklistitem"><!--flex container-->
+                      <div class="trackdetailscontainer"><!--track name and artist-->
+                        <div class="overflowwrapper"><!--allow overflow ellipsis-->
+                          <a class="songname" href="#" songId="${data.id}">${data.name}</a>
+                          <br>
+                          <a class="artistname songsearchlink" href="#">${data.artist_name}</a>
+                        </div>
+                      </div><div class="actionmenucontainer"><!--container for options button-->
+                        <button class="actionbutton">
+                          <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" focusable="false" class="actionbuttonicon">
+                            <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+                          </svg>
+                        </button>
+                        <div class="actionmenudropdown">
+                          <div class="actionmenuoption" data-option="Play next">Play next</div>
+                          <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
+                          <div class="actionmenuoption" data-option="Add to playlist">Add to playlist</div>
+                        </div>	
+                      </div>
+                    </div>
+                  </li>`;
+      }
+      return listItems;
+  };
+
+  function addQueueEventListeners(queueList, playButton, volumeSlider, trackSlider, playbackDurationField) {
+      //allow songs in queue to be dragged
+      let queueDraggables = document.querySelectorAll(".draggableQueue");
+      queueDraggables.forEach(draggable => {
+        //add dragging class to an item when you start dragging it, after a delay
+        draggable.addEventListener('dragstart', () => {
+          setTimeout(() => draggable.classList.add('dragging'), 0);
+        });
+
+        //remove dragging class when you let go
+        draggable.addEventListener('dragend', () => {
+          draggable.classList.remove('dragging');
+        });
+
+        draggable.addEventListener('dragenter', () => {
+          draggable.classList.add('over');
+        });
+
+        draggable.addEventListener('dragleave', () => {
+          draggable.classList.remove('over');
+        });
+
+        //add click events to the newly generated html
+        let songNameLink = draggable.querySelector('.songname');
+        songNameLink.addEventListener('click', () => {
+          playSong(songNameLink.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField); //play song when clicked
+          initializeSongQueue(songNameLink, queueList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField); //generate new queue using the order of the list items in the queuelist
+        });
+      });
   }
 
   window.onload=init;
