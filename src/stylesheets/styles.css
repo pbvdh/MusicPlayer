@@ -352,6 +352,14 @@ footer button:focus {
     background-color: #f0f0f0; 
 }
 
+.queueHistory {
+    opacity: 0.5;
+}
+
+.queueCurrent {
+    background-color: #2e3942;
+}
+
   
 
 /* ids */

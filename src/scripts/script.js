@@ -3,7 +3,6 @@ let queue = []; //global variable to hold the current queue
 
 
 //EVENT LISTENERS AND DYNAMIC GENERATION
-
 async function init() {
 
   /*Generate HTML that needs to be created before event listeners are added */
@@ -41,7 +40,7 @@ async function init() {
   //if an the name of an artist is clicked within our app, we input it as a search
   songSearchLinks.forEach(songSearchLink => {
     songSearchLink.addEventListener('click', () => {
-      searchLinkedTrack(songSearchLink);
+      searchLinkedTrack(songSearchLink, songList, songSearchInput, clearSongSearch);
     });
   });
 
@@ -52,12 +51,12 @@ async function init() {
 
   //clear search window button
   clearSongSearch.addEventListener('click', function() {
-    clearInput(songSearchInput);
+    clearInput(songSearsongList, songSearchInput, clearSongSearchchInput);
   });
 
   //handle searching for songs
   songSearchInput.addEventListener('input', function() {
-    searchSongByName();
+    searchSongByName(songList, songSearchInput, clearSongSearch);
   });
 
   //update the current position value for the track slider
@@ -85,7 +84,7 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField);
+      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
       initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
     });
   });
@@ -104,7 +103,6 @@ async function init() {
     adjustSongVolume(volumeSlider, muteButton);
   });
 
-
   document.addEventListener('click', (event) => {
     //hide pop up options menus when you click outside them
     removeOpenDropDowns(event);
@@ -117,17 +115,16 @@ async function init() {
 
 
 
+
+
 //MENU OPERATIONS
 
 //keyup search bar functionality
-function searchSongByName() {
+function searchSongByName(ul, input, clearText) {
     // Declare variables
-    let input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById("searchsongs");
+    let filter, li, i;
     filter = input.value.toLowerCase();
-    ul = document.getElementById("songlist");
     li = ul.getElementsByTagName('li');
-    clearText = document.getElementById("searchsongsclearbutton");
 
     if (input.value){
       clearText.style.visibility = "visible"
@@ -162,17 +159,17 @@ function searchSongByName() {
   }
 
 //clicking a song or artist name inside <a>, automatically sends to search bar and makes pane visible
-  function searchLinkedTrack(a){
+  function searchLinkedTrack(a, songList, songSearchInput, clearSongSearch){
     let searchTerm = a.textContent || a.innerText;
     let input = document.getElementById('searchsongs');
     input.value = searchTerm;
     showHidePanes(true);
-    searchSongByName();
+    searchSongByName(songList, songSearchInput, clearSongSearch);
   }
 
-  function clearInput(input) {
-    input.value="";
-    searchSongByName();
+  function clearInput(songList, songSearchInput, clearSongSearch) {
+    songSearchInput.value="";
+    searchSongByName(songList, songSearchInput, clearSongSearch);
   }
 
   function sortSongList(ul) {
@@ -264,7 +261,7 @@ function searchSongByName() {
   //SONG CONTROLS
 
 
-  async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurationField){
+  async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurationField, queueList){
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -291,7 +288,7 @@ function searchSongByName() {
     } else {
       await togglePlayButton(playButton, volumeSlider);
     }
-    addSongEventListeners(id, playButton, volumeSlider, trackSlider, playbackDurationField);
+    addSongEventListeners(id, playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
     trackSlider.value = 0;
     updatePlaybackPositionValue(trackSlider);
     trackSlider.max = song.duration;
@@ -383,7 +380,7 @@ function searchSongByName() {
     }
   }
 
-  function addSongEventListeners(songId, playButton, volumeSlider, trackSlider, playbackDurationField) {
+  function addSongEventListeners(songId, playButton, volumeSlider, trackSlider, playbackDurationField, queueList) {
     song.addEventListener('timeupdate', function() {
       trackSlider.value = song.currentTime;
       updatePlaybackPositionValue(trackSlider);
@@ -392,8 +389,11 @@ function searchSongByName() {
     //handle when song ends
     song.addEventListener('ended', function() {
       //if there are more songs in the queue:
-      if (queue.length > 0){
-        playSong(queue.shift(), playButton, volumeSlider, trackSlider, playbackDurationField);
+      if (queue.indexOf(songId) < queue.length-1){
+        let nextSongId = queue[queue.indexOf(songId)+1]
+        playSong(nextSongId, playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+        updateQueueAppearance(queueList, queueList.querySelector(`a[songId="${nextSongId}"]`).closest("li"));
+
       } else {
         trackSlider.value = 0;
         updatePlaybackPositionValue(trackSlider);
@@ -412,32 +412,42 @@ function searchSongByName() {
     //clear queue and prepare to populate with subsequent songs in search field
     queue = [];
     let allSongs = songList.querySelectorAll('li');
-    let index = Array.prototype.indexOf.call(allSongs, songName.closest('li')); //how far down the list of all songs is the selected one?
+    let currentSongIndex = Array.prototype.indexOf.call(allSongs, songName.closest('li')); //how far down the list of all songs is the selected one?
+    let currentSongId = allSongs[currentSongIndex].querySelector('.songname').getAttribute("songid");
 
-    //using all subsequent songs that are visible in the current search field, form a queue
-    for (i = index+1; i < allSongs.length; i++) {
+    //using all songs that are visible in the current search field, form a queue
+    for (i = 0; i < allSongs.length; i++) {
       if (allSongs[i].style.display != "none") {       
         queue.push(allSongs[i].querySelector('.songname').getAttribute("songid"));
       }
     }
 
+    currentSongIndex = queue.indexOf(currentSongId); //updated index among only visible songs
+
     //populate queue window with list items
     queueList.innerHTML = "" //clear current queue
-    let listItems = await generateQueueListItems(); 
+    let listItems = await generateQueueListItems(currentSongIndex); 
     queueList.innerHTML = listItems;
+    queueList.querySelector(".queueCurrent").scrollIntoView({behavior: "smooth"});
     addQueueEventListeners(queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
   }
 
-  async function generateQueueListItems() {
+  async function generateQueueListItems(currentSongIndex) {
       let listItems = "";
       for (i = 0; (i < queue.length) && (i < 100); i++) { //Max queue size until efficient way of making thousands of requests
         let id = queue[i];
         const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
         let response = await fetch(getSongDetailsUrl);
         let data = await response.json();
+        let styleClass = "";
+        if(i == currentSongIndex){
+          styleClass = "queueCurrent";
+        } else if (i < currentSongIndex) {
+          styleClass = "queueHistory";
+        } 
         listItems +=
                   `<li class="draggableQueue" draggable="true"><!--single song li block-->
-                    <div class="tracklistitem"><!--flex container-->
+                    <div class="tracklistitem ${styleClass}"><!--flex container-->
                       <div class="trackdetailscontainer"><!--track name and artist-->
                         <div class="overflowwrapper"><!--allow overflow ellipsis-->
                           <a class="songname" href="#" songId="${data.id}">${data.name}</a>
@@ -487,10 +497,33 @@ function searchSongByName() {
         //add click events to the newly generated html
         let songNameLink = draggable.querySelector('.songname');
         songNameLink.addEventListener('click', () => {
-          playSong(songNameLink.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField); //play song when clicked
-          initializeSongQueue(songNameLink, queueList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField); //generate new queue using the order of the list items in the queuelist
+          playSong(songNameLink.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList); //play song when clicked
+          updateQueueAppearance(queueList, songNameLink.closest("li"));
         });
       });
+  }
+
+  function updateQueueAppearance(queueList, songToPlay) {
+    //set styles of all songs before and after the currently playing one to reflect queue state
+    let listItems = queueList.querySelectorAll("li");
+    let nextSongIndex = Array.prototype.indexOf.call(listItems, songToPlay); //how far down the list of all songs is the selected one?
+    for(i = 0; i < listItems.length; i++){
+      let item = listItems[i].querySelector('.tracklistitem');
+      if(i == nextSongIndex){
+        //set style of song we want to play next
+        item.classList.remove("queueHistory");
+        item.classList.add("queueCurrent");
+      } else {
+        if(i < nextSongIndex){
+          item.classList.add("queueHistory");
+          item.classList.remove("queueCurrent");
+        } else if (i > nextSongIndex) {
+          item.classList.remove("queueHistory");
+          item.classList.remove("queueCurrent");
+        }
+      }
+    }
+    songToPlay.scrollIntoView({behavior: "smooth"});
   }
 
   window.onload=init;
