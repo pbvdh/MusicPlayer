@@ -352,11 +352,11 @@ footer button:focus {
     background-color: #f0f0f0; 
 }
 
-.queueHistory {
+.queuehistory {
     opacity: 0.5;
 }
 
-.queueCurrent {
+.queuecurrent {
     background-color: #2e3942;
 }
 

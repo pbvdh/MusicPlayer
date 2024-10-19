@@ -24,4 +24,4 @@ To Do
 - scroll song name on hover
 - search artists
 - allow queue of 3000+
-- dragging reorganize queue
+- examine use of global variables

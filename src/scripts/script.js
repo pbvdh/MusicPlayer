@@ -51,7 +51,7 @@ async function init() {
 
   //clear search window button
   clearSongSearch.addEventListener('click', function() {
-    clearInput(songSearsongList, songSearchInput, clearSongSearchchInput);
+    clearInput(songList, songSearchInput, clearSongSearch);
   });
 
   //handle searching for songs
@@ -84,8 +84,8 @@ async function init() {
 
   songNames.forEach(songName => {
     songName.addEventListener('click', function() {
-      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
       initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
+      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
     });
   });
 
@@ -393,7 +393,6 @@ function searchSongByName(ul, input, clearText) {
         let nextSongId = queue[queue.indexOf(songId)+1]
         playSong(nextSongId, playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
         updateQueueAppearance(queueList, queueList.querySelector(`a[songId="${nextSongId}"]`).closest("li"));
-
       } else {
         trackSlider.value = 0;
         updatePlaybackPositionValue(trackSlider);
@@ -423,12 +422,11 @@ function searchSongByName(ul, input, clearText) {
     }
 
     currentSongIndex = queue.indexOf(currentSongId); //updated index among only visible songs
-
     //populate queue window with list items
     queueList.innerHTML = "" //clear current queue
     let listItems = await generateQueueListItems(currentSongIndex); 
     queueList.innerHTML = listItems;
-    queueList.querySelector(".queueCurrent").scrollIntoView({behavior: "smooth"});
+    queueList.querySelector(".queuecurrent").scrollIntoView({behavior: "smooth"});
     addQueueEventListeners(queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
   }
 
@@ -441,9 +439,9 @@ function searchSongByName(ul, input, clearText) {
         let data = await response.json();
         let styleClass = "";
         if(i == currentSongIndex){
-          styleClass = "queueCurrent";
+          styleClass = "queuecurrent";
         } else if (i < currentSongIndex) {
-          styleClass = "queueHistory";
+          styleClass = "queuehistory";
         } 
         listItems +=
                   `<li class="draggableQueue" draggable="true"><!--single song li block-->
@@ -484,6 +482,18 @@ function searchSongByName(ul, input, clearText) {
         //remove dragging class when you let go
         draggable.addEventListener('dragend', () => {
           draggable.classList.remove('dragging');
+          let currentSong = queueList.querySelector(".queuecurrent").querySelector(".songname").closest("li");
+          updateQueueAppearance(queueList, currentSong);
+
+          //update actual queue array
+          let listItems = queueList.querySelectorAll("li");
+          queue = [];
+          //using all songs that are visible in the current search field, form a queue
+          for (i = 0; i < listItems.length; i++) {
+            if (listItems[i].style.display != "none") {       
+              queue.push(listItems[i].querySelector('.songname').getAttribute("songid"));
+            }
+          }
         });
 
         draggable.addEventListener('dragenter', () => {
@@ -511,15 +521,15 @@ function searchSongByName(ul, input, clearText) {
       let item = listItems[i].querySelector('.tracklistitem');
       if(i == nextSongIndex){
         //set style of song we want to play next
-        item.classList.remove("queueHistory");
-        item.classList.add("queueCurrent");
+        item.classList.remove("queuehistory");
+        item.classList.add("queuecurrent");
       } else {
         if(i < nextSongIndex){
-          item.classList.add("queueHistory");
-          item.classList.remove("queueCurrent");
+          item.classList.add("queuehistory");
+          item.classList.remove("queuecurrent");
         } else if (i > nextSongIndex) {
-          item.classList.remove("queueHistory");
-          item.classList.remove("queueCurrent");
+          item.classList.remove("queuehistory");
+          item.classList.remove("queuecurrent");
         }
       }
     }
