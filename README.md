@@ -15,13 +15,15 @@ Additional Tools used
 - Postman to test POST requests
 
 To Do
-- add backup stylings to handle broken images
+- add backup stylings to handle broken images, accessibility text
 - write api documentation
 - add hovers for songs with long names
 - use test driven development to hone API error codes
 - env file for port number and other variables
-- stop window resizing on search
 - scroll song name on hover
 - search artists
-- allow queue of 3000+
 - examine use of global variables
+- make shuffle more nuanced - either toggle on off or always put current song at top.
+        -shuffle on: put at the top (and store natural/original ordering?)
+        -shuffle back off: random
+- queue item pop out menu. different pop up menu for remove from queue.

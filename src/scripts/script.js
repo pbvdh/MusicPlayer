@@ -24,6 +24,9 @@ async function init() {
   let playButton = document.getElementById("playbutton");
   let muteButton = document.getElementById("mutebutton");
   let volumeSlider = document.getElementById("volumeslider");
+  let previousTrackButton = document.getElementById("previousbutton");
+  let nextTrackButton = document.getElementById("nextbutton");
+  let shuffleButton = document.getElementById("shufflebutton");
 
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', e => {
@@ -102,6 +105,34 @@ async function init() {
   volumeSlider.addEventListener('input', function () {
     adjustSongVolume(volumeSlider, muteButton);
   });
+
+  previousTrackButton.addEventListener('click', function() {
+    if(queueList.childElementCount > 0) {
+      let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
+      let trackIndex = queue.indexOf(currentTrack.getAttribute("songid"))-1;
+      if (trackIndex >= 0) {
+        playSong(queue[trackIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList)
+        updateQueueAppearance(queueList, currentTrack.closest("li").previousSibling);
+      }
+    }
+  });
+
+  nextTrackButton.addEventListener('click', function() {
+    if(queueList.childElementCount > 0) {
+      let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
+      let trackIndex = queue.indexOf(currentTrack.getAttribute("songid"))+1;
+      if (trackIndex < queue.length) {
+        playSong(queue[trackIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList)
+        updateQueueAppearance(queueList, currentTrack.closest("li").nextSibling);
+      }
+    }
+  });
+
+  shuffleButton.addEventListener('click', function() {
+    shuffleSongQueue(queueList);
+  });
+
+
 
   document.addEventListener('click', (event) => {
     //hide pop up options menus when you click outside them
@@ -407,11 +438,11 @@ function updatePlaybackPositionValue(trackSlider) {
   playbackPositionValue.innerHTML = Math.floor(trackSlider.value / 60) + ":" + String(Math.floor(trackSlider.value % 60)).padStart(2, '0');
 }
 
-function initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField) {
+function initializeSongQueue(songNameLink, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField) {
   //clear queue and prepare to populate with subsequent songs in search field
   queue = [];
   let allSongs = songList.querySelectorAll('li');
-  let currentSongIndex = Array.prototype.indexOf.call(allSongs, songName.closest('li')); //how far down the list of all songs is the selected one?
+  let currentSongIndex = Array.prototype.indexOf.call(allSongs, songNameLink.closest('li')); //how far down the list of all songs is the selected one?
   let currentSongId = allSongs[currentSongIndex].querySelector('.songname').getAttribute("songid");
 
   //using all songs that are visible in the current search field, form a queue
@@ -430,6 +461,31 @@ function initializeSongQueue(songName, songList, queueList, playButton, volumeSl
   })
   queueList.querySelector(".queuecurrent").scrollIntoView({ behavior: "smooth" });
   addQueueEventListeners(queueList, playButton, volumeSlider, trackSlider, playbackDurationField);
+}
+
+function shuffleSongQueue(queueList) {
+  //shuffle queue array and list items simultaneously as they should be in the same order
+  let queueIndex = queue.length;
+  let randomIndex;
+  let queueListItems = [...queueList.children];
+  let queueListIndex = queueListItems.length;
+  //if queue and list represenation are synced up, shuffle both in the same way
+  if(queueIndex == queueListIndex){
+    queueList.innerHTML = ""
+
+    while (queueIndex != 0 ) {
+      randomIndex = Math.floor(Math.random() * queueIndex);
+      queueIndex--;
+      queueListIndex--;
+      //swap positions
+      [queue[queueIndex], queue[randomIndex]] = [queue[randomIndex], queue[queueIndex]];
+      [queueListItems[queueListIndex], queueListItems[randomIndex]] = [queueListItems[randomIndex], queueListItems[queueListIndex]]
+    }
+
+    queueList.append(...queueListItems);
+    let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
+    updateQueueAppearance(queueList, currentSongListItem);
+  }
 }
 
 function generateQueueListItems(currentSongIndex, queueSource) {
