@@ -177,7 +177,7 @@ footer button:focus {
 }
 
 .tracknavicon:hover {
-    fill: #536878;
+    transform: scale(1.05);
 }
 
 /* main panels */
@@ -368,6 +368,10 @@ Some of these classes relate to dynamically generated content*/
 
 .queuecurrent {
     background-color: #2e3942;
+}
+
+.toggledon {
+    fill: white;
 }
 
 

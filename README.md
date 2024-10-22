@@ -22,8 +22,5 @@ To Do
 - env file for port number and other variables
 - scroll song name on hover
 - search artists
-- examine use of global variables
-- make shuffle more nuanced - either toggle on off or always put current song at top.
-        -shuffle on: put at the top (and store natural/original ordering?)
-        -shuffle back off: random
 - queue item pop out menu. different pop up menu for remove from queue.
+- transition img click to queue btn or remove it
