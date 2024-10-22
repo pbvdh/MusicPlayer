@@ -23,4 +23,4 @@ To Do
 - scroll song name on hover
 - search artists
 - queue item pop out menu. different pop up menu for remove from queue.
-- transition img click to queue btn or remove it
+- test in chrome
