@@ -22,5 +22,7 @@ To Do
 - env file for port number and other variables
 - scroll song name on hover
 - search artists
-- queue item pop out menu. different pop up menu for remove from queue.
 - test in chrome
+- dropdown menu options
+- persist current song/queue when refreshed and sensible defaults
+- clear playing queue button

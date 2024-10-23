@@ -293,6 +293,24 @@ Some of these classes relate to dynamically generated content*/
     background-color: #9f4995cc;
 }
 
+.queuehistory .songname, .queuehistory .artistname {
+    opacity: 0.5;
+}
+
+.queuehistory {
+    background-color: #454c53;
+}
+
+.queuecurrent {
+    background-color: #2c3b46;
+}
+
+/* animate while dragging elements in the playing queue*/
+.draggableQueue.over.dragging .tracklistitem {
+    background-color: #D072D0;
+    box-shadow: 1px 1px 1px 1px #2e3942 inset;
+}
+
 .queuedraggable.dragging {
     opacity: 0.5;
 }
@@ -361,26 +379,16 @@ Some of these classes relate to dynamically generated content*/
     background-color: #f0f0f0;
 }
 
+.toggledon {
+    fill: white;
+}
+
 /*certain action menu options shouldn't be present in the song library tab*/
 #songlist .queueoption {
     display: none;
 }
 
-.queuehistory {
-    background-color: rgb(69, 76, 83);
-}
 
-.queuehistory .songname, .queuehistory .artistname {
-    opacity: 0.5;
-}
-
-.queuecurrent {
-    background-color: #2c3b46;
-}
-
-.toggledon {
-    fill: white;
-}
 
 
 
@@ -565,10 +573,4 @@ Some of these classes relate to dynamically generated content*/
 
 #searchsongs:focus {
     outline: none;
-}
-
-/* animate while dragging elements in the playing queue*/
-#queuelist li.over.dragging {
-    background-color: #536878;
-    box-shadow: 1px 1px 1px 1px #2e3942 inset;
 }
