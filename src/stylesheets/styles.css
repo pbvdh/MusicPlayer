@@ -14,7 +14,7 @@ html {
 
 body {
     background-image: url("http://localhost:3000/images/crossing_dusk.jpg");
-    background-color: #D072D0;
+    background-color: #AC65CF;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
@@ -307,7 +307,7 @@ Some of these classes relate to dynamically generated content*/
 
 /* animate while dragging elements in the playing queue*/
 .draggableQueue.over.dragging .tracklistitem {
-    background-color: #D072D0;
+    background-color: #AC65CF;
     box-shadow: 1px 1px 1px 1px #2e3942 inset;
 }
 
@@ -316,14 +316,23 @@ Some of these classes relate to dynamically generated content*/
 }
 
 .queueheader {
-    font-size: x-large;
     box-shadow: 0px 0px 5px 1px black;
     position: relative;
     border-bottom: 4px solid black;
     text-align: center;
     background-color: white;
     padding: 0.5rem;
-    display: block;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    user-select: none;
+}
+
+.queueheader h1 {
+    flex-grow: 1;
+    font-size: x-large;
+    text-align: left;
+    padding-left: 1rem;
 }
 
 /*pop out dropdown action menu on each song card */
@@ -503,7 +512,6 @@ Some of these classes relate to dynamically generated content*/
     align-items: center;
     box-sizing: border-box;
     padding: 0 16px;
-
 }
 
 #playbutton {
@@ -573,4 +581,9 @@ Some of these classes relate to dynamically generated content*/
 
 #searchsongs:focus {
     outline: none;
+}
+
+#clearqueuebutton {
+    font-size: medium;
+    justify-self: end;
 }

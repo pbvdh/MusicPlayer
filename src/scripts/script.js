@@ -37,6 +37,7 @@ async function init() {
   let shuffleIcon = shuffleButton.querySelector(".tracknavicon");
   let showQueueButton = document.getElementById("showqueuebutton");
   let showQueueIcon = showQueueButton.querySelector(".tracknavicon");
+  let clearQueueButton = document.getElementById("clearqueuebutton");
 
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', e => {
@@ -133,6 +134,16 @@ async function init() {
     shuffleSongQueue(shuffleIcon, queueList);
   });
 
+  clearQueueButton.addEventListener('click', function() {
+    if(queueList.childElementCount > 0) {
+      nowPlayingInfo.queue = [queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid")];
+      let queueListItems = [...queueList.querySelectorAll(".tracklistitem:not(.queuecurrent)")];
+      queueListItems.forEach(queueListItem => {
+        queueListItem.closest("li").remove();
+      });
+    }
+  });
+
 
   document.addEventListener('click', (event) => {
     //hide pop up options menus when you click outside them
@@ -142,6 +153,13 @@ async function init() {
   //sort lists of songs when app loads
   sortSongList(songList);
 }
+
+
+
+
+
+
+
 
 
 //EVENT LISTENERS
@@ -271,7 +289,7 @@ function removeOpenDropDowns(event = null) {
 
 function handleActionMenuOption(option, songCard, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon) {
   removeOpenDropDowns();
-  let songQueue = queueList.querySelectorAll("li");
+  let songQueue = [...queueList.querySelectorAll("li")];
   let selectedSongId = songCard.querySelector(".songname").getAttribute("songid");
   let currentSong;
   let copy = songCard.cloneNode(true);
@@ -281,6 +299,8 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
       copy = songCard.cloneNode(true);
       copy.classList.add("draggableQueue");
       copy.setAttribute("draggable", "true"); 
+      copy.querySelector(".tracklistitem").classList.remove("queuecurrent");
+      copy.querySelector(".tracklistitem").classList.remove("queuehistory");
       //if the queue is empty
       if(nowPlayingInfo.queue.length == 0){
         queueList.appendChild(copy);
@@ -296,7 +316,6 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
 
       updateQueueAppearance(queueList, currentSong);
       addQueueEventListeners(copy, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
-      
       break;
     case "add to queue":
       copy.classList.add("draggableQueue");
@@ -310,7 +329,6 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
 
       //only add event listeners to the 'copy' item to prevent dupes
       addQueueEventListeners(copy, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
-      
       break;
     case "add to playlist":
       console.log(option + 'selected');
@@ -318,26 +336,22 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
       //use API call with songid
       break;
     case "remove from queue":
-      //remove this item from the queue and update the display
-
       //if you removed the current item, reassign and skip if there are more, otherwise pause
-      if(songCard.classList.contains("queuecurrent")){
-        togglePlayButton(playButton, volumeSlider);
+      if(songCard.querySelector(".tracklistitem").classList.contains("queuecurrent")){
         if(nowPlayingInfo.queue.length > 1){
           //either there are only historic elements, only future elements, or both
           //in which case we must; make the previous element current, make a future element current, or make a future element current
           let currentSongIndex = Array.prototype.indexOf.call(songQueue, songCard);
-          songCard.remove();
-          nowPlayingInfo.queue.splice(currentSongIndex, 1);
-          let newCurrentSongIndex = Math.min(currentSongIndex, nowPlayingInfo.queue.length-1);
-          songQueue[newCurrentSongIndex].classList.remove("queuehistory");
-          songQueue[newCurrentSongIndex].classList.add("queuecurrent");
-          playSong(nowPlayingInfo.queue[newCurrentSongIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
 
-        } else {
-          nowPlayingInfo.queue.pop();
-          songCard.remove();
-        }
+          songCard.remove(); //remove from DOM
+          songQueue.splice(currentSongIndex, 1); //remove from reference array
+          nowPlayingInfo.queue.splice(currentSongIndex, 1); //remove from playing queue
+
+          let newCurrentSongIndex = Math.min(currentSongIndex, nowPlayingInfo.queue.length-1);
+          songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.remove("queuehistory");
+          songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.add("queuecurrent");
+          playSong(nowPlayingInfo.queue[newCurrentSongIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+        } 
       } else {
         currentSong = queueList.querySelector(".queuecurrent").closest("li");
         let selectedSongIndex = Array.prototype.indexOf.call(songQueue, songCard);
@@ -345,11 +359,8 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
         songCard.remove();
         updateQueueAppearance(queueList, currentSong);
       }
-
       break;
   }
-
-
   removeOpenDropDowns();
 }
 
@@ -415,7 +426,7 @@ async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurat
     nowPlayingInfo.song = null;
   };
   //reassign song variable to the new song that was just triggered
-  nowPlayingInfo.song = await new Audio(filepath);
+  nowPlayingInfo.song = new Audio(filepath);
   nowPlayingInfo.song.load();
   //if we are still in playing state, dont toggle to off state - we are likely in the middle of a queue.
   if (playButton.getAttribute('status') == "playing") {

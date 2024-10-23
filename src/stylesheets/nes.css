@@ -59,15 +59,6 @@ hr {
   overflow: visible;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-}
 
 p {
   margin-top: 0;
@@ -947,10 +938,6 @@ input[type="checkbox"] {
   box-shadow: inset -6px -6px #adafbc;
 }
 
-.nes-btn:focus {
-  box-shadow: 0 0 0 6px rgba(173, 175, 188, 0.3);
-}
-
 .nes-btn:active:not(.is-disabled)::after {
   box-shadow: inset 4px 4px #adafbc;
 }
@@ -1068,7 +1055,7 @@ input[type="checkbox"] {
 
 .nes-btn.is-error {
   color: #fff;
-  background-color: #e76e55;
+  background-color: #AC65CF;
 }
 
 .nes-btn.is-error::after {
@@ -1078,25 +1065,22 @@ input[type="checkbox"] {
   bottom: -4px;
   left: -4px;
   content: "";
-  box-shadow: inset -4px -4px #8c2022;
+  box-shadow: inset -4px -4px #432658;
 }
 
 .nes-btn.is-error:hover {
   color: #fff;
   text-decoration: none;
-  background-color: #ce372b;
+  background-color: #7957D2;
 }
 
 .nes-btn.is-error:hover::after {
-  box-shadow: inset -6px -6px #8c2022;
+  box-shadow: inset -6px -6px #432658;
 }
 
-.nes-btn.is-error:focus {
-  box-shadow: 0 0 0 6px rgba(140, 32, 34, 0.3);
-}
 
 .nes-btn.is-error:active:not(.is-disabled)::after {
-  box-shadow: inset 4px 4px #8c2022;
+  box-shadow: inset 4px 4px #432658;
 }
 
 .nes-btn input[type="file"] {

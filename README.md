@@ -23,6 +23,4 @@ To Do
 - scroll song name on hover
 - search artists
 - test in chrome
-- dropdown menu options
 - persist current song/queue when refreshed and sensible defaults
-- clear playing queue button
