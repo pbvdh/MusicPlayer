@@ -23,14 +23,21 @@
 	<main>
 		<!--searchable list of all songs-->
 		<div class="maindivs" id="songs">
-			<div class="listwindow">
-				<div class="searchbar">
-					<input type="text" id="searchsongs" placeholder="Search for song or artist...">
-					<span id="searchsongsclearbutton" class="clearButton"></span>
+			<div id="songResults" class="listwindow">
+				<div class="queueheader">
+					<h1>Library</h1>
+					<button type="button" id="togglelibrarybutton" class="nes-btn is-error" status="toartists">Artists</button>
 				</div>
 				<div class="searchresultswrapper">
+					<div class="searchbar">
+						<input type="text" id="searchsongs" placeholder="Search for song or artist...">
+						<span id="searchsongsclearbutton" class="clearButton"></span>
+					</div>
 					<!--list of songs-->
 					<ul id="songlist" class="tracklist">
+						<!--Populate list with call to API-->
+					</ul>
+					<ul id="artistlist" class="tracklist">
 						<!--Populate list with call to API-->
 					</ul>
 				</div>
@@ -108,7 +115,7 @@
 				<div id="playbackposition" class="playbackdata">
 					0:00
 				</div>
-				<input type="range" min="0" max="100" value="0" step="0.01" class="slider" id="trackslider">
+				<input type="range" min="0" max="0" value="0" step="0.01" class="slider" id="trackslider">
 				<div id="playbackduration" class="playbackdata">
 					0:00
 				</div>

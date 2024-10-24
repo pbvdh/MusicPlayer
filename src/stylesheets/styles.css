@@ -201,10 +201,11 @@ footer button:focus {
 .listwindow {
     border: 4px solid black;
     width: 100%;
-    position: relative;
     height: 100%;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
 }
 
 /*search songs panel */
@@ -213,11 +214,13 @@ footer button:focus {
     overflow: scroll;
     height: 100%;
     background-color: #bdc2c7;
+    flex-direction: column;
 }
 
 .searchbar {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .clearButton {
@@ -247,6 +250,7 @@ Some of these classes relate to dynamically generated content*/
     margin: 0;
     overflow: scroll;
     list-style-type: none;
+    height: 100%;
 }
 
 .tracklistitem {
@@ -326,6 +330,8 @@ Some of these classes relate to dynamically generated content*/
     align-items: center;
     overflow: hidden;
     user-select: none;
+    z-index: 3;
+    min-height: 54px;
 }
 
 .queueheader h1 {
@@ -333,6 +339,10 @@ Some of these classes relate to dynamically generated content*/
     font-size: x-large;
     text-align: left;
     padding-left: 1rem;
+}
+
+.queueheader button {
+    width: 136px;
 }
 
 /*pop out dropdown action menu on each song card */
@@ -396,8 +406,6 @@ Some of these classes relate to dynamically generated content*/
 #songlist .queueoption {
     display: none;
 }
-
-
 
 
 
@@ -583,7 +591,10 @@ Some of these classes relate to dynamically generated content*/
     outline: none;
 }
 
-#clearqueuebutton {
-    font-size: medium;
-    justify-self: end;
+#artistlist {
+    display: none;
+}
+
+#artistlist .artistname {
+    font-size: small;
 }

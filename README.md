@@ -13,6 +13,7 @@ Plan:
 Additional Tools used
 - Visual studio for development
 - Postman to test POST requests
+- DB Browser for SQL lite for formulating queries
 
 To Do
 - add backup stylings to handle broken images, accessibility text
@@ -24,3 +25,6 @@ To Do
 - search artists
 - test in chrome
 - persist current song/queue when refreshed and sensible defaults
+- change font
+- search linked track should switch us to song tab (especially clicking an artist in artistlist)
+- when pop out menu below window, scroll to view

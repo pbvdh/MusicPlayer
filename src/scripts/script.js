@@ -1,48 +1,101 @@
-class NowPlayingInfo {
-  constructor(song, queue) {
-    this.song = song;
-    this.queue = queue;
-    this.unshuffledQueue;
-    this.unshuffledQueueList;
+//Namespace containing classes
+const CLASSES = (function () {
+
+  class NowPlayingInfo {
+    constructor(song, queue) {
+      this.song = song;
+      this.queue = queue;
+      this.unshuffledQueue;
+      this.unshuffledQueueList;
+    }
   }
-}
 
-let nowPlayingInfo = new NowPlayingInfo(null, []); //global function to hold currently playing song and queue
+  return {
+    NowPlayingInfo,
+  }
+})();
 
+//Namespace for running app - DOM elements, event listeners, and functions triggered by those listeners
+const APP = (function () {
 
-//EVENT LISTENERS AND DYNAMIC GENERATION
+window.onload = init;
+
+//hold currently playing song and queue
+let nowPlayingInfo = new CLASSES.NowPlayingInfo(null, []); 
+
+//DOM elements
+let songSearchLinks;
+let clearSongSearch;
+let songSearchInput;
+let trackSlider;
+let playbackDurationField;
+let actionButtons;
+let actionMenuOptions;
+let queueList;
+let songNames;
+let playButton;
+let muteButton;
+let volumeSlider;
+let previousTrackButton;
+let nextTrackButton;
+let shuffleButton;
+let shuffleIcon;
+let showQueueButton;
+let showQueueIcon;
+let clearQueueButton;
+let toggleLibraryButton;
+let songList;
+let artistList;
+
+//define DOM elements and assign event listeners. Dynamically generate content as required
 async function init() {
 
-  /*Generate HTML that needs to be created before event listeners are added */
-  let songList = document.getElementById("songlist");
-  let listItems = await loadSongList();
-  songList.innerHTML = listItems;
+  //Generate HTML that needs to be created before event listeners are added 
+  //song library
+  songList = document.getElementById("songlist");
+  try {
+    let songListItems = await loadSongList();
+    songList.innerHTML = songListItems;
+  } catch {
+    console.error("Error fetching songs:\n" + error);
+  }
+  
+  //artist library
+  artistList = document.getElementById("artistlist");
+  try {
+    let artistListItems = await loadArtistList();
+    artistList.innerHTML = artistListItems;
+  } catch(error) {
+    console.error("Error fetching artists:\n" + error);
+  }
+  
 
-  /*event listeners for DOM*/
-  let songSearchLinks = document.querySelectorAll(".songsearchlink");
-  let clearSongSearch = document.getElementById("searchsongsclearbutton");
-  let songSearchInput = document.getElementById("searchsongs");
-  let trackSlider = document.getElementById("trackslider");
-  let playbackDurationField = document.getElementById("playbackduration");
-  let actionButtons = document.querySelectorAll(".actionbutton");
-  let actionMenuOptions = document.querySelectorAll(".actionmenuoption");
-  let queueList = document.getElementById("queuelist");
-  let songNames = document.querySelectorAll(".songname");
-  let playButton = document.getElementById("playbutton");
-  let muteButton = document.getElementById("mutebutton");
-  let volumeSlider = document.getElementById("volumeslider");
-  let previousTrackButton = document.getElementById("previousbutton");
-  let nextTrackButton = document.getElementById("nextbutton");
-  let shuffleButton = document.getElementById("shufflebutton");
-  let shuffleIcon = shuffleButton.querySelector(".tracknavicon");
-  let showQueueButton = document.getElementById("showqueuebutton");
-  let showQueueIcon = showQueueButton.querySelector(".tracknavicon");
-  let clearQueueButton = document.getElementById("clearqueuebutton");
+  //event listeners for DOM
+  songSearchLinks = document.querySelectorAll(".songsearchlink");
+  clearSongSearch = document.getElementById("searchsongsclearbutton");
+  songSearchInput = document.getElementById("searchsongs");
+  trackSlider = document.getElementById("trackslider");
+  playbackDurationField = document.getElementById("playbackduration");
+  actionButtons = document.querySelectorAll(".actionbutton");
+  actionMenuOptions = document.querySelectorAll(".actionmenuoption");
+  queueList = document.getElementById("queuelist");
+  songNames = document.querySelectorAll(".songname");
+  playButton = document.getElementById("playbutton");
+  muteButton = document.getElementById("mutebutton");
+  volumeSlider = document.getElementById("volumeslider");
+  previousTrackButton = document.getElementById("previousbutton");
+  nextTrackButton = document.getElementById("nextbutton");
+  shuffleButton = document.getElementById("shufflebutton");
+  shuffleIcon = shuffleButton.querySelector(".tracknavicon");
+  showQueueButton = document.getElementById("showqueuebutton");
+  showQueueIcon = showQueueButton.querySelector(".tracknavicon");
+  clearQueueButton = document.getElementById("clearqueuebutton");
+  toggleLibraryButton = document.getElementById("togglelibrarybutton");
 
   //handle a song getting dragged within the song queue
-  queueList.addEventListener('dragover', e => {
+  queueList.addEventListener('dragover', function (e) {
     e.preventDefault();
-    const afterElement = getDragAfterElement(queuelist, e.clientY);
+    const afterElement = getDragAfterElement(queueList, e.clientY);
     const draggable = document.querySelector('.dragging');
     if (afterElement == null) {
       queueList.appendChild(draggable);
@@ -51,89 +104,115 @@ async function init() {
     }
   });
 
+  //toggle whether the menu panes are visible
   showQueueButton.addEventListener('click', function () {
-    showHidePanes(showQueueIcon);
+    showHidePanes();
   });
 
   //clear search window button
   clearSongSearch.addEventListener('click', function () {
-    clearInput(songList, songSearchInput, clearSongSearch);
+    clearInput();
   });
 
-  //handle searching for songs
+  //handle searching for songs in library
   songSearchInput.addEventListener('input', function () {
-    searchSongByName(songList, songSearchInput, clearSongSearch);
+    searchSongByName(songList);
+    searchSongByName(artistList);
   });
 
-  //update the current position value for the track slider
+  //update the current position string (timestamp) for the track slider
   trackSlider.addEventListener('input', function () {
-    updatePlaybackPositionValue(trackSlider);
+    updatePlaybackPositionValue();
     nowPlayingInfo.song.currentTime = trackSlider.value;
   });
 
-  addActionMenuEventListeners(actionButtons, actionMenuOptions, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
+  //add event listeners for the kebab menu on song cards
+  addActionMenuEventListeners(actionButtons, actionMenuOptions);
 
+  //when clicking a song, play it and start a queue using the songs around it
   songNames.forEach(songName => {
     songName.addEventListener('click', function () {
-      playSong(songName.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+      playSong(songName.getAttribute('songid'));
       shuffleIcon.classList.remove("toggledon");
-      initializeSongQueue(songName, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songSearchInput, clearSongSearch, showQueueIcon);
+      initializeSongQueue(songName);
     });
   });
   
   //if an the name of an artist is clicked within our app, we input it as a search
   songSearchLinks.forEach(songSearchLink => {
-    songSearchLink.addEventListener('click', () => {
-      searchLinkedTrack(songSearchLink, songList, songSearchInput, clearSongSearch, showQueueIcon);
+    songSearchLink.addEventListener('click', function () {
+      searchLinkedTrack(songSearchLink);
     });
   });
 
+  //resume playing current song
   playButton.addEventListener('click', function () {
     if (nowPlayingInfo.song) {
-      togglePlayButton(playButton, volumeSlider);
+      togglePlayButton();
     }
   });
 
+  //mute audio 
   muteButton.addEventListener('click', function () {
-    toggleMuteButton(muteButton, volumeSlider);
+    toggleMuteButton();
   });
 
+  //change volume
   volumeSlider.addEventListener('input', function () {
-    adjustSongVolume(volumeSlider, muteButton);
+    adjustSongVolume();
   });
 
+  //go to previous song in queue
   previousTrackButton.addEventListener('click', async function() {
     if(queueList.childElementCount > 0) {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
       let trackIndex = nowPlayingInfo.queue.indexOf(currentTrack.getAttribute("songid"))-1;
       if (trackIndex >= 0) {
-        playSong(nowPlayingInfo.queue[trackIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
-        updateQueueAppearance(queueList, currentTrack.closest("li").previousSibling);
+        playSong(nowPlayingInfo.queue[trackIndex]);
+        updateQueueAppearance(currentTrack.closest("li").previousSibling);
       } else {
         //restart song
-        await playSong(nowPlayingInfo.queue[trackIndex+1], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+        await playSong(nowPlayingInfo.queue[trackIndex+1]);
       }
     }
   });
 
+  //go to next song in queue
   nextTrackButton.addEventListener('click', async function() {
     if(queueList.childElementCount > 0) {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
       let trackIndex = nowPlayingInfo.queue.indexOf(currentTrack.getAttribute("songid"))+1;
       if (trackIndex < nowPlayingInfo.queue.length) {
-        playSong(nowPlayingInfo.queue[trackIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList)
-        updateQueueAppearance(queueList, currentTrack.closest("li").nextSibling);
+        playSong(nowPlayingInfo.queue[trackIndex])
+        updateQueueAppearance(currentTrack.closest("li").nextSibling);
       } else {
         //restart song
-        await playSong(nowPlayingInfo.queue[trackIndex-1], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+        await playSong(nowPlayingInfo.queue[trackIndex-1]);
       }
     }
   });
 
+  //shuffle queue
   shuffleButton.addEventListener('click', function() {
-    shuffleSongQueue(shuffleIcon, queueList);
+    shuffleSongQueue();
   });
 
+  //switch between artist and song libraries
+  toggleLibraryButton.addEventListener('click', function() {
+    if (toggleLibraryButton.getAttribute("status") == "toartists") {
+      toggleLibraryButton.setAttribute("status", "tosongs");
+      toggleLibraryButton.innerText = "Songs";
+      songList.style.display = "none";
+      artistList.style.display = "initial";
+    } else {
+      toggleLibraryButton.setAttribute("status", "toartists");
+      toggleLibraryButton.innerText = "Artists";
+      artistList.style.display = "none";
+      songList.style.display = "initial";
+    }
+  });
+
+  //empty the current queue
   clearQueueButton.addEventListener('click', function() {
     if(queueList.childElementCount > 0) {
       nowPlayingInfo.queue = [queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid")];
@@ -144,15 +223,20 @@ async function init() {
     }
   });
 
-
-  document.addEventListener('click', (event) => {
-    //hide pop up options menus when you click outside them
+  //hide pop up options menus when you click outside them
+  document.addEventListener('click', function (event)  {
     removeOpenDropDowns(event);
   });
 
-  //sort lists of songs when app loads
+  //sort libraries when app loads
   sortSongList(songList);
+  sortSongList(artistList);
 }
+
+
+
+
+
 
 
 
@@ -163,11 +247,12 @@ async function init() {
 
 
 //EVENT LISTENERS
-function addActionMenuEventListeners(actionButtons, actionMenuOptions, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon) {
+//Add event listeners to kebab menus on song cards
+function addActionMenuEventListeners(actionButtons, actionMenuOptions) {
   //pop up options menus on song panels
   actionButtons.forEach(actionButton => {
     let dropdown = actionButton.parentElement.querySelector('.actionmenudropdown');
-    actionButton.addEventListener('click', (event) => {
+    actionButton.addEventListener('click', function (event) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
       dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
@@ -175,38 +260,115 @@ function addActionMenuEventListeners(actionButtons, actionMenuOptions, queueList
   });
 
   actionMenuOptions.forEach(option => {
-    option.addEventListener('click', (event) => {
+    option.addEventListener('click', function (event) {
       let selectedOption = event.currentTarget.getAttribute('data-option');
       let songCard = option.closest("li");
-      handleActionMenuOption(selectedOption, songCard, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
+      handleActionMenuOption(selectedOption, songCard);
     });
   });
+}
+
+//add listeners to currently playing song
+function addSongEventListeners(songId) {
+  nowPlayingInfo.song.addEventListener('timeupdate', function () {
+    trackSlider.value = nowPlayingInfo.song.currentTime;
+    updatePlaybackPositionValue();
+  })
+
+  //handle when song ends
+  nowPlayingInfo.song.addEventListener('ended', function () {
+    //if there are more songs in the queue:
+    if (nowPlayingInfo.queue.indexOf(songId) < nowPlayingInfo.queue.length - 1) {
+      let nextSongId = nowPlayingInfo.queue[nowPlayingInfo.queue.indexOf(songId) + 1]
+      playSong(nextSongId);
+      updateQueueAppearance(queueList.querySelector(`a[songId="${nextSongId}"]`).closest("li"));
+    } else {
+      trackSlider.value = 0;
+      updatePlaybackPositionValue();
+      togglePlayButton();
+    }
+  });
+}
+
+//add event listeners to the queue we generated
+function addQueueEventListeners(queueItems) {
+  //determine if we were passed a draggable item or a list containing draggable items.
+  let queueDraggables = queueItems.classList.contains("draggableQueue") ? [queueItems] : queueItems.querySelectorAll(".draggableQueue");
+  //allow songs in queue to be dragged
+  queueDraggables.forEach(draggable => {
+    //add dragging class to an item when you start dragging it, after a delay
+    draggable.addEventListener('dragstart', () => {
+      setTimeout(() => draggable.classList.add('dragging'), 0);
+    });
+
+    //remove dragging class when you let go
+    draggable.addEventListener('dragend', () => {
+      draggable.classList.remove('dragging');
+      let currentSong = queueList.querySelector(".queuecurrent").querySelector(".songname").closest("li");
+      updateQueueAppearance(currentSong, false);
+
+      //update actual queue array
+      let listItems = queueList.querySelectorAll("li");
+      nowPlayingInfo.queue = [];
+      //using all songs that are visible in the current search field, form a queue
+      for (let i = 0; i < listItems.length; i++) {
+        if (listItems[i].style.display != "none") {
+          nowPlayingInfo.queue.push(listItems[i].querySelector('.songname').getAttribute("songid"));
+        }
+      }
+    });
+
+    draggable.addEventListener('dragenter', () => {
+      draggable.classList.add('over');
+    });
+
+    draggable.addEventListener('dragleave', () => {
+      draggable.classList.remove('over');
+    });
+
+    //add click events to the newly generated html
+    let songNameLink = draggable.querySelector('.songname');
+    songNameLink.addEventListener('click', () => {
+      playSong(songNameLink.getAttribute('songid')); //play song when clicked
+      updateQueueAppearance(songNameLink.closest("li"));
+    });
+
+    let artistNameLink = draggable.querySelector('.artistname');
+    //if an the name of an artist is clicked within our app, we input it as a search
+    artistNameLink.addEventListener('click', () => {
+        searchLinkedTrack(artistNameLink);
+    });
+  });
+
+  addActionMenuEventListeners(queueItems.querySelectorAll(".actionbutton"), queueItems.querySelectorAll(".actionmenuoption"));
 }
 
 
 
 
 //MENU OPERATIONS
-
 //keyup search bar functionality
-function searchSongByName(ul, input, clearText) {
+function searchSongByName(ul) {
   // Declare variables
-  let filter, li, i;
-  filter = input.value.toLowerCase();
+  let filter, li, i, songEntry, songValue, artistEntry, artistValue;
+  filter = songSearchInput.value.toLowerCase();
   li = ul.getElementsByTagName('li');
 
-  if (input.value) {
-    clearText.style.visibility = "visible"
+  if (songSearchInput.value) {
+    clearSongSearch.style.visibility = "visible"
   } else {
-    clearText.style.visibility = "hidden"
+    clearSongSearch.style.visibility = "hidden"
   }
 
   // Loop through all list items, and hide those who don't match the search query
   for (i = 0; i < li.length; i++) {
     songEntry = li[i].getElementsByTagName("a")[0];
-    artistEntry = li[i].getElementsByTagName("a")[1];
     songValue = songEntry.textContent || songEntry.innerText;
+
+    artistEntry = li[i].getElementsByTagName("a")[1];
+    if(artistEntry == null){artistEntry = songEntry} //in the case where there is no second entry just use the first one
     artistValue = artistEntry.textContent || artistEntry.innerText;
+
     if (songValue.toLowerCase().indexOf(filter) > -1 || artistValue.toLowerCase().indexOf(filter) > -1) {
       li[i].style.display = "";
     } else {
@@ -216,16 +378,16 @@ function searchSongByName(ul, input, clearText) {
 }
 
 //forcibly reveal or hide main panels, overriding hover effect
-function showHidePanes(showQueueIcon, forceShow = false) {  //can optionally pass value true to just show panes rather than toggle
+function showHidePanes(forceShow = false) {  //can optionally pass value true to just show panes rather than toggle
   let panes = document.getElementsByClassName("maindivs");
 
   if (!showQueueIcon.classList.contains("toggledon")) {
-    for (i = 0; i < panes.length; i++) {
+    for (let i = 0; i < panes.length; i++) {
       panes[i].style.opacity = 0.95;
     }
     showQueueIcon.classList.add("toggledon");
   } else if (forceShow == false) {
-    for (i = 0; i < panes.length; i++) {
+    for (let i = 0; i < panes.length; i++) {
       panes[i].style.opacity = 0;
     }
     showQueueIcon.classList.remove("toggledon");
@@ -233,17 +395,19 @@ function showHidePanes(showQueueIcon, forceShow = false) {  //can optionally pas
 }
 
 //clicking a song or artist name inside <a>, automatically sends to search bar and makes pane visible
-function searchLinkedTrack(a, songList, songSearchInput, clearSongSearch, showQueueIcon) {
+function searchLinkedTrack(a) {
   let searchTerm = a.textContent || a.innerText;
   let input = document.getElementById('searchsongs');
   input.value = searchTerm;
-  showHidePanes(showQueueIcon, true);
-  searchSongByName(songList, songSearchInput, clearSongSearch);
+  showHidePanes(true);
+  searchSongByName(songList);
+  searchSongByName(artistList);
 }
 
-function clearInput(songList, songSearchInput, clearSongSearch) {
+function clearInput() {
   songSearchInput.value = "";
-  searchSongByName(songList, songSearchInput, clearSongSearch);
+  searchSongByName(songList);
+  searchSongByName(artistList);
 }
 
 function sortSongList(ul) {
@@ -287,7 +451,8 @@ function removeOpenDropDowns(event = null) {
   }
 }
 
-function handleActionMenuOption(option, songCard, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon) {
+//Perform an action based on the selected dropdown option on song card - add to queue or playlist or remove from queue
+function handleActionMenuOption(option, songCard) {
   removeOpenDropDowns();
   let songQueue = [...queueList.querySelectorAll("li")];
   let selectedSongId = songCard.querySelector(".songname").getAttribute("songid");
@@ -314,8 +479,8 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
         nowPlayingInfo.queue.splice(nowPlayingInfo.queue.indexOf(currentSongId)+1, 0, selectedSongId);
       }
 
-      updateQueueAppearance(queueList, currentSong);
-      addQueueEventListeners(copy, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
+      updateQueueAppearance(currentSong);
+      addQueueEventListeners(copy);
       break;
     case "add to queue":
       copy.classList.add("draggableQueue");
@@ -328,7 +493,7 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
       nowPlayingInfo.queue.push(selectedSongId);
 
       //only add event listeners to the 'copy' item to prevent dupes
-      addQueueEventListeners(copy, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
+      addQueueEventListeners(copy);
       break;
     case "add to playlist":
       console.log(option + 'selected');
@@ -350,20 +515,25 @@ function handleActionMenuOption(option, songCard, queueList, playButton, volumeS
           let newCurrentSongIndex = Math.min(currentSongIndex, nowPlayingInfo.queue.length-1);
           songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.remove("queuehistory");
           songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.add("queuecurrent");
-          playSong(nowPlayingInfo.queue[newCurrentSongIndex], playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+          playSong(nowPlayingInfo.queue[newCurrentSongIndex]);
         } 
       } else {
         currentSong = queueList.querySelector(".queuecurrent").closest("li");
         let selectedSongIndex = Array.prototype.indexOf.call(songQueue, songCard);
         nowPlayingInfo.queue.splice(selectedSongIndex, 1);
         songCard.remove();
-        updateQueueAppearance(queueList, currentSong);
+        updateQueueAppearance(currentSong, false);
       }
       break;
   }
   removeOpenDropDowns();
 }
 
+
+
+
+//API calls
+//get songs from database and turn into blocks of HTML
 async function loadSongList() {
   //get json of all songs via GET request
   const getAllSongsUrl = "http://localhost:3000/songs";
@@ -401,14 +571,38 @@ async function loadSongList() {
   return listItems;
 }
 
+//get artists from database and turn into blocks of html
+async function loadArtistList() {
+  //get json of all songs via GET request
+  const getAllArtistsUrl = "http://localhost:3000/artists";
+  let listItems = "";
+  let response = await fetch(getAllArtistsUrl);
+  let data = await response.json();
+  data.artists.forEach(artist => {
+    //add each to the block of html we will add
+    listItems +=
+              `<li>
+                <div class="tracklistitem">
+                  <div class="trackdetailscontainer">
+                    <div class="overflowwrapper">
+                      <a class="artistname songsearchlink" href="#">${artist.artist_name}</a>
+                    </div>
+                  </div>
+                </div>
+              </li>`;
+  });
+  return listItems;
+}
+
+
+
 
 
 
 
 //SONG CONTROLS
-
-
-async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurationField, queueList) {
+//when a song needs to begin playing (due to song end, resume, new queue etc)
+async function playSong(id) {
   const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
   let response = await fetch(getSongDetailsUrl);
   let data = await response.json();
@@ -421,7 +615,7 @@ async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurat
   //stop the currently playing song
   if (nowPlayingInfo.song) {
     if (!nowPlayingInfo.song.paused) {
-      await togglePlayButton(playButton, volumeSlider);
+      await togglePlayButton();
     }
     nowPlayingInfo.song = null;
   };
@@ -433,17 +627,18 @@ async function playSong(id, playButton, volumeSlider, trackSlider, playbackDurat
     nowPlayingInfo.song.volume = volumeSlider.value;
     await nowPlayingInfo.song.play();
   } else {
-    await togglePlayButton(playButton, volumeSlider);
+    await togglePlayButton();
   }
-  addSongEventListeners(id, playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
+  addSongEventListeners(id);
   trackSlider.value = 0;
-  updatePlaybackPositionValue(trackSlider);
+  updatePlaybackPositionValue();
   trackSlider.max = nowPlayingInfo.song.duration;
   playbackDurationField.innerText = Math.floor(nowPlayingInfo.song.duration / 60) + ":" + String(Math.floor(nowPlayingInfo.song.duration % 60)).padStart(2, '0');
 
 }
 
-async function togglePlayButton(playButton, volumeSlider) {
+//play or pause song
+async function togglePlayButton() {
   const pauseIcon =
     `<svg role="img" viewBox="0 0 16 16" class="playicon">
 					<path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7H2.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
@@ -466,7 +661,8 @@ async function togglePlayButton(playButton, volumeSlider) {
   }
 }
 
-function toggleMuteButton(muteButton, volumeSlider) {
+//mute or unmute song
+function toggleMuteButton() {
   const unmutedIcon =
     `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
 					<path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
@@ -495,11 +691,10 @@ function toggleMuteButton(muteButton, volumeSlider) {
       nowPlayingInfo.song.muted = true;
     }
   }
-
 }
 
-
-function adjustSongVolume(volumeSlider, muteButton) {
+//change volume
+function adjustSongVolume() {
   if (nowPlayingInfo.song) { nowPlayingInfo.song.volume = volumeSlider.value };
   //if volume slider value is under certain thresholds, change volume icon to represent a lower volume.
   const lowVolume =
@@ -527,34 +722,14 @@ function adjustSongVolume(volumeSlider, muteButton) {
   }
 }
 
-function addSongEventListeners(songId, playButton, volumeSlider, trackSlider, playbackDurationField, queueList) {
-  nowPlayingInfo.song.addEventListener('timeupdate', function () {
-    trackSlider.value = nowPlayingInfo.song.currentTime;
-    updatePlaybackPositionValue(trackSlider);
-  })
-
-  //handle when song ends
-  nowPlayingInfo.song.addEventListener('ended', function () {
-    //if there are more songs in the queue:
-    if (nowPlayingInfo.queue.indexOf(songId) < nowPlayingInfo.queue.length - 1) {
-      let nextSongId = nowPlayingInfo.queue[nowPlayingInfo.queue.indexOf(songId) + 1]
-      playSong(nextSongId, playButton, volumeSlider, trackSlider, playbackDurationField, queueList);
-      updateQueueAppearance(queueList, queueList.querySelector(`a[songId="${nextSongId}"]`).closest("li"));
-    } else {
-      trackSlider.value = 0;
-      updatePlaybackPositionValue(trackSlider);
-      togglePlayButton(playButton, volumeSlider);
-    }
-  });
-
-}
-
-function updatePlaybackPositionValue(trackSlider) {
-  playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
+//Update the timestamp string
+function updatePlaybackPositionValue() {
+  let playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
   playbackPositionValue.innerHTML = Math.floor(trackSlider.value / 60) + ":" + String(Math.floor(trackSlider.value % 60)).padStart(2, '0');
 }
 
-function initializeSongQueue(songNameLink, songList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songSearchInput, clearSongSearch, showQueueIcon) {
+//create a queue of songs and display them in the playing queue
+function initializeSongQueue(songNameLink) {
   //clear queue and prepare to populate with subsequent songs in search field
   nowPlayingInfo.queue = [];
   let allSongs = songList.querySelectorAll('li');
@@ -562,7 +737,7 @@ function initializeSongQueue(songNameLink, songList, queueList, playButton, volu
   let currentSongId = allSongs[currentSongIndex].querySelector('.songname').getAttribute("songid");
 
   //using all songs that are visible in the current search field, form a queue
-  for (i = 0; i < allSongs.length; i++) {
+  for (let i = 0; i < allSongs.length; i++) {
     if (allSongs[i].style.display != "none") {
       nowPlayingInfo.queue.push(allSongs[i].querySelector('.songname').getAttribute("songid"));
     }
@@ -576,10 +751,11 @@ function initializeSongQueue(songNameLink, songList, queueList, playButton, volu
     queueList.appendChild(listItem);
   })
   queueList.querySelector(".queuecurrent").scrollIntoView({ behavior: "smooth" });
-  addQueueEventListeners(queueList, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
+  addQueueEventListeners(queueList);
 }
 
-function shuffleSongQueue(shuffleIcon, queueList) {
+//shuffle the song queue as well as its physical appearance
+function shuffleSongQueue() {
   if (shuffleIcon.classList.contains("toggledon")) { //then unshuffle
     //check currently playing song via queuecurrent
     //return to unshuffled order but update queue appearance with currently playing song
@@ -588,7 +764,7 @@ function shuffleSongQueue(shuffleIcon, queueList) {
       queueList.append(...nowPlayingInfo.unshuffledQueueList);
       nowPlayingInfo.queue = nowPlayingInfo.unshuffledQueue;
       let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
-      updateQueueAppearance(queueList, currentSongListItem);
+      updateQueueAppearance(currentSongListItem);
     }
     shuffleIcon.classList.remove("toggledon");
   } else if(queueList.childElementCount > 0){ //shuffle
@@ -624,7 +800,7 @@ function shuffleSongQueue(shuffleIcon, queueList) {
       queueList.append(...currentSongElement, ...queueListItems);
       nowPlayingInfo.queue.unshift(currentSongId);
       let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
-      updateQueueAppearance(queueList, currentSongListItem);
+      updateQueueAppearance(currentSongListItem);
       shuffleIcon.classList.add("toggledon");
     }
   } else {
@@ -632,11 +808,11 @@ function shuffleSongQueue(shuffleIcon, queueList) {
   }
 }
 
+//Create copies of song cards to populate new queue and add relevant classes for styling.
 function generateQueueListItems(currentSongIndex, queueSource) {
-  //Create copies of song cards to populate new queue and add relevant classes for styling.
   let listItems = queueSource.querySelectorAll("li");
   let newList = [];
-  for (i = 0; (i < listItems.length); i++) {
+  for (let i = 0; (i < listItems.length); i++) {
     if (listItems[i].style.display != "none") {
       let newListItem = listItems[i].cloneNode(true);
       newListItem.classList.add("draggableQueue");
@@ -644,7 +820,7 @@ function generateQueueListItems(currentSongIndex, queueSource) {
       newList.push(newListItem);
     }
   }
-  for (i = 0; (i < newList.length); i++) {
+  for (let i = 0; (i < newList.length); i++) {
     if (i == currentSongIndex) {
       newList[i].querySelector(".tracklistitem").classList.add("queuecurrent");
     } else if (i < currentSongIndex) {
@@ -654,63 +830,12 @@ function generateQueueListItems(currentSongIndex, queueSource) {
   return newList;
 };
 
-function addQueueEventListeners(queueItems, queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon) {
-  //determine if we were passed a draggable item or a list containing draggable items.
-  let queueDraggables = queueItems.classList.contains("draggableQueue") ? [queueItems] : queueItems.querySelectorAll(".draggableQueue");
-  //allow songs in queue to be dragged
-  queueDraggables.forEach(draggable => {
-    //add dragging class to an item when you start dragging it, after a delay
-    draggable.addEventListener('dragstart', () => {
-      setTimeout(() => draggable.classList.add('dragging'), 0);
-    });
-
-    //remove dragging class when you let go
-    draggable.addEventListener('dragend', () => {
-      draggable.classList.remove('dragging');
-      let currentSong = queueList.querySelector(".queuecurrent").querySelector(".songname").closest("li");
-      updateQueueAppearance(queueList, currentSong, false);
-
-      //update actual queue array
-      let listItems = queueList.querySelectorAll("li");
-      nowPlayingInfo.queue = [];
-      //using all songs that are visible in the current search field, form a queue
-      for (i = 0; i < listItems.length; i++) {
-        if (listItems[i].style.display != "none") {
-          nowPlayingInfo.queue.push(listItems[i].querySelector('.songname').getAttribute("songid"));
-        }
-      }
-    });
-
-    draggable.addEventListener('dragenter', () => {
-      draggable.classList.add('over');
-    });
-
-    draggable.addEventListener('dragleave', () => {
-      draggable.classList.remove('over');
-    });
-
-    //add click events to the newly generated html
-    let songNameLink = draggable.querySelector('.songname');
-    songNameLink.addEventListener('click', () => {
-      playSong(songNameLink.getAttribute('songid'), playButton, volumeSlider, trackSlider, playbackDurationField, queueList); //play song when clicked
-      updateQueueAppearance(queueList, songNameLink.closest("li"));
-    });
-
-    let artistNameLink = draggable.querySelector('.artistname');
-    //if an the name of an artist is clicked within our app, we input it as a search
-    artistNameLink.addEventListener('click', () => {
-        searchLinkedTrack(artistNameLink, songList, songSearchInput, clearSongSearch, showQueueIcon);
-    });
-  });
-
-  addActionMenuEventListeners(queueItems.querySelectorAll(".actionbutton"), queueItems.querySelectorAll(".actionmenuoption"), queueList, playButton, volumeSlider, trackSlider, playbackDurationField, songList, songSearchInput, clearSongSearch, showQueueIcon);
-}
-
-function updateQueueAppearance(queueList, songToPlay, scroll = true) {
+//Examine the new queue order to update the song card styles if necessary
+function updateQueueAppearance(songToPlay, scroll = true) {
   //set styles of all songs before and after the currently playing one to reflect queue state
   let listItems = queueList.querySelectorAll("li");
   let nextSongIndex = Array.prototype.indexOf.call(listItems, songToPlay); //how far down the list of all songs is the selected one?
-  for (i = 0; i < listItems.length; i++) {
+  for (let i = 0; i < listItems.length; i++) {
     let item = listItems[i].querySelector('.tracklistitem');
     if (i == nextSongIndex) {
       //set style of song we want to play next
@@ -731,4 +856,12 @@ function updateQueueAppearance(queueList, songToPlay, scroll = true) {
 
 
 
-window.onload = init;
+return{}
+})();
+
+
+
+
+
+
+

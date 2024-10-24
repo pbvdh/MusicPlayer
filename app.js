@@ -5,6 +5,7 @@ const morgan = require('morgan');
 //routes
 const songRoutes = require('./api/routes/songs');
 const playlistRoutes = require('./api/routes/playlists');
+const artistRoutes = require('./api/routes/artists');
 
 //routes for handling files
 const webpageRoutes = require('./api/routes/webpage')
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 //Routes which should handle requests 
 app.use('/songs', songRoutes);
 app.use('/playlists', playlistRoutes);
+app.use('/artists', artistRoutes);
 
 //Routes which return files
 app.use('/index', webpageRoutes);
