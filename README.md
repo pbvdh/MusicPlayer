@@ -19,12 +19,9 @@ To Do
 - add backup stylings to handle broken images, accessibility text
 - write api documentation
 - add hovers for songs with long names
-- use test driven development to hone API error codes
+- test to hone API error codes
 - env file for port number and other variables
-- scroll song name on hover
-- search artists
-- test in chrome
+- test in other browsers
 - persist current song/queue when refreshed and sensible defaults
+
 - change font
-- search linked track should switch us to song tab (especially clicking an artist in artistlist)
-- when pop out menu below window, scroll to view

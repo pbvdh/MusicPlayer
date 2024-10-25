@@ -199,17 +199,7 @@ async function init() {
 
   //switch between artist and song libraries
   toggleLibraryButton.addEventListener('click', function() {
-    if (toggleLibraryButton.getAttribute("status") == "toartists") {
-      toggleLibraryButton.setAttribute("status", "tosongs");
-      toggleLibraryButton.innerText = "Songs";
-      songList.style.display = "none";
-      artistList.style.display = "initial";
-    } else {
-      toggleLibraryButton.setAttribute("status", "toartists");
-      toggleLibraryButton.innerText = "Artists";
-      artistList.style.display = "none";
-      songList.style.display = "initial";
-    }
+    toggleLibrary();
   });
 
   //empty the current queue
@@ -256,6 +246,7 @@ function addActionMenuEventListeners(actionButtons, actionMenuOptions) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
       dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
+      dropdown.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
     });
   });
 
@@ -402,6 +393,7 @@ function searchLinkedTrack(a) {
   showHidePanes(true);
   searchSongByName(songList);
   searchSongByName(artistList);
+  toggleLibrary(true);
 }
 
 function clearInput() {
@@ -479,7 +471,7 @@ function handleActionMenuOption(option, songCard) {
         nowPlayingInfo.queue.splice(nowPlayingInfo.queue.indexOf(currentSongId)+1, 0, selectedSongId);
       }
 
-      updateQueueAppearance(currentSong);
+      updateQueueAppearance(currentSong, false);
       addQueueEventListeners(copy);
       break;
     case "add to queue":
@@ -529,6 +521,20 @@ function handleActionMenuOption(option, songCard) {
   removeOpenDropDowns();
 }
 
+//switch between artist and song libraries
+function toggleLibrary(toSongs = false) {
+  if ((toggleLibraryButton.getAttribute("status") == "tosongs") || toSongs){
+    toggleLibraryButton.setAttribute("status", "toartists");
+    toggleLibraryButton.innerText = "Artists";
+    artistList.style.display = "none";
+    songList.style.display = "initial";
+  } else {
+    toggleLibraryButton.setAttribute("status", "tosongs");
+    toggleLibraryButton.innerText = "Songs";
+    songList.style.display = "none";
+    artistList.style.display = "initial";
+  }
+}
 
 
 
