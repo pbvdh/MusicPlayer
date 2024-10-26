@@ -24,7 +24,7 @@
 		<!--searchable list of all songs-->
 		<div class="maindivs" id="songs">
 			<div id="songResults" class="listwindow">
-				<div class="queueheader">
+				<div class="windowheader">
 					<h1>Library</h1>
 					<button type="button" id="togglelibrarybutton" class="nes-btn is-error" status="toartists">Artists</button>
 				</div>
@@ -44,17 +44,27 @@
 			</div>
 		</div>
 		<div class="maindivs" id="playlists">
-			Search personal playlists.
+			<div class="listwindow">
+				<div class="windowheader">
+					<h1>Playlists</h1>
+					<button type="button" id="createplaylistbutton" class="nes-btn is-error">Create</button>
+				</div>
+				<div class="searchresultswrapper">
+					<ul id="playlistlist" class="tracklist">
+						<!--populate list with call to API -->
+					</ul>
+				</div>
+			</div>
 		</div>
 		<div class="maindivs" id="songqueue">
 			<div class="listwindow">
-				<div class="queueheader">
+				<div class="windowheader">
 					<h1>Playing Queue</h1>
 					<button type="button" id="clearqueuebutton" class="nes-btn is-error">Clear</button>
 				</div>
 				<div class="searchresultswrapper">
 					<ul id="queuelist" class="tracklist">
-
+						<!--Populate list with song cards-->
 					</ul>
 				</div>
 			</div>

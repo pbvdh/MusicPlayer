@@ -324,7 +324,7 @@ Some of these classes relate to dynamically generated content*/
     opacity: 0.5;
 }
 
-.queueheader {
+.windowheader {
     box-shadow: 0px 0px 5px 1px black;
     position: relative;
     border-bottom: 4px solid black;
@@ -339,14 +339,14 @@ Some of these classes relate to dynamically generated content*/
     min-height: 54px;
 }
 
-.queueheader h1 {
+.windowheader h1 {
     flex-grow: 1;
     font-size: x-large;
     text-align: left;
     padding-left: 1rem;
 }
 
-.queueheader button {
+.windowheader button {
     width: 136px;
 }
 
@@ -405,6 +405,16 @@ Some of these classes relate to dynamically generated content*/
 
 .toggledon {
     fill: white;
+}
+
+.playlistname {
+    justify-self: start;
+    width: 100%;
+    display: flex;
+    white-space: nowrap;
+    padding-inline-start: 6px;
+    padding-top: 4px;
+    font-size: medium;
 }
 
 /*certain action menu options shouldn't be present in the song library tab*/

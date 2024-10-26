@@ -24,7 +24,7 @@ const addSongToPlaylist = (playlistId, songId, callback) => {
 
 //READ
 const selectAllPlaylists = (callback) => {
-    const sql = 'SELECT * FROM playlist';
+    const sql = 'SELECT * FROM playlist ORDER BY name';
     db.all(sql, [], callback);
 }
 

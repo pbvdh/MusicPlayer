@@ -52,7 +52,7 @@ router.get('/', (req, res, next) => {
         } else {      
             const response = {
                 count: rows.length,
-                songs: rows
+                playlists: rows
             }
             res.status(200).json(response);
         }
@@ -116,7 +116,7 @@ router.patch('/', (req, res, next) => {
                     name: rows.name,
                     songs: {
                         type: 'GET',
-                        url: `http://localhost:3000/playlists/${id}`
+                        url: `http://localhost:3000/playlists/songs/${rows.id}`
                     }
                 }
             });
