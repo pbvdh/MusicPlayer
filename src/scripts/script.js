@@ -49,7 +49,6 @@ let songList;
 let artistList;
 let playlistList;
 let playlistSongList;
-let playlistNames;
 let libraryPanel;
 let playlistPanel;
 
@@ -107,7 +106,6 @@ async function init() {
   toggleLibraryButton = document.getElementById("togglelibrarybutton");
   createPlaylistButton = document.getElementById("createplaylistbutton");
   playlistSongList = document.getElementById("playlistsonglist");
-  playlistNames = document.querySelectorAll(".playlistname");
   libraryPanel = document.getElementById("songs");
   playlistPanel = document.getElementById("playlists");
 
@@ -272,24 +270,7 @@ async function init() {
     }
   });
 
-  //when clicking a song, play it and start a queue using the songs around it
-  playlistNames.forEach(playlistName => {
-    playlistName.addEventListener('click', async function () {
-      //toggle create button
-      createPlaylistButton.setAttribute("status", "return");
-      createPlaylistButton.innerText = "Back";
-      playlistList.style.display = "none";
-      playlistSongList.style.display = "initial";
-
-      //reset search bar
-      let searchBar = playlistPanel.querySelector(".searchbar");
-      searchBar.querySelector(".searchsongs").value = "";
-      searchSongByName(searchBar, playlistList);
-
-      //api call to fetch songs in playlist
-      playlistSongList.innerHTML = await loadPlaylistSongs(playlistName.getAttribute("playlistid"));
-    });
-  });
+  addPlaylistEventListeners();
 
 
 
@@ -307,8 +288,23 @@ async function init() {
 
 
 
-
-
+function generateActionMenu(type) {
+  if(type == "song"){
+      return `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
+              </div>`
+  } else if (type == "playlist") {
+      return `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
+              </div>`
+  }
+}
 
 
 
@@ -322,15 +318,20 @@ async function init() {
 function addActionMenuEventListeners(actionButtons, actionMenuOptions) {
   //pop up options menus on song panels
   actionButtons.forEach(actionButton => {
+
     let dropdown = actionButton.parentElement.querySelector('.actionmenudropdown');
+
     actionButton.addEventListener('click', function (event) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+
+      //colour selected song card
       if(actionButton.closest("li").style.backgroundColor){
         actionButton.closest("li").style.removeProperty("background-color");
       } else { 
         actionButton.closest("li").style.backgroundColor = "#9f4995cc";
       };
+
       dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
       //if menu is out of view, scroll to it
       if(dropdown.getBoundingClientRect().bottom > dropdown.closest(".searchresultswrapper").getBoundingClientRect().bottom) {
@@ -433,9 +434,28 @@ function addQueueEventListeners(queueItems) {
 function addPlaylistEventListeners() {
   let playlistActionButtons = playlistList.querySelectorAll(".actionbutton");
   let playlistActionMenuOptions = playlistList.querySelectorAll(".actionmenuoption");
+  let playlistNames = document.querySelectorAll(".playlistname");
   addActionMenuEventListeners(playlistActionButtons, playlistActionMenuOptions);
 
   //click events, toggle to song contents
+    //when clicking a playlist, reveal its contents
+    playlistNames.forEach(playlistName => {
+      playlistName.addEventListener('click', async function () {
+        //toggle create button
+        createPlaylistButton.setAttribute("status", "return");
+        createPlaylistButton.innerText = "Back";
+        playlistList.style.display = "none";
+        playlistSongList.style.display = "initial";
+  
+        //reset search bar
+        let searchBar = playlistPanel.querySelector(".searchbar");
+        searchBar.querySelector(".searchsongs").value = "";
+        searchSongByName(searchBar, playlistList);
+  
+        //api call to fetch songs in playlist
+        playlistSongList.innerHTML = await loadPlaylistSongs(playlistName.getAttribute("playlistid"));
+      });
+    });
 }
 
 
@@ -583,8 +603,12 @@ function handleSongActionMenuOption(option, songCard) {
     case "add to queue":
       copy.classList.add("draggableQueue");
       copy.setAttribute("draggable", "true");
-      //dont need to do full queue update, as this item is always going at the end we can just strip its styles
-      copy.querySelector(".tracklistitem").classList.remove("queuecurrent");
+      //dont need to do full queue update, as this item is always going at the end we can reliably handle its styles
+      if(queueList.childElementCount > 0){
+        copy.querySelector(".tracklistitem").classList.remove("queuecurrent");
+      } else {
+        copy.querySelector(".tracklistitem").classList.add("queuecurrent");
+      }
       copy.querySelector(".tracklistitem").classList.remove("queuehistory");
 
       queueList.appendChild(copy);
@@ -594,7 +618,6 @@ function handleSongActionMenuOption(option, songCard) {
       addQueueEventListeners(copy);
       break;
     case "add to playlist":
-
 
     /*
       const addToPlaylistUrl = "http://localhost:3000/playlists/addSong";
@@ -759,10 +782,10 @@ async function loadSongList() {
                       </svg>
                     </button>
                     <div class="actionmenudropdown">
-                      <div class="actionmenuoption" data-option="Play next">Play next</div>
-                      <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
-                      <div class="actionmenuoption" data-option="Add to playlist">Add to playlist</div>
-                      <div class="actionmenuoption queueoption" data-option="Remove from queue">Remove from queue</div>
+                      <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                      <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                      <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                      <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
                     </div>	
                   </div>
                 </div>
@@ -817,10 +840,10 @@ async function loadPlaylists() {
                 </svg>
               </button>
               <div class="actionmenudropdown">
-                <div class="actionmenuoption" data-option="Play next">Play next</div>
-                <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
-                <div class="actionmenuoption playlistoption" data-option="Rename playlist">Rename playlist</div>
-                <div class="actionmenuoption playlistoption" data-option="Delete playlist">Delete playlist</div>
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
               </div>	
             </div>
           </div>
@@ -854,10 +877,10 @@ async function loadPlaylistSongs(id) {
                       </svg>
                     </button>
                     <div class="actionmenudropdown">
-                      <div class="actionmenuoption" data-option="Play next">Play next</div>
-                      <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
-                      <div class="actionmenuoption" data-option="Add to playlist">Add to playlist</div>
-                      <div class="actionmenuoption queueoption" data-option="Remove from queue">Remove from queue</div>
+                      <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                      <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                      <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                      <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
                     </div>	
                   </div>
                 </div>
@@ -868,10 +891,11 @@ async function loadPlaylistSongs(id) {
 
 async function createPlaylist() {
   let playlistName = prompt("Enter playlist name:");
+  if(!playlistName){return}
 
   const playlistsUrl = "http://localhost:3000/playlists";
 
-  const options = {
+  const options = { 
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -24,5 +24,5 @@ To Do
 - test in other browsers
 - persist current song/queue when refreshed and sensible defaults
 - now playing in tab header
-
+- length restriction on playlistname
 - change font

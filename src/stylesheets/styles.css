@@ -619,14 +619,3 @@ Some of these classes relate to dynamically generated content*/
     display: none;
 }
 
-#playlistspopup {
-    width: 500px;
-    height: 500px;
-    background-color: red;
-    position: fixed;
-    z-index: 99999;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    visibility: hidden;
-}
