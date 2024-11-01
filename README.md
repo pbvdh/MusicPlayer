@@ -23,5 +23,6 @@ To Do
 - env file for port number and other variables
 - test in other browsers
 - persist current song/queue when refreshed and sensible defaults
+- now playing in tab header
 
 - change font

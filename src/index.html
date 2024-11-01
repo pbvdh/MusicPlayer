@@ -19,6 +19,9 @@
 
 </head>
 
+<div id="playlistspopup">
+
+</div>
 <body>
 	<main>
 		<!--searchable list of all songs-->
@@ -29,9 +32,9 @@
 					<button type="button" id="togglelibrarybutton" class="nes-btn is-error" status="toartists">Artists</button>
 				</div>
 				<div class="searchresultswrapper">
-					<div class="searchbar">
-						<input type="text" id="searchsongs" placeholder="Search for song or artist...">
-						<span id="searchsongsclearbutton" class="clearButton"></span>
+					<div class="searchbar" for="library">
+						<input type="text" class="searchsongs" placeholder="Search for song or artist...">
+						<span class="clearbutton"></span>
 					</div>
 					<!--list of songs-->
 					<ul id="songlist" class="tracklist">
@@ -47,11 +50,18 @@
 			<div class="listwindow">
 				<div class="windowheader">
 					<h1>Playlists</h1>
-					<button type="button" id="createplaylistbutton" class="nes-btn is-error">Create</button>
+					<button type="button" id="createplaylistbutton" class="nes-btn is-error" status="create">Create</button>
 				</div>
 				<div class="searchresultswrapper">
+					<div class="searchbar" for="playlists">
+						<input type="text" class="searchsongs" placeholder="Search playlists...">
+						<span class="clearbutton"></span>
+					</div>
 					<ul id="playlistlist" class="tracklist">
 						<!--populate list with call to API -->
+					</ul>
+					<ul id="playlistsonglist" class="tracklist">
+						<!--call API to find songs in playlist-->
 					</ul>
 				</div>
 			</div>
@@ -80,12 +90,12 @@
 			<div id="nowplayingdetails">
 				<div id="nowplayingsongname">
 					<span draggable=false>
-						<a draggable=false href="#" class="songsearchlink">Song name</a>
+						<a draggable=false class="songsearchlink">Song name</a>
 					</span>
 				</div>
 				<div id="nowplayingartistname">
 					<span draggable=false>
-						<a draggable=false href="#" class="songsearchlink">Artist</a>
+						<a draggable=false class="songsearchlink">Artist</a>
 					</span>
 				</div>
 			</div>

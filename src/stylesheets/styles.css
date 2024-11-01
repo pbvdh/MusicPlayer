@@ -228,7 +228,7 @@ footer button:focus {
     position: relative;
 }
 
-.clearButton {
+.clearbutton {
     background-image: url("http://localhost:3000/images/cross.png");
     position: absolute;
     right: 10px;
@@ -397,6 +397,7 @@ Some of these classes relate to dynamically generated content*/
     padding: 10px 15px;
     cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
     user-select: none;
+    position: relative;
 }
 
 .actionmenuoption:hover {
@@ -588,7 +589,7 @@ Some of these classes relate to dynamically generated content*/
 
 /* search songs panel */
 /* search bar input */
-#searchsongs {
+.searchsongs {
     width: 100%;
     background-image: url("http://localhost:3000/images/searchicon.png");
     background-repeat: no-repeat;
@@ -602,7 +603,7 @@ Some of these classes relate to dynamically generated content*/
     border-bottom: 4px solid black;
 }
 
-#searchsongs:focus {
+.searchsongs:focus {
     outline: none;
 }
 
@@ -612,4 +613,20 @@ Some of these classes relate to dynamically generated content*/
 
 #artistlist .artistname {
     font-size: small;
+}
+
+#playlistsonglist {
+    display: none;
+}
+
+#playlistspopup {
+    width: 500px;
+    height: 500px;
+    background-color: red;
+    position: fixed;
+    z-index: 99999;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
 }

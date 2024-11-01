@@ -25,8 +25,8 @@ let nowPlayingInfo = new CLASSES.NowPlayingInfo(null, []);
 
 //DOM elements
 let songSearchLinks;
-let clearSongSearch;
-let songSearchInput;
+let clearSongSearches;
+let songSearchInputs;
 let trackSlider;
 let playbackDurationField;
 let actionButtons;
@@ -48,6 +48,10 @@ let createPlaylistButton;
 let songList;
 let artistList;
 let playlistList;
+let playlistSongList;
+let playlistNames;
+let libraryPanel;
+let playlistPanel;
 
 //define DOM elements and assign event listeners. Dynamically generate content as required
 async function init() {
@@ -75,7 +79,6 @@ async function init() {
   try {
     let playlistListItems = await loadPlaylists();
     playlistList.innerHTML = playlistListItems;
-    //addPlaylistEventListeners();
   } catch(error) {
     console.error("Error fetching playlists:\n" + error);
   }
@@ -83,8 +86,8 @@ async function init() {
 
   //DOM elements
   songSearchLinks = document.querySelectorAll(".songsearchlink");
-  clearSongSearch = document.getElementById("searchsongsclearbutton");
-  songSearchInput = document.getElementById("searchsongs");
+  clearSongSearches = document.querySelectorAll(".clearbutton");
+  songSearchInputs = document.querySelectorAll(".searchsongs");
   trackSlider = document.getElementById("trackslider");
   playbackDurationField = document.getElementById("playbackduration");
   actionButtons = document.querySelectorAll(".actionbutton");
@@ -103,6 +106,10 @@ async function init() {
   clearQueueButton = document.getElementById("clearqueuebutton");
   toggleLibraryButton = document.getElementById("togglelibrarybutton");
   createPlaylistButton = document.getElementById("createplaylistbutton");
+  playlistSongList = document.getElementById("playlistsonglist");
+  playlistNames = document.querySelectorAll(".playlistname");
+  libraryPanel = document.getElementById("songs");
+  playlistPanel = document.getElementById("playlists");
 
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', function (e) {
@@ -122,14 +129,36 @@ async function init() {
   });
 
   //clear search window button
-  clearSongSearch.addEventListener('click', function () {
-    clearInput();
+  clearSongSearches.forEach(clearSongSearch => {
+    clearSongSearch.addEventListener('click', function () {
+      let searchBar = clearSongSearch.closest(".searchbar");
+      let target = searchBar.getAttribute("for");
+  
+      searchBar.querySelector(".searchsongs").value="";
+  
+      if (target == "library") {
+        searchSongByName(searchBar, songList);
+        searchSongByName(searchBar, artistList);
+      } else if (target == "playlists") {
+        searchSongByName(searchBar, playlistList);
+      }
+    });
   });
 
   //handle searching for songs in library
-  songSearchInput.addEventListener('input', function () {
-    searchSongByName(songList);
-    searchSongByName(artistList);
+  songSearchInputs.forEach(songSearchInput => {
+    songSearchInput.addEventListener('input', function () {
+
+      let searchBar = songSearchInput.closest(".searchbar");
+      let target = searchBar.getAttribute("for");
+  
+      if (target == "library") {
+        searchSongByName(searchBar, songList);
+        searchSongByName(searchBar, artistList);
+      } else if (target == "playlists") {
+        searchSongByName(searchBar, playlistList);
+      }
+    });
   });
 
   //update the current position string (timestamp) for the track slider
@@ -153,7 +182,7 @@ async function init() {
   //if an the name of an artist is clicked within our app, we input it as a search
   songSearchLinks.forEach(songSearchLink => {
     songSearchLink.addEventListener('click', function () {
-      searchLinkedTrack(songSearchLink);
+      searchLinkedTrack(libraryPanel.querySelector(".searchbar"), songSearchLink);
     });
   });
 
@@ -225,9 +254,45 @@ async function init() {
     }
   });
 
+  //create new playlist
   createPlaylistButton.addEventListener('click', function() {
-    createPlaylist();
+    if(createPlaylistButton.getAttribute("status") == "create"){
+      createPlaylist();
+    } else if (createPlaylistButton.getAttribute("status") == "return") {
+
+      createPlaylistButton.setAttribute("status", "create");
+      createPlaylistButton.innerText = "Create";
+      playlistSongList.style.display = "none";
+      playlistList.style.display = "initial";
+
+      //reset searchbar
+      let searchBar = playlistPanel.querySelector(".searchbar");
+      searchBar.querySelector(".searchsongs").value = "";
+      searchSongByName(searchBar, playlistList);
+    }
   });
+
+  //when clicking a song, play it and start a queue using the songs around it
+  playlistNames.forEach(playlistName => {
+    playlistName.addEventListener('click', async function () {
+      //toggle create button
+      createPlaylistButton.setAttribute("status", "return");
+      createPlaylistButton.innerText = "Back";
+      playlistList.style.display = "none";
+      playlistSongList.style.display = "initial";
+
+      //reset search bar
+      let searchBar = playlistPanel.querySelector(".searchbar");
+      searchBar.querySelector(".searchsongs").value = "";
+      searchSongByName(searchBar, playlistList);
+
+      //api call to fetch songs in playlist
+      playlistSongList.innerHTML = await loadPlaylistSongs(playlistName.getAttribute("playlistid"));
+    });
+  });
+
+
+
 
   //hide pop up options menus when you click outside them
   document.addEventListener('click', function (event)  {
@@ -261,6 +326,11 @@ function addActionMenuEventListeners(actionButtons, actionMenuOptions) {
     actionButton.addEventListener('click', function (event) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+      if(actionButton.closest("li").style.backgroundColor){
+        actionButton.closest("li").style.removeProperty("background-color");
+      } else { 
+        actionButton.closest("li").style.backgroundColor = "#9f4995cc";
+      };
       dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
       //if menu is out of view, scroll to it
       if(dropdown.getBoundingClientRect().bottom > dropdown.closest(".searchresultswrapper").getBoundingClientRect().bottom) {
@@ -353,7 +423,7 @@ function addQueueEventListeners(queueItems) {
     let artistNameLink = draggable.querySelector('.artistname');
     //if an the name of an artist is clicked within our app, we input it as a search
     artistNameLink.addEventListener('click', () => {
-        searchLinkedTrack(artistNameLink);
+        searchLinkedTrack(libraryPanel.querySelector(".searchbar"), artistNameLink);
     });
   });
 
@@ -377,16 +447,18 @@ function addPlaylistEventListeners() {
 
 //MENU OPERATIONS
 //keyup search bar functionality
-function searchSongByName(ul) {
+function searchSongByName(searchBar, ul) {
   // Declare variables
   let filter, li, i, songEntry, songValue, artistEntry, artistValue;
-  filter = songSearchInput.value.toLowerCase();
+  let input = searchBar.querySelector(".searchsongs");
+  let clearButton = searchBar.querySelector(".clearbutton");
+  filter = input.value.toLowerCase();
   li = ul.getElementsByTagName('li');
 
-  if (songSearchInput.value) {
-    clearSongSearch.style.visibility = "visible"
+  if (input.value) {
+    clearButton.style.visibility = "visible"
   } else {
-    clearSongSearch.style.visibility = "hidden"
+    clearButton.style.visibility = "hidden"
   }
 
   // Loop through all list items, and hide those who don't match the search query
@@ -424,21 +496,16 @@ function showHidePanes(forceShow = false) {  //can optionally pass value true to
 }
 
 //clicking a song or artist name inside <a>, automatically sends to search bar and makes pane visible
-function searchLinkedTrack(a) {
+function searchLinkedTrack(searchBar, a) {
   let searchTerm = a.textContent || a.innerText;
-  let input = document.getElementById('searchsongs');
+  let input = searchBar.querySelector(".searchsongs");
   input.value = searchTerm;
   showHidePanes(true);
-  searchSongByName(songList);
-  searchSongByName(artistList);
+  searchSongByName(searchBar, songList);
+  searchSongByName(searchBar, artistList);
   toggleLibrary(true);
 }
 
-function clearInput() {
-  songSearchInput.value = "";
-  searchSongByName(songList);
-  searchSongByName(artistList);
-}
 
 function sortSongList(ul) {
   const li = ul.querySelectorAll("li");
@@ -475,6 +542,7 @@ function removeOpenDropDowns(event = null) {
     //if the user clicked anywhere on the page except on the button or menu themselves 
     //(prevents dropdown immediately opening and closing on initial click)
     if (event == null || (!dropdown.parentElement.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
+      dropdown.closest("li").style.removeProperty("background-color");
       dropdown.style.display = 'none';
       dropdown.removeAttribute("id");
     }
@@ -526,6 +594,32 @@ function handleSongActionMenuOption(option, songCard) {
       addQueueEventListeners(copy);
       break;
     case "add to playlist":
+
+
+    /*
+      const addToPlaylistUrl = "http://localhost:3000/playlists/addSong";
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playlistId: playlistName
+        }),
+      };
+    
+      let response = await fetch(playlistsUrl, options);
+      let data = await response.json();
+
+      if (response.status == 201) {
+        try {
+          let playlistListItems = await loadPlaylists();
+          playlistList.innerHTML = playlistListItems;
+        } catch(error) {
+          console.error("Error fetching playlists:\n" + error);
+        }
+        */
       console.log(option + 'selected');
       //awaiting playlist functionality
       //use API call with songid
@@ -653,9 +747,9 @@ async function loadSongList() {
                 <div class="tracklistitem">
                   <div class="trackdetailscontainer">
                     <div class="overflowwrapper">
-                      <a class="songname" draggable=false href="#" songId ="${song.id}">${song.name}</a>
+                      <a class="songname" draggable=false songId ="${song.id}">${song.name}</a>
                       <br>
-                      <a class="artistname songsearchlink" href="#">${song.artist_name}</a>
+                      <a class="artistname songsearchlink">${song.artist_name}</a>
                     </div>
                   </div>
                   <div class="actionmenucontainer">
@@ -691,7 +785,7 @@ async function loadArtistList() {
                 <div class="tracklistitem">
                   <div class="trackdetailscontainer">
                     <div class="overflowwrapper">
-                      <a class="artistname songsearchlink" href="#">${artist.artist_name}</a>
+                      <a class="artistname songsearchlink">${artist.artist_name}</a>
                     </div>
                   </div>
                 </div>
@@ -713,7 +807,7 @@ async function loadPlaylists() {
           <div class="tracklistitem">
             <div class="trackdetailscontainer">
               <div class="overflowwrapper">
-                <a class="playlistname" playlistid="${playlist.id}" href="#">${playlist.name}</a>
+                <a class="playlistname" playlistid="${playlist.id}">${playlist.name}</a>
               </div>
             </div>
             <div class="actionmenucontainer">
@@ -731,6 +825,43 @@ async function loadPlaylists() {
             </div>
           </div>
         </li>`
+  });
+  return listItems;
+}
+
+async function loadPlaylistSongs(id) {
+  const getPlaylistSongsUrl = "http://localhost:3000/playlists/songs/" + id;
+  let listItems = "";
+  let response = await fetch(getPlaylistSongsUrl);
+  let data = await response.json();
+
+  data.songs.forEach(song => {
+    //add each to the block of html we will add
+    listItems +=
+              `<li>
+                <div class="tracklistitem">
+                  <div class="trackdetailscontainer">
+                    <div class="overflowwrapper">
+                      <a class="songname" draggable=false songId ="${song.id}">${song.name}</a>
+                      <br>
+                      <a class="artistname songsearchlink">${song.artist_name}</a>
+                    </div>
+                  </div>
+                  <div class="actionmenucontainer">
+                    <button class="actionbutton">
+                      <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" focusable="false" class="actionbuttonicon">
+                        <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
+                      </svg>
+                    </button>
+                    <div class="actionmenudropdown">
+                      <div class="actionmenuoption" data-option="Play next">Play next</div>
+                      <div class="actionmenuoption" data-option="Add to queue">Add to queue</div>
+                      <div class="actionmenuoption" data-option="Add to playlist">Add to playlist</div>
+                      <div class="actionmenuoption queueoption" data-option="Remove from queue">Remove from queue</div>
+                    </div>	
+                  </div>
+                </div>
+              </li>`;
   });
   return listItems;
 }
