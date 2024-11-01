@@ -90,7 +90,6 @@ async function init() {
   trackSlider = document.getElementById("trackslider");
   playbackDurationField = document.getElementById("playbackduration");
   actionButtons = document.querySelectorAll(".actionbutton");
-  actionMenuOptions = document.querySelectorAll(".actionmenuoption");
   queueList = document.getElementById("queuelist");
   songNames = document.querySelectorAll(".songname");
   playButton = document.getElementById("playbutton");
@@ -166,7 +165,7 @@ async function init() {
   });
 
   //add event listeners for the kebab menu on song cards
-  addActionMenuEventListeners(actionButtons, actionMenuOptions);
+  addActionMenuEventListeners(actionButtons);
 
   //when clicking a song, play it and start a queue using the songs around it
   songNames.forEach(songName => {
@@ -186,9 +185,12 @@ async function init() {
 
   //resume playing current song
   playButton.addEventListener('click', function () {
-    if (nowPlayingInfo.song) {
+    if (nowPlayingInfo.song) { //there is a currently playing song, but it was paused
       togglePlayButton();
-    }
+    } else if (nowPlayingInfo.queue) { //there is a song queued and ready to play
+      let id = queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid");
+      playSong(id);
+    } 
   });
 
   //mute audio 
@@ -289,70 +291,70 @@ async function init() {
 
 
 function generateActionMenu(type) {
-  if(type == "song"){
-      return `<div class="actionmenudropdown">
+  const template = document.createElement('template');
+  if(type == "songs"){
+      template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
-              </div>`
-  } else if (type == "playlist") {
-      return `<div class="actionmenudropdown">
+              </div>`;
+  } else if (type == "playlists") {
+      template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
-              </div>`
+              </div>`;
+  } else if (type == "songqueue") {
+    template.innerHTML = `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
+              </div>`;
   }
+
+  return template.content.firstElementChild;
 }
-
-
-
-
-
-
 
 
 //EVENT LISTENERS
 //Add event listeners to kebab menus on song cards
-function addActionMenuEventListeners(actionButtons, actionMenuOptions) {
+function addActionMenuEventListeners(actionButtons) {
   //pop up options menus on song panels
-  actionButtons.forEach(actionButton => {
-
-    let dropdown = actionButton.parentElement.querySelector('.actionmenudropdown');
-
-    actionButton.addEventListener('click', function (event) {
+  actionButtons.forEach(actionButton => { 
+    actionButton.onclick = function (event) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
-      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-
-      //colour selected song card
-      if(actionButton.closest("li").style.backgroundColor){
-        actionButton.closest("li").style.removeProperty("background-color");
-      } else { 
-        actionButton.closest("li").style.backgroundColor = "#9f4995cc";
-      };
-
-      dropdown.setAttribute("id", "active-action-menu-dropdown"); //identifier with which to remove open drop downs
-      //if menu is out of view, scroll to it
-      if(dropdown.getBoundingClientRect().bottom > dropdown.closest(".searchresultswrapper").getBoundingClientRect().bottom) {
-        dropdown.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
-      }
-    });
-  });
-
-  actionMenuOptions.forEach(option => {
-    option.addEventListener('click', function (event) {
-      let selectedOption = event.currentTarget.getAttribute('data-option');
-      let songCard = option.closest("li");
-      if(songCard.getElementsByClassName("songname").length == 1 || songCard.getElementsByClassName("artistname").length == 1) {
-        handleSongActionMenuOption(selectedOption, songCard);
-      } else if (songCard.getElementsByClassName("playlistname").length == 1) {
-        handlePlaylistActionMenuOption(selectedOption, songCard);
+      let songCard = actionButton.closest("li");
+      let type = songCard.closest(".maindivs").getAttribute("id");
+      if(songCard.classList.contains("activeactionmenu")){
+        songCard.style.removeProperty("background-color");
+        songCard.classList.remove("activeactionmenu");
+        document.querySelector(".actionmenudropdown").remove();
       } else {
-        console.error("Expected action menu parent to have song, artist or playlist name class.");
-      }
+        //colour in selected song card
+        songCard.style.backgroundColor = "#9f4995cc";
+        songCard.classList.add("activeactionmenu");
+        document.querySelector("body").appendChild(generateActionMenu(type));
+        document.querySelector(".actionmenudropdown").style.transform = "translate(" + event.clientX  + "px, " + event.clientY + "px)";
 
-    });
+        //add event listeners to newly created menu
+        document.querySelectorAll(".actionmenuoption").forEach(option => {
+          option.addEventListener('click', function (event) {
+            let selectedOption = event.currentTarget.getAttribute('data-option');
+            if(songCard.getElementsByClassName("songname").length == 1 || songCard.getElementsByClassName("artistname").length == 1) {
+              handleSongActionMenuOption(selectedOption, songCard);
+            } else if (songCard.getElementsByClassName("playlistname").length == 1) {
+              handlePlaylistActionMenuOption(selectedOption, songCard);
+            } else {
+              console.error("Expected action menu parent to have song, artist or playlist name class.");
+            }
+      
+          });
+        });
+
+      }
+    };
   });
 }
 
@@ -428,14 +430,13 @@ function addQueueEventListeners(queueItems) {
     });
   });
 
-  addActionMenuEventListeners(queueItems.querySelectorAll(".actionbutton"), queueItems.querySelectorAll(".actionmenuoption"));
+  addActionMenuEventListeners(queueItems.querySelectorAll(".actionbutton"));
 }
 
 function addPlaylistEventListeners() {
   let playlistActionButtons = playlistList.querySelectorAll(".actionbutton");
-  let playlistActionMenuOptions = playlistList.querySelectorAll(".actionmenuoption");
   let playlistNames = document.querySelectorAll(".playlistname");
-  addActionMenuEventListeners(playlistActionButtons, playlistActionMenuOptions);
+  addActionMenuEventListeners(playlistActionButtons);
 
   //click events, toggle to song contents
     //when clicking a playlist, reveal its contents
@@ -557,14 +558,15 @@ function getDragAfterElement(container, y) {
 
 //clear all open dropdown windows on the page
 function removeOpenDropDowns(event = null) {
-  const dropdown = document.getElementById("active-action-menu-dropdown");
-  if (dropdown != null) {
+  let dropdown = document.querySelector(".actionmenudropdown");
+  let songCard = document.querySelector(".activeactionmenu");
+  if (dropdown != null && songCard != null) {
     //if the user clicked anywhere on the page except on the button or menu themselves 
     //(prevents dropdown immediately opening and closing on initial click)
-    if (event == null || (!dropdown.parentElement.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
-      dropdown.closest("li").style.removeProperty("background-color");
-      dropdown.style.display = 'none';
-      dropdown.removeAttribute("id");
+    if (event == null || (!songCard.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
+      songCard.style.removeProperty("background-color");
+      songCard.classList.remove("activeactionmenu");
+      dropdown.remove();
     }
   }
 }
@@ -678,6 +680,7 @@ function handleSongActionMenuOption(option, songCard) {
 
 //Perform an action based on the selected dropdown option on playlist card - add contents to queue or edit playlist
 async function handlePlaylistActionMenuOption(option, card) {
+  removeOpenDropDowns();
   let playlistLink = card.querySelector(".playlistname")
   let playlistName = playlistLink.innerText;
   let playlistId = playlistLink.getAttribute("playlistid");
@@ -781,12 +784,6 @@ async function loadSongList() {
                         <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
                       </svg>
                     </button>
-                    <div class="actionmenudropdown">
-                      <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                      <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                      <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-                      <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
-                    </div>	
                   </div>
                 </div>
               </li>`;
@@ -839,12 +836,6 @@ async function loadPlaylists() {
                   <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
                 </svg>
               </button>
-              <div class="actionmenudropdown">
-                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
-                <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
-              </div>	
             </div>
           </div>
         </li>`
@@ -875,13 +866,7 @@ async function loadPlaylistSongs(id) {
                       <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" focusable="false" class="actionbuttonicon">
                         <path d="M12 16.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zM10.5 12c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5zm0-6c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5-1.5.67-1.5 1.5z"></path>
                       </svg>
-                    </button>
-                    <div class="actionmenudropdown">
-                      <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                      <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                      <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-                      <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
-                    </div>	
+                    </button>	
                   </div>
                 </div>
               </li>`;
