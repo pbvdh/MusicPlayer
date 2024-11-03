@@ -24,13 +24,13 @@ window.onload = init;
 let nowPlayingInfo = new CLASSES.NowPlayingInfo(null, []); 
 
 //DOM elements
+let tabTitle;
 let songSearchLinks;
 let clearSongSearches;
 let songSearchInputs;
 let trackSlider;
 let playbackDurationField;
 let actionButtons;
-let actionMenuOptions;
 let queueList;
 let songNames;
 let playButton;
@@ -51,6 +51,8 @@ let playlistList;
 let playlistSongList;
 let libraryPanel;
 let playlistPanel;
+let nowPlayingArtist;
+let nowPlayingSong;
 
 //define DOM elements and assign event listeners. Dynamically generate content as required
 async function init() {
@@ -84,6 +86,7 @@ async function init() {
   
 
   //DOM elements
+  tabTitle = document.querySelector("head title");
   songSearchLinks = document.querySelectorAll(".songsearchlink");
   clearSongSearches = document.querySelectorAll(".clearbutton");
   songSearchInputs = document.querySelectorAll(".searchsongs");
@@ -107,6 +110,8 @@ async function init() {
   playlistSongList = document.getElementById("playlistsonglist");
   libraryPanel = document.getElementById("songs");
   playlistPanel = document.getElementById("playlists");
+  nowPlayingSong = document.getElementById('nowplayingsongname').querySelector('.songsearchlink');
+  nowPlayingArtist = document.getElementById('nowplayingartistname').querySelector('.songsearchlink');
 
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', function (e) {
@@ -275,8 +280,6 @@ async function init() {
   addPlaylistEventListeners();
 
 
-
-
   //hide pop up options menus when you click outside them
   document.addEventListener('click', function (event)  {
     removeOpenDropDowns(event);
@@ -290,32 +293,6 @@ async function init() {
 
 
 
-function generateActionMenu(type) {
-  const template = document.createElement('template');
-  if(type == "songs"){
-      template.innerHTML = `<div class="actionmenudropdown">
-                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-              </div>`;
-  } else if (type == "playlists") {
-      template.innerHTML = `<div class="actionmenudropdown">
-                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
-                <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
-              </div>`;
-  } else if (type == "songqueue") {
-    template.innerHTML = `<div class="actionmenudropdown">
-                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
-                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
-                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
-              </div>`;
-  }
-
-  return template.content.firstElementChild;
-}
 
 
 //EVENT LISTENERS
@@ -330,13 +307,24 @@ function addActionMenuEventListeners(actionButtons) {
       if(songCard.classList.contains("activeactionmenu")){
         songCard.style.removeProperty("background-color");
         songCard.classList.remove("activeactionmenu");
-        document.querySelector(".actionmenudropdown").remove();
+        if(document.querySelector(".actionmenudropdown")){
+          document.querySelector(".actionmenudropdown").remove();
+        }
       } else {
         //colour in selected song card
         songCard.style.backgroundColor = "#9f4995cc";
         songCard.classList.add("activeactionmenu");
         document.querySelector("body").appendChild(generateActionMenu(type));
-        document.querySelector(".actionmenudropdown").style.transform = "translate(" + event.clientX  + "px, " + event.clientY + "px)";
+        
+        let dropdown = document.querySelector(".actionmenudropdown");
+
+        //if dropdown would appear on right side of screen, 
+        if(event.clientX > window.innerWidth/2){
+          dropdown.style.transform = "translate(" + (event.clientX-dropdown.offsetWidth)  + "px, " + event.clientY + "px)";
+        } else {
+          dropdown.style.transform = "translate(" + event.clientX  + "px, " + event.clientY + "px)";
+        }
+
 
         //add event listeners to newly created menu
         document.querySelectorAll(".actionmenuoption").forEach(option => {
@@ -349,10 +337,17 @@ function addActionMenuEventListeners(actionButtons) {
             } else {
               console.error("Expected action menu parent to have song, artist or playlist name class.");
             }
-      
           });
-        });
 
+          if(option.getAttribute("data-option").toLowerCase() == "add to playlist"){
+            option.addEventListener('mouseenter', async function () {
+              //if dropdown menu isnt present yet, reveal it
+              if (!option.querySelector(".playlistpopup")) { 
+                await actionMenuRevealPlaylists();
+              }
+            });
+          }
+        });
       }
     };
   });
@@ -429,10 +424,10 @@ function addQueueEventListeners(queueItems) {
         searchLinkedTrack(libraryPanel.querySelector(".searchbar"), artistNameLink);
     });
   });
-
   addActionMenuEventListeners(queueItems.querySelectorAll(".actionbutton"));
 }
 
+//for items in playlists panel
 function addPlaylistEventListeners() {
   let playlistActionButtons = playlistList.querySelectorAll(".actionbutton");
   let playlistNames = document.querySelectorAll(".playlistname");
@@ -455,6 +450,27 @@ function addPlaylistEventListeners() {
   
         //api call to fetch songs in playlist
         playlistSongList.innerHTML = await loadPlaylistSongs(playlistName.getAttribute("playlistid"));
+
+
+        //add event listeners to the newly generated html
+        let songNameLinks = playlistSongList.querySelectorAll('.songname');
+        songNameLinks.forEach(songNameLink => {
+          songNameLink.addEventListener('click', () => {
+            playSong(songNameLink.getAttribute('songid'));
+            shuffleIcon.classList.remove("toggledon");
+            initializeSongQueue(songNameLink);
+          });
+        });
+
+        let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+          artistNameLinks.forEach(artistNameLink => {
+            //if an the name of an artist is clicked, we input it as a search
+            artistNameLink.addEventListener('click', () => {
+              searchLinkedTrack(libraryPanel.querySelector(".searchbar"), artistNameLink);
+          });
+        });
+
+        addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
       });
     });
 }
@@ -563,7 +579,14 @@ function removeOpenDropDowns(event = null) {
   if (dropdown != null && songCard != null) {
     //if the user clicked anywhere on the page except on the button or menu themselves 
     //(prevents dropdown immediately opening and closing on initial click)
-    if (event == null || (!songCard.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
+    if (event == null) {
+      songCard.style.removeProperty("background-color");
+      songCard.classList.remove("activeactionmenu");
+      dropdown.remove();
+    } else if ((!songCard.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
+      if(dropdown.querySelector(".playlistpopup") && dropdown.querySelector(".playlistpopup").contains(event.target)){
+        return;
+      }
       songCard.style.removeProperty("background-color");
       songCard.classList.remove("activeactionmenu");
       dropdown.remove();
@@ -572,8 +595,7 @@ function removeOpenDropDowns(event = null) {
 }
 
 //Perform an action based on the selected dropdown option on song card - add to queue or playlist or remove from queue
-function handleSongActionMenuOption(option, songCard) {
-  removeOpenDropDowns();
+async function handleSongActionMenuOption(option, songCard) {
   let songQueue = [...queueList.querySelectorAll("li")];
   let selectedSongId = songCard.querySelector(".songname").getAttribute("songid");
   let currentSong;
@@ -581,11 +603,13 @@ function handleSongActionMenuOption(option, songCard) {
 
   switch (option.toLowerCase()) {
     case "play next":
+      removeOpenDropDowns();
       copy = songCard.cloneNode(true);
       copy.classList.add("draggableQueue");
       copy.setAttribute("draggable", "true"); 
       copy.querySelector(".tracklistitem").classList.remove("queuecurrent");
       copy.querySelector(".tracklistitem").classList.remove("queuehistory");
+      copy.classList.remove("activeactionmenu");
       //if the queue is empty
       if(nowPlayingInfo.queue.length == 0){
         queueList.appendChild(copy);
@@ -601,8 +625,10 @@ function handleSongActionMenuOption(option, songCard) {
 
       updateQueueAppearance(currentSong, false);
       addQueueEventListeners(copy);
+      removeOpenDropDowns();
       break;
     case "add to queue":
+      removeOpenDropDowns();
       copy.classList.add("draggableQueue");
       copy.setAttribute("draggable", "true");
       //dont need to do full queue update, as this item is always going at the end we can reliably handle its styles
@@ -612,44 +638,24 @@ function handleSongActionMenuOption(option, songCard) {
         copy.querySelector(".tracklistitem").classList.add("queuecurrent");
       }
       copy.querySelector(".tracklistitem").classList.remove("queuehistory");
+      copy.classList.remove("activeactionmenu");
 
       queueList.appendChild(copy);
       nowPlayingInfo.queue.push(selectedSongId);
 
       //only add event listeners to the 'copy' item to prevent dupes
       addQueueEventListeners(copy);
+      removeOpenDropDowns();
       break;
     case "add to playlist":
-
-    /*
-      const addToPlaylistUrl = "http://localhost:3000/playlists/addSong";
-
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          playlistId: playlistName
-        }),
-      };
-    
-      let response = await fetch(playlistsUrl, options);
-      let data = await response.json();
-
-      if (response.status == 201) {
-        try {
-          let playlistListItems = await loadPlaylists();
-          playlistList.innerHTML = playlistListItems;
-        } catch(error) {
-          console.error("Error fetching playlists:\n" + error);
-        }
-        */
-      console.log(option + 'selected');
-      //awaiting playlist functionality
-      //use API call with songid
+      if(document.querySelector(".playlistpopup")){
+        document.querySelector(".playlistpopup").remove();
+      }else {
+        await actionMenuRevealPlaylists();
+      }
       break;
     case "remove from queue":
+      removeOpenDropDowns();
       //if you removed the current item, reassign and skip if there are more, otherwise pause
       if(songCard.querySelector(".tracklistitem").classList.contains("queuecurrent")){
         if(nowPlayingInfo.queue.length > 1){
@@ -673,9 +679,9 @@ function handleSongActionMenuOption(option, songCard) {
         songCard.remove();
         updateQueueAppearance(currentSong, false);
       }
+      removeOpenDropDowns();
       break;
   }
-  removeOpenDropDowns();
 }
 
 //Perform an action based on the selected dropdown option on playlist card - add contents to queue or edit playlist
@@ -906,6 +912,81 @@ async function createPlaylist() {
   }
 }
 
+function generateActionMenu(type) {
+  const template = document.createElement('template');
+  if(type == "songs"){
+      template.innerHTML = `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+              </div>`;
+  } else if (type == "playlists") {
+      template.innerHTML = `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
+                <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
+              </div>`;
+  } else if (type == "songqueue") {
+    template.innerHTML = `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
+              </div>`;
+  }
+  return template.content.firstElementChild;
+}
+
+async function actionMenuRevealPlaylists() {
+  let menuOption = document.querySelector(".actionmenuoption[data-option='Add to playlist']");
+  const template = document.createElement('template');
+  template.innerHTML = `<div class="playlistpopup"></div>`;
+  menuOption.appendChild(template.content.firstElementChild);
+  let playlistPopup = menuOption.querySelector(".playlistpopup");
+  playlistPopup.innerHTML = await presentPlaylistsAsList(); 
+  
+  playlistPopup.style.transform = `translate(${playlistPopup.closest(".actionmenuoption").offsetWidth - 15}px, -34px)`;
+  playlistPopup.querySelectorAll(".playlistoption").forEach(option => {
+    option.addEventListener('click', async function (event) {
+      let playlistId = event.currentTarget.getAttribute('playlistid');
+      let songId = document.querySelector(".activeactionmenu").querySelector(".songname").getAttribute("songid");
+      await addSongToPlaylist(songId, playlistId);
+      //TODO if curr playlist is open: loadPlaylistSongs(playListId);
+    });
+  });
+}
+
+async function presentPlaylistsAsList(){
+  const getAllPlaylistsUrl = "http://localhost:3000/playlists";
+  let listItems = "";
+  let response = await fetch(getAllPlaylistsUrl);
+  let data = await response.json();
+  data.playlists.forEach(playlist => {
+    //add each to the block of html we will add
+    listItems += 
+            `<div class="playlistoption" playlistid="${playlist.id}">${playlist.name}</div>`;
+  });
+  return listItems;
+}
+
+async function addSongToPlaylist(songId, playlistId) {
+  const addToPlaylistUrl = "http://localhost:3000/playlists/addSong";
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      playlistId: playlistId,
+      songId: songId
+    }),
+  };
+    
+  await fetch(addToPlaylistUrl, options);
+}
+
 
 
 
@@ -921,8 +1002,6 @@ async function playSong(id) {
   let data = await response.json();
   //make strings appropriate for browser & static reference
   let filepath = 'http://localhost:3000/' + encodeURIComponent(data.filepath.slice(data.filepath.lastIndexOf("\\") + 1));
-  let nowPlayingSong = document.getElementById('nowplayingsongname').getElementsByClassName('songsearchlink')[0];
-  let nowPlayingArtist = document.getElementById('nowplayingartistname').getElementsByClassName('songsearchlink')[0];
   nowPlayingSong.innerText = data.name;
   nowPlayingArtist.innerText = data.artist_name;
   //stop the currently playing song
@@ -935,6 +1014,8 @@ async function playSong(id) {
   //reassign song variable to the new song that was just triggered
   nowPlayingInfo.song = new Audio(filepath);
   nowPlayingInfo.song.load();
+  //display now playing song in browser tab
+  tabTitle.innerText = data.name + " - " + data.artist_name;
   //if we are still in playing state, dont toggle to off state - we are likely in the middle of a queue.
   if (playButton.getAttribute('status') == "playing") {
     nowPlayingInfo.song.volume = volumeSlider.value;
@@ -1045,7 +1126,8 @@ function updatePlaybackPositionValue() {
 function initializeSongQueue(songNameLink) {
   //clear queue and prepare to populate with subsequent songs in search field
   nowPlayingInfo.queue = [];
-  let allSongs = songList.querySelectorAll('li');
+  let parentSongList = songNameLink.closest("ul");
+  let allSongs = parentSongList.querySelectorAll('li'); 
   let currentSongIndex = Array.prototype.indexOf.call(allSongs, songNameLink.closest('li')); //how far down the list of all songs is the selected one?
   let currentSongId = allSongs[currentSongIndex].querySelector('.songname').getAttribute("songid");
 
@@ -1055,11 +1137,11 @@ function initializeSongQueue(songNameLink) {
       nowPlayingInfo.queue.push(allSongs[i].querySelector('.songname').getAttribute("songid"));
     }
   }
-
+  
   currentSongIndex = nowPlayingInfo.queue.indexOf(currentSongId); //updated index among only visible songs
   //populate queue window with list items
   queueList.innerHTML = "" //clear current queue
-  let listItems = generateQueueListItems(currentSongIndex, songList);
+  let listItems = generateQueueListItems(currentSongIndex, parentSongList);
   listItems.forEach(listItem => {
     queueList.appendChild(listItem);
   })
@@ -1166,6 +1248,7 @@ function updateQueueAppearance(songToPlay, scroll = true) {
   }
   if(scroll){songToPlay.scrollIntoView({ behavior: "smooth" });}
 }
+
 
 
 

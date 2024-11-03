@@ -23,6 +23,7 @@ To Do
 - env file for port number and other variables
 - test in other browsers
 - persist current song/queue when refreshed and sensible defaults
-- now playing in tab header
-- length restriction on playlistname
+- length restriction on playlistname (enforce in sql, error checking etc)
 - change font
+- display name of playlist you are currently viewing
+- TODO if current playlist is open in playlists window: update appearance when u add a song to the playlist.
