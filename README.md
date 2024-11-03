@@ -27,3 +27,7 @@ To Do
 - change font
 - display name of playlist you are currently viewing
 - TODO if current playlist is open in playlists window: update appearance when u add a song to the playlist.
+- add to playlist menu appears up or down (based on which half of screen its in) so that it is visible on screen
+- playlist action menu options (add to queue)
+- action menu options for songs on playlist should be different to playlist acitons.
+- decide if i want to allow the same song multiple times per playlist, or handle preventing repeats (no 500)

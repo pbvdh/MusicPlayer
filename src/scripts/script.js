@@ -303,7 +303,13 @@ function addActionMenuEventListeners(actionButtons) {
     actionButton.onclick = function (event) {
       removeOpenDropDowns(event); //clear existing pop ups if there are any
       let songCard = actionButton.closest("li");
+
       let type = songCard.closest(".maindivs").getAttribute("id");
+      if(type="playlists"){
+        //even in playlist panel, we might want song actions depending on current view
+        if(createPlaylistButton.getAttribute("status") == "return"){type = "songs"}
+      }
+
       if(songCard.classList.contains("activeactionmenu")){
         songCard.style.removeProperty("background-color");
         songCard.classList.remove("activeactionmenu");
