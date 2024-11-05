@@ -29,7 +29,7 @@ const selectAllPlaylists = (callback) => {
 }
 
 const selectSongsOnPlaylist = (id, callback) => {
-    const sql = `SELECT s.* FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.id = ?`;
+    const sql = `SELECT s.* FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.id = ? ORDER BY position`;
     db.all(sql, [id], callback);
 }
 
@@ -51,12 +51,25 @@ const updatePlaylist = (id, name, callback) => {
 }
 
 //DELETE
-const deletePlaylist = (id, callback) => {
-    if (id==null) {
-        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
-    }
-    const sql = `DELETE FROM playlist WHERE id = ?`;
-    db.run(sql, id, callback);
+const deletePlaylist = (playlistId, callback) => {
+    const sql = `DELETE FROM playlist WHERE id = ?;`;
+    db.run(sql, [playlistId], callback);
 }
 
-module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist};
+const deleteSongsInPlaylist = (playlistId, callback) => {
+    if (playlistId == null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
+    const sql = `DELETE FROM song_in_playlist WHERE playlist_id = ?;`;
+    db.run(sql, [playlistId], callback);
+}
+
+const removeSongFromPlaylist = (playlistId, songId, callback) => {
+    if (playlistId == null || songId == null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    }
+    const sql = `DELETE FROM song_in_playlist WHERE playlist_id = ? AND song_id = ?;`;
+    db.run(sql, [playlistId, songId], callback);
+}
+
+module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist};

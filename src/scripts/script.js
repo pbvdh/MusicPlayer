@@ -302,7 +302,7 @@ function addActionMenuEventListeners(actionButtons) {
       let type = songCard.closest(".maindivs").getAttribute("id");
       if(type=="playlists"){
         //even in playlist panel, we might want song actions depending on current view
-        if(createPlaylistButton.getAttribute("status") == "return"){type = "songs"}
+        if(createPlaylistButton.getAttribute("status") == "return"){type = "playlistsongs"}
       }
 
       if(songCard.classList.contains("activeactionmenu")){
@@ -692,6 +692,39 @@ async function handleSongActionMenuOption(option, songCard) {
       }
       removeOpenDropDowns();
       break;
+    case "remove from playlist":
+      removeOpenDropDowns();
+      let playlistId = playlistWindowHeader.getAttribute("playlistid")
+
+      const deleteSongFromPlaylistUrl = "http://localhost:3000/playlists/song";
+
+        const options = {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            playlistId: playlistId,
+            songId: selectedSongId
+          }),
+        };
+
+        let response = await fetch(deleteSongFromPlaylistUrl, options);
+
+        //reload
+        if (response.status == 200) {
+          //api call to fetch songs in playlist
+          playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+
+          //add event listeners to the newly generated html
+          let songNameLinks = playlistSongList.querySelectorAll('.songname');
+          let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+          
+          addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+          addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+
+        }
+      break;
   }
 }
 
@@ -798,9 +831,19 @@ async function handlePlaylistActionMenuOption(option, card) {
     case "delete playlist":
       //are you sure?
       if(confirm(`Are you sure you want to delete playlist "${playlistName}"?`)){
-        const playlistsUrl = "http://localhost:3000/playlists/" + playlistId;
+        const playlistsUrl = "http://localhost:3000/playlists/";
 
-        let response = await fetch(playlistsUrl, {method: 'DELETE'});
+        const options = {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: playlistId
+          }),
+        };
+
+        let response = await fetch(playlistsUrl, options);
         if (response.status == 200) {
           card.remove();
         }
@@ -984,26 +1027,38 @@ async function createPlaylist() {
 
 function generateActionMenu(type) {
   const template = document.createElement('template');
-  if(type == "songs"){
+  switch(type.toLowerCase()){
+    case "songs":
       template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
               </div>`;
-  } else if (type == "playlists") {
+      break;
+    case "playlists":
       template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
               </div>`;
-  } else if (type == "songqueue") {
-    template.innerHTML = `<div class="actionmenudropdown">
+      break;
+    case "playlistsongs":
+      template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Remove from playlist"><span>Remove from playlist</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
-                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
               </div>`;
+      break;
+    case "songqueue":
+      template.innerHTML = `<div class="actionmenudropdown">
+                <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
+                <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
+                <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+              </div>`;
+      break;
   }
   return template.content.firstElementChild;
 }

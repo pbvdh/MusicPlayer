@@ -16,7 +16,10 @@ router.post('/', (req, res, next) => {
     createSong(name, filepath, genre, duration_seconds, artist_name, (err, rows) => {
         if(err){
             if(err.code=="PARAMETER_ERROR") {
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "name, filepath, genre, duration_seconds (optional), artist_name"
+                });
             } else {
                 res.status(500).json({error: err.message});
             }
@@ -83,7 +86,10 @@ router.patch('/', (req, res, next) => {
     updateSongDetails(id, number_of_plays, genre, (err, rows) => {
         if(err){
             if(err.code=="PARAMETER_ERROR") {
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "id, number_of_plays (optional), genre(optional)"
+                });
             } else {
                 res.status(500).json({error: err.message});
             }

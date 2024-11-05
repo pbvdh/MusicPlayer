@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist} = require('../queries/playlists.js');
+const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist} = require('../queries/playlists.js');
 
 
 //Call corresponding query based on API call method, passing parameters and handling errors
@@ -11,7 +11,10 @@ router.post('/', (req, res, next) => {
     createPlaylist(name, (err, rows) => {
         if(err){
             if(err.code=="PARAMETER_ERROR"){
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "name"
+                });
             } else {
                 if(err.message.includes("UNIQUE constraint failed")){
                     res.status(409).json({
@@ -38,7 +41,10 @@ router.post('/addSong', (req, res, next) => {
     addSongToPlaylist(playlistId, songId, (err) => {
         if (err) {
             if(err.code=="PARAMETER_ERROR"){
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "playlistId, songId"
+                });
             } else {
                 if(err.message.includes("UNIQUE constraint failed")){
                     res.status(409).json({
@@ -118,7 +124,10 @@ router.patch('/', (req, res, next) => {
     updatePlaylist(id, name, (err, rows) => {
         if(err){
             if(err.code=="PARAMETER_ERROR"){
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "id, name"
+                });
             } else {
                 res.status(500).json({error: err.message});
             }
@@ -139,19 +148,47 @@ router.patch('/', (req, res, next) => {
 });
 
 //DELETE
-router.delete('/:id', (req, res, next) => {
-    const id = req.params.id;
-    deletePlaylist(id, (err) => {
+router.delete('/', (req, res, next) => {
+    const id = req.body.id;
+    deleteSongsInPlaylist(id, (err) => {
         if (err) {
             if(err.code=="PARAMETER_ERROR"){
-                res.status(400).json({error: err.message});
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "id"
+                });
             } else {
                 res.status(500).json({error: err.message});
             }
         } else {
-            res.status(200).json({message: `Deleted playlist with id: ${id}`});
+            deletePlaylist(id, (err) => {
+                if (err) {
+                    res.status(500).json({error: err.message});
+                } else {
+                    res.status(200).json({message: `Deleted playlist with id: ${id}`});
+                }
+            });
+        }
+    });  
+});
+
+router.delete('/song', (req, res, next) => {
+    const playlistId = req.body.playlistId;
+    const songId = req.body.songId;
+    removeSongFromPlaylist(playlistId, songId, (err) => {
+        if (err) {
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "playlistId, songId"
+                });
+            } else {
+                res.status(500).json({error: err.message});
+            }
+        } else {
+            res.status(200).json({message: `Deleted song: ${songId} from playlist: ${playlistId}`})
         }
     });
-});
+})
 
 module.exports = router;

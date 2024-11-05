@@ -24,6 +24,10 @@ To Do
 - test in other browsers
 - persist current song/queue when refreshed and sensible defaults
 - tracking # plays and ability to sort
+- stylized modal instead of alert/prompt
+- shuffle all songs option?
 
 playlists
 - allow reorder playlist by dragging (if using a new class, this needs to be removed just like queuecurrent etc)
+- shuffle playlist option
+- display playlist length
