@@ -53,6 +53,7 @@ let libraryPanel;
 let playlistPanel;
 let nowPlayingArtist;
 let nowPlayingSong;
+let playlistWindowHeader;
 
 //define DOM elements and assign event listeners. Dynamically generate content as required
 async function init() {
@@ -112,6 +113,7 @@ async function init() {
   playlistPanel = document.getElementById("playlists");
   nowPlayingSong = document.getElementById('nowplayingsongname').querySelector('.songsearchlink');
   nowPlayingArtist = document.getElementById('nowplayingartistname').querySelector('.songsearchlink');
+  playlistWindowHeader = document.querySelector("#playlists .windowheader h1");
 
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', function (e) {
@@ -172,21 +174,7 @@ async function init() {
   //add event listeners for the kebab menu on song cards
   addActionMenuEventListeners(actionButtons);
 
-  //when clicking a song, play it and start a queue using the songs around it
-  songNames.forEach(songName => {
-    songName.addEventListener('click', function () {
-      playSong(songName.getAttribute('songid'));
-      shuffleIcon.classList.remove("toggledon");
-      initializeSongQueue(songName);
-    });
-  });
-  
-  //if an the name of an artist is clicked within our app, we input it as a search
-  songSearchLinks.forEach(songSearchLink => {
-    songSearchLink.addEventListener('click', function () {
-      searchLinkedTrack(libraryPanel.querySelector(".searchbar"), songSearchLink);
-    });
-  });
+  addSongAndArtistEventListeners(songNames, songSearchLinks);
 
   //resume playing current song
   playButton.addEventListener('click', function () {
@@ -267,6 +255,8 @@ async function init() {
 
       createPlaylistButton.setAttribute("status", "create");
       createPlaylistButton.innerText = "Create";
+      playlistWindowHeader.innerText = "Playlists";
+      playlistWindowHeader.removeAttribute("playlistid");
       playlistSongList.style.display = "none";
       playlistList.style.display = "initial";
 
@@ -305,7 +295,7 @@ function addActionMenuEventListeners(actionButtons) {
       let songCard = actionButton.closest("li");
 
       let type = songCard.closest(".maindivs").getAttribute("id");
-      if(type="playlists"){
+      if(type=="playlists"){
         //even in playlist panel, we might want song actions depending on current view
         if(createPlaylistButton.getAttribute("status") == "return"){type = "songs"}
       }
@@ -443,9 +433,12 @@ function addPlaylistEventListeners() {
     //when clicking a playlist, reveal its contents
     playlistNames.forEach(playlistName => {
       playlistName.addEventListener('click', async function () {
+        let playlistId = playlistName.getAttribute("playlistid");
         //toggle create button
         createPlaylistButton.setAttribute("status", "return");
         createPlaylistButton.innerText = "Back";
+        playlistWindowHeader.innerText = playlistName.innerText;
+        playlistWindowHeader.setAttribute("playlistid", playlistId);
         playlistList.style.display = "none";
         playlistSongList.style.display = "initial";
   
@@ -455,32 +448,37 @@ function addPlaylistEventListeners() {
         searchSongByName(searchBar, playlistList);
   
         //api call to fetch songs in playlist
-        playlistSongList.innerHTML = await loadPlaylistSongs(playlistName.getAttribute("playlistid"));
+        playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
 
 
         //add event listeners to the newly generated html
         let songNameLinks = playlistSongList.querySelectorAll('.songname');
-        songNameLinks.forEach(songNameLink => {
-          songNameLink.addEventListener('click', () => {
-            playSong(songNameLink.getAttribute('songid'));
-            shuffleIcon.classList.remove("toggledon");
-            initializeSongQueue(songNameLink);
-          });
-        });
-
         let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
-          artistNameLinks.forEach(artistNameLink => {
-            //if an the name of an artist is clicked, we input it as a search
-            artistNameLink.addEventListener('click', () => {
-              searchLinkedTrack(libraryPanel.querySelector(".searchbar"), artistNameLink);
-          });
-        });
 
+        addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
         addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+
       });
     });
 }
 
+function addSongAndArtistEventListeners(songNames, songSearchLinks) {
+    //when clicking a song, play it and start a queue using the songs around it
+    songNames.forEach(songName => {
+      songName.addEventListener('click', function () {
+        playSong(songName.getAttribute('songid'));
+        shuffleIcon.classList.remove("toggledon");
+        initializeSongQueue(songName);
+      });
+    });
+    
+    //if an the name of an artist is clicked within our app, we input it as a search
+    songSearchLinks.forEach(songSearchLink => {
+      songSearchLink.addEventListener('click', function () {
+        searchLinkedTrack(libraryPanel.querySelector(".searchbar"), songSearchLink);
+      });
+    });
+}
 
 
 
@@ -855,8 +853,8 @@ async function loadPlaylists() {
   return listItems;
 }
 
-async function loadPlaylistSongs(id) {
-  const getPlaylistSongsUrl = "http://localhost:3000/playlists/songs/" + id;
+async function loadPlaylistSongs(playlistId) {
+  const getPlaylistSongsUrl = "http://localhost:3000/playlists/songs/" + playlistId;
   let listItems = "";
   let response = await fetch(getPlaylistSongsUrl);
   let data = await response.json();
@@ -952,13 +950,46 @@ async function actionMenuRevealPlaylists() {
   let playlistPopup = menuOption.querySelector(".playlistpopup");
   playlistPopup.innerHTML = await presentPlaylistsAsList(); 
   
-  playlistPopup.style.transform = `translate(${playlistPopup.closest(".actionmenuoption").offsetWidth - 15}px, -34px)`;
+  //orient popup based on where on the screen it is
+  let parentDimensions = playlistPopup.closest(".actionmenuoption").getBoundingClientRect();
+  let hoz;
+  let vert;
+  //left or right
+  if(parentDimensions.left < window.innerWidth/2){
+    hoz = parentDimensions.width - 15;
+  } else {
+    hoz = -(parentDimensions.width + 13);
+  }
+  //up or down
+  if (parentDimensions.bottom > window.innerHeight/2) {
+    vert = -189;
+  } else {
+    vert = -34;
+  }
+  playlistPopup.style.transform = `translate(${hoz}px, ${vert}px)`;
+  
+
+
   playlistPopup.querySelectorAll(".playlistoption").forEach(option => {
     option.addEventListener('click', async function (event) {
       let playlistId = event.currentTarget.getAttribute('playlistid');
       let songId = document.querySelector(".activeactionmenu").querySelector(".songname").getAttribute("songid");
-      await addSongToPlaylist(songId, playlistId);
-      //TODO if curr playlist is open: loadPlaylistSongs(playListId);
+      let response = await addSongToPlaylist(songId, playlistId);
+      if(response.status == 201) {
+        //if we are currently looking at the songs in this playlist, we should see it visually update to include this new one
+        if(playlistWindowHeader.getAttribute("playlistid") == playlistId){
+
+          //api call to fetch songs in playlist
+          playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+
+          //add event listeners to the newly generated html
+          let songNameLinks = playlistSongList.querySelectorAll('.songname');
+          let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+          
+          addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+          addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+        }
+      }
     });
   });
 }
@@ -990,7 +1021,7 @@ async function addSongToPlaylist(songId, playlistId) {
     }),
   };
     
-  await fetch(addToPlaylistUrl, options);
+  return await fetch(addToPlaylistUrl, options);
 }
 
 

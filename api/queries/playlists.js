@@ -15,10 +15,10 @@ const addSongToPlaylist = (playlistId, songId, callback) => {
     if(playlistId == null || songId == null){
         return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
     }
-    const sql = `INSERT INTO song_in_playlist (song_id, playlist_id) VALUES (?, ?)`;
+    const sql = `INSERT INTO song_in_playlist (song_id, playlist_id, position) VALUES (?, ?, (SELECT IFNULL(MAX(position), 0) + 1 FROM song_in_playlist WHERE playlist_id == ?))`;
     db.serialize(() => {
         db.run(`PRAGMA foreign_keys=on`); //force sqlite3 to adhere to foreign key constraints
-        db.run(sql, [songId, playlistId], callback);
+        db.run(sql, [songId, playlistId, playlistId], callback);
     });
 }
 

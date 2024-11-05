@@ -13,7 +13,13 @@ router.post('/', (req, res, next) => {
             if(err.code=="PARAMETER_ERROR"){
                 res.status(400).json({error: err.message});
             } else {
-                res.status(500).json({error: err.message});
+                if(err.message.includes("UNIQUE constraint failed")){
+                    res.status(409).json({
+                        message: `A playlist with this name already exists`
+                    });
+                } else {
+                    res.status(500).json({error: err.message});
+                }
             }
         } else {
             res.status(201).json({
@@ -34,11 +40,19 @@ router.post('/addSong', (req, res, next) => {
             if(err.code=="PARAMETER_ERROR"){
                 res.status(400).json({error: err.message});
             } else {
-                res.status(500).json({error: err.message});
+                if(err.message.includes("UNIQUE constraint failed")){
+                    res.status(409).json({
+                        message: `Song already exists in this playlist`
+                    });
+                } else {
+                    res.status(500).json({error: err.message});
+                } 
             }
         } else {
             res.status(201).json({
-                message: `Song ${songId} added to playlist ${playlistId}`
+                message: `Song ${songId} added to playlist ${playlistId}`,
+                songId: songId,
+                playlistId: playlistId
             });
         }
     });
