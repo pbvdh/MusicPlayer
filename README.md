@@ -26,9 +26,4 @@ To Do
 - tracking # plays and ability to sort
 
 playlists
-- length restriction on playlistname (enforce in sql, error checking etc) - 15?
-- change font
-- TODO if current playlist is open in playlists window: update appearance when u add a song to the playlist.
-- playlist action menu options (add to queue)
-- action menu options for songs on playlist should be different to playlist acitons.
-- reorder playlist
+- allow reorder playlist by dragging (if using a new class, this needs to be removed just like queuecurrent etc)

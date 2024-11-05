@@ -7,6 +7,7 @@ const CLASSES = (function () {
       this.queue = queue;
       this.unshuffledQueue;
       this.unshuffledQueueList;
+      this.currentSongIndex;
     }
   }
 
@@ -181,7 +182,7 @@ async function init() {
     if (nowPlayingInfo.song) { //there is a currently playing song, but it was paused
       togglePlayButton();
     } else if (nowPlayingInfo.queue) { //there is a song queued and ready to play
-      let id = queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid");
+      let id = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
       playSong(id);
     } 
   });
@@ -200,8 +201,9 @@ async function init() {
   previousTrackButton.addEventListener('click', async function() {
     if(queueList.childElementCount > 0) {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
-      let trackIndex = nowPlayingInfo.queue.indexOf(currentTrack.getAttribute("songid"))-1;
+      let trackIndex = nowPlayingInfo.currentSongIndex-1;
       if (trackIndex >= 0) {
+        nowPlayingInfo.currentSongIndex--;
         playSong(nowPlayingInfo.queue[trackIndex]);
         updateQueueAppearance(currentTrack.closest("li").previousSibling);
       } else {
@@ -215,9 +217,10 @@ async function init() {
   nextTrackButton.addEventListener('click', async function() {
     if(queueList.childElementCount > 0) {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
-      let trackIndex = nowPlayingInfo.queue.indexOf(currentTrack.getAttribute("songid"))+1;
+      let trackIndex = nowPlayingInfo.currentSongIndex+1;
       if (trackIndex < nowPlayingInfo.queue.length) {
-        playSong(nowPlayingInfo.queue[trackIndex])
+        nowPlayingInfo.currentSongIndex++;
+        playSong(nowPlayingInfo.queue[trackIndex]);
         updateQueueAppearance(currentTrack.closest("li").nextSibling);
       } else {
         //restart song
@@ -239,11 +242,12 @@ async function init() {
   //empty the current queue
   clearQueueButton.addEventListener('click', function() {
     if(queueList.childElementCount > 0) {
-      nowPlayingInfo.queue = [queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid")];
+      nowPlayingInfo.queue = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
       let queueListItems = [...queueList.querySelectorAll(".tracklistitem:not(.queuecurrent)")];
       queueListItems.forEach(queueListItem => {
         queueListItem.closest("li").remove();
       });
+      nowPlayingInfo.currentSongIndex = 0;
     }
   });
 
@@ -269,7 +273,6 @@ async function init() {
 
   addPlaylistEventListeners();
 
-
   //hide pop up options menus when you click outside them
   document.addEventListener('click', function (event)  {
     removeOpenDropDowns(event);
@@ -279,6 +282,8 @@ async function init() {
   sortSongList(songList);
   sortSongList(artistList);
 }
+
+
 
 
 
@@ -350,7 +355,7 @@ function addActionMenuEventListeners(actionButtons) {
 }
 
 //add listeners to currently playing song
-function addSongEventListeners(songId) {
+function addSongEventListeners() {
   nowPlayingInfo.song.addEventListener('timeupdate', function () {
     trackSlider.value = nowPlayingInfo.song.currentTime;
     updatePlaybackPositionValue();
@@ -359,8 +364,9 @@ function addSongEventListeners(songId) {
   //handle when song ends
   nowPlayingInfo.song.addEventListener('ended', function () {
     //if there are more songs in the queue:
-    if (nowPlayingInfo.queue.indexOf(songId) < nowPlayingInfo.queue.length - 1) {
-      let nextSongId = nowPlayingInfo.queue[nowPlayingInfo.queue.indexOf(songId) + 1]
+    if (nowPlayingInfo.queue.currentSongIndex < nowPlayingInfo.queue.length - 1) {
+      let nextSongId = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex + 1];
+      nowPlayingInfo.currentSongIndex++;
       playSong(nextSongId);
       updateQueueAppearance(queueList.querySelector(`a[songId="${nextSongId}"]`).closest("li"));
     } else {
@@ -397,6 +403,7 @@ function addQueueEventListeners(queueItems) {
           nowPlayingInfo.queue.push(listItems[i].querySelector('.songname').getAttribute("songid"));
         }
       }
+      nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(listItems, currentSong);
     });
 
     draggable.addEventListener('dragenter', () => {
@@ -409,10 +416,11 @@ function addQueueEventListeners(queueItems) {
 
     //add click events to the newly generated html
     let songNameLink = draggable.querySelector('.songname');
-    songNameLink.addEventListener('click', () => {
+    songNameLink.onclick = function() {
       playSong(songNameLink.getAttribute('songid')); //play song when clicked
       updateQueueAppearance(songNameLink.closest("li"));
-    });
+      nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueItems.querySelectorAll("li"), queueList.querySelector(".queuecurrent").closest("li"));
+    };
 
     let artistNameLink = draggable.querySelector('.artistname');
     //if an the name of an artist is clicked within our app, we input it as a search
@@ -614,17 +622,17 @@ async function handleSongActionMenuOption(option, songCard) {
       copy.querySelector(".tracklistitem").classList.remove("queuecurrent");
       copy.querySelector(".tracklistitem").classList.remove("queuehistory");
       copy.classList.remove("activeactionmenu");
+      copy.style.removeProperty("background-color");
       //if the queue is empty
       if(nowPlayingInfo.queue.length == 0){
         queueList.appendChild(copy);
         nowPlayingInfo.queue.push(selectedSongId);
         currentSong = queueList.querySelector("li");
+        nowPlayingInfo.currentSongIndex = 0;
       } else { 
         currentSong = queueList.querySelector(".queuecurrent").closest("li");
-        let currentSongIndex = Array.prototype.indexOf.call(songQueue, currentSong);
-        let currentSongId = currentSong.querySelector(".songname").getAttribute("songid");
-        queueList.insertBefore(copy, queueList.children[currentSongIndex + 1]);
-        nowPlayingInfo.queue.splice(nowPlayingInfo.queue.indexOf(currentSongId)+1, 0, selectedSongId);
+        queueList.insertBefore(copy, queueList.children[nowPlayingInfo.currentSongIndex + 1]);
+        nowPlayingInfo.queue.splice(nowPlayingInfo.currentSongIndex+1, 0, selectedSongId);
       }
 
       updateQueueAppearance(currentSong, false);
@@ -643,6 +651,7 @@ async function handleSongActionMenuOption(option, songCard) {
       }
       copy.querySelector(".tracklistitem").classList.remove("queuehistory");
       copy.classList.remove("activeactionmenu");
+      copy.style.removeProperty("background-color");
 
       queueList.appendChild(copy);
       nowPlayingInfo.queue.push(selectedSongId);
@@ -665,13 +674,11 @@ async function handleSongActionMenuOption(option, songCard) {
         if(nowPlayingInfo.queue.length > 1){
           //either there are only historic elements, only future elements, or both
           //in which case we must; make the previous element current, make a future element current, or make a future element current
-          let currentSongIndex = Array.prototype.indexOf.call(songQueue, songCard);
-
           songCard.remove(); //remove from DOM
-          songQueue.splice(currentSongIndex, 1); //remove from reference array
-          nowPlayingInfo.queue.splice(currentSongIndex, 1); //remove from playing queue
+          songQueue.splice(nowPlayingInfo.currentSongIndex, 1); //remove from reference array
+          nowPlayingInfo.queue.splice(nowPlayingInfo.currentSongIndex, 1); //remove from playing queue
 
-          let newCurrentSongIndex = Math.min(currentSongIndex, nowPlayingInfo.queue.length-1);
+          let newCurrentSongIndex = Math.min(nowPlayingInfo.currentSongIndex, nowPlayingInfo.queue.length-1);
           songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.remove("queuehistory");
           songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.add("queuecurrent");
           playSong(nowPlayingInfo.queue[newCurrentSongIndex]);
@@ -694,15 +701,68 @@ async function handlePlaylistActionMenuOption(option, card) {
   let playlistLink = card.querySelector(".playlistname")
   let playlistName = playlistLink.innerText;
   let playlistId = playlistLink.getAttribute("playlistid");
+  let currentSong;
+  const template = document.createElement('template');
+
   switch (option.toLowerCase()) {
     case "play next":
-      console.log(option);
+      removeOpenDropDowns();
+      //get list of songs on playlist by calling api
+      template.innerHTML = await loadPlaylistSongs(playlistId);
+      if(nowPlayingInfo.queue.length == 0){
+        [...template.content.children].forEach(child => {
+          child.classList.add("draggableQueue");
+          child.setAttribute("draggable", "true"); 
+          queueList.appendChild(child);
+          nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+        });
+        currentSong = queueList.children[0];
+        nowPlayingInfo.currentSongIndex = 0;
+      } else {
+        currentSong = queueList.querySelector(".queuecurrent").closest("li");
+        let insertBeforeElement = queueList.children[nowPlayingInfo.currentSongIndex + 1];
+        let i = 0;
+        [...template.content.children].forEach(child => {
+          child.classList.add("draggableQueue");
+          child.setAttribute("draggable", "true"); 
+          queueList.insertBefore(child, insertBeforeElement);
+          i++
+          nowPlayingInfo.queue.splice(nowPlayingInfo.currentSongIndex+i, 0, child.querySelector(".songname").getAttribute("songid"));
+        });
+      }
+      updateQueueAppearance(currentSong, false);
+      addQueueEventListeners(queueList);
+      removeOpenDropDowns();
       break;
+
     case "add to queue":
-      console.log(option);
+      removeOpenDropDowns();
+      template.innerHTML = await loadPlaylistSongs(playlistId);
+      let initialLength = queueList.childElementCount;
+      [...template.content.children].forEach(child => {
+        child.classList.add("draggableQueue");
+        child.setAttribute("draggable", "true");
+        queueList.appendChild(child);
+        nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+      });
+      if(initialLength == 0){
+        queueList.firstElementChild.querySelector(".tracklistitem").classList.add("queuecurrent");
+      }
+
+      addQueueEventListeners(queueList);
+      removeOpenDropDowns();
       break;
+      
     case "rename playlist":
-      let newPlaylistName = prompt("Playlist Name", playlistName);
+      //get new name
+      let newPlaylistName = prompt("Enter playlist name (up to 15 characters):");
+      if(!newPlaylistName || newPlaylistName.trim().length == 0){return;} 
+      while(newPlaylistName.length > 15){
+        newPlaylistName = prompt(`Name too long! (${newPlaylistName.length} characters). Enter a different name with less than 15 characters:`);
+      }
+      if(!newPlaylistName || newPlaylistName.trim().length == 0 ){return;} 
+
+      //if name is valid, proceed
       if (newPlaylistName != null && newPlaylistName != "" && newPlaylistName != playlistName) {
         const playlistsUrl = "http://localhost:3000/playlists";
 
@@ -885,8 +945,14 @@ async function loadPlaylistSongs(playlistId) {
 }
 
 async function createPlaylist() {
-  let playlistName = prompt("Enter playlist name:");
-  if(!playlistName){return}
+  
+  let playlistName = prompt("Enter playlist name (up to 15 characters):");
+  if(!playlistName || playlistName.trim().length == 0){return;} 
+  while(playlistName.length > 15){
+    playlistName = prompt(`Name too long! (${playlistName.length} characters). Enter a different name with less than 15 characters:`);
+  }
+  if(!playlistName || playlistName.trim().length == 0 ){return;} 
+
 
   const playlistsUrl = "http://localhost:3000/playlists";
 
@@ -1060,7 +1126,7 @@ async function playSong(id) {
   } else {
     await togglePlayButton();
   }
-  addSongEventListeners(id);
+  addSongEventListeners();
   trackSlider.value = 0;
   updatePlaybackPositionValue();
   trackSlider.max = nowPlayingInfo.song.duration;
@@ -1175,10 +1241,10 @@ function initializeSongQueue(songNameLink) {
     }
   }
   
-  currentSongIndex = nowPlayingInfo.queue.indexOf(currentSongId); //updated index among only visible songs
+  nowPlayingInfo.currentSongIndex = nowPlayingInfo.queue.indexOf(currentSongId); //updated index among only visible songs. id will be unique as we are taking from playlist or library
   //populate queue window with list items
   queueList.innerHTML = "" //clear current queue
-  let listItems = generateQueueListItems(currentSongIndex, parentSongList);
+  let listItems = generateQueueListItems(parentSongList);
   listItems.forEach(listItem => {
     queueList.appendChild(listItem);
   })
@@ -1196,14 +1262,11 @@ function shuffleSongQueue() {
       queueList.append(...nowPlayingInfo.unshuffledQueueList);
       nowPlayingInfo.queue = nowPlayingInfo.unshuffledQueue;
       let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
+      nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueList.children, currentSongListItem);
       updateQueueAppearance(currentSongListItem);
     }
     shuffleIcon.classList.remove("toggledon");
   } else if(queueList.childElementCount > 0){ //shuffle
-    //put aside currently playing song, to end up at top of queue
-    let currentSongId = queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid");
-    let currentSongIndex = nowPlayingInfo.queue.indexOf(currentSongId);
-
     //shuffle queue array and list items simultaneously as they should be in the same order
     let queueListItems = [...queueList.children];
     let queueIndex = nowPlayingInfo.queue.length -1; //because we plan to splice out current song
@@ -1214,10 +1277,13 @@ function shuffleSongQueue() {
     nowPlayingInfo.unshuffledQueueList = [...queueList.children];
     nowPlayingInfo.unshuffledQueue = [...nowPlayingInfo.queue];
 
+    //take note of currently playing song, to end up at the top of the queue
+    let currentSongId = queueList.querySelector(".queuecurrent").querySelector(".songname").getAttribute("songid");
+
     //if queue and list represenation are synced up, shuffle both in parallel
     if(queueIndex == queueListIndex && queueListIndex > 0){
-      let currentSongElement = queueListItems.splice(currentSongIndex,1);
-      nowPlayingInfo.queue.splice(currentSongIndex, 1);
+      let currentSongElement = queueListItems.splice(nowPlayingInfo.currentSongIndex, 1);
+      nowPlayingInfo.queue.splice(nowPlayingInfo.currentSongIndex, 1);
       queueList.innerHTML = ""
 
       while (queueIndex != 0 ) {
@@ -1231,6 +1297,7 @@ function shuffleSongQueue() {
 
       queueList.append(...currentSongElement, ...queueListItems);
       nowPlayingInfo.queue.unshift(currentSongId);
+      nowPlayingInfo.currentSongIndex = 0;
       let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
       updateQueueAppearance(currentSongListItem);
       shuffleIcon.classList.add("toggledon");
@@ -1241,7 +1308,7 @@ function shuffleSongQueue() {
 }
 
 //Create copies of song cards to populate new queue and add relevant classes for styling.
-function generateQueueListItems(currentSongIndex, queueSource) {
+function generateQueueListItems(queueSource) {
   let listItems = queueSource.querySelectorAll("li");
   let newList = [];
   for (let i = 0; (i < listItems.length); i++) {
@@ -1253,9 +1320,9 @@ function generateQueueListItems(currentSongIndex, queueSource) {
     }
   }
   for (let i = 0; (i < newList.length); i++) {
-    if (i == currentSongIndex) {
+    if (i == nowPlayingInfo.currentSongIndex) {
       newList[i].querySelector(".tracklistitem").classList.add("queuecurrent");
-    } else if (i < currentSongIndex) {
+    } else if (i < nowPlayingInfo.currentSongIndex) {
       newList[i].querySelector(".tracklistitem").classList.add("queuehistory");
     }
   }
