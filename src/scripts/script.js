@@ -203,7 +203,9 @@ async function init() {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
       let trackIndex = nowPlayingInfo.currentSongIndex-1;
       if (trackIndex >= 0) {
-        nowPlayingInfo.currentSongIndex--;
+        if(nowPlayingInfo.currentSongIndex > 0){
+          nowPlayingInfo.currentSongIndex--
+        }
         playSong(nowPlayingInfo.queue[trackIndex]);
         updateQueueAppearance(currentTrack.closest("li").previousSibling);
       } else {
@@ -219,7 +221,9 @@ async function init() {
       let currentTrack = queueList.querySelector(".queuecurrent").querySelector(".songname");
       let trackIndex = nowPlayingInfo.currentSongIndex+1;
       if (trackIndex < nowPlayingInfo.queue.length) {
-        nowPlayingInfo.currentSongIndex++;
+        if(nowPlayingInfo.currentSongIndex < nowPlayingInfo.queue.length-1){
+          nowPlayingInfo.currentSongIndex++;
+        }
         playSong(nowPlayingInfo.queue[trackIndex]);
         updateQueueAppearance(currentTrack.closest("li").nextSibling);
       } else {
@@ -850,6 +854,34 @@ async function handlePlaylistActionMenuOption(option, card) {
 
       }
       break;
+    case "shuffle playlist":
+      removeOpenDropDowns();
+      template.innerHTML = await loadPlaylistSongs(playlistId);
+      //set a random song as the first one, so when fisher yates is applied by shufflesongqueue(), we dont always end up with the same first song
+      let firstChild = template.content.firstElementChild;
+      template.content.insertBefore(firstChild, template.content.children[Math.floor(Math.random() * (nowPlayingInfo.queue.length-1))+1]);
+
+      //empty queue
+      shuffleIcon.classList.remove("toggledon");
+      queueList.innerHTML = "";
+      nowPlayingInfo.queue = [];
+      nowPlayingInfo.currentSongIndex = 0;
+
+      //similar to add playlist to queue for empty queue
+      [...template.content.children].forEach(child => {
+        child.classList.add("draggableQueue");
+        child.setAttribute("draggable", "true");
+        queueList.appendChild(child);
+        nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+      });
+      queueList.firstElementChild.querySelector(".tracklistitem").classList.add("queuecurrent");
+      addQueueEventListeners(queueList);
+
+      //shuffle the queue and start playing the first song
+      shuffleSongQueue();
+      playSong(nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex]);
+      removeOpenDropDowns();
+      break;
   }
   removeOpenDropDowns();
 }
@@ -941,6 +973,7 @@ async function loadPlaylists() {
             <div class="trackdetailscontainer">
               <div class="overflowwrapper">
                 <a class="playlistname" playlistid="${playlist.id}">${playlist.name}</a>
+                <span class="playlistlength">${playlist.length} songs</span>
               </div>
             </div>
             <div class="actionmenucontainer">
@@ -1039,6 +1072,7 @@ function generateActionMenu(type) {
       template.innerHTML = `<div class="actionmenudropdown">
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
+                <div class="actionmenuoption" data-option="Shuffle playlist"><span>Shuffle playlist</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Rename playlist"><span>Rename playlist</span></div>
                 <div class="actionmenuoption playlistoption" data-option="Delete playlist"><span>Delete playlist</span></div>
               </div>`;
@@ -1181,6 +1215,7 @@ async function playSong(id) {
   } else {
     await togglePlayButton();
   }
+  await incrementSongPlays(data.id, data.number_of_plays);
   addSongEventListeners();
   trackSlider.value = 0;
   updatePlaybackPositionValue();
@@ -1408,7 +1443,23 @@ function updateQueueAppearance(songToPlay, scroll = true) {
   if(scroll){songToPlay.scrollIntoView({ behavior: "smooth" });}
 }
 
+async function incrementSongPlays(id, number_of_plays) {
+  const songsUrl = "http://localhost:3000/songs";
+  number_of_plays += 1;
 
+  const options = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: id,
+      number_of_plays: number_of_plays
+    }),
+  };
+
+  await fetch(songsUrl, options);
+}
 
 
 return{}

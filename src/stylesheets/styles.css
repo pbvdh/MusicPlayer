@@ -216,7 +216,7 @@ footer button:focus {
 /*search songs panel */
 .searchresultswrapper {
     display: flex;
-    overflow: scroll;
+    overflow: hidden;
     height: 100%;
     background-color: #bdc2c7;
     flex-direction: column;
@@ -256,6 +256,7 @@ Some of these classes relate to dynamically generated content*/
     overflow: scroll;
     list-style-type: none;
     height: 100%;
+    overflow-x: auto;
 }
 
 .tracklistitem {
@@ -414,6 +415,16 @@ Some of these classes relate to dynamically generated content*/
     padding-inline-start: 6px;
     padding-top: 4px;
     font-size: medium;
+}
+
+.playlistlength {
+    justify-self: start;
+    width: 100%;
+    display: flex;
+    white-space: nowrap;
+    padding-inline-start: 6px;
+    font-size: x-small;
+    color: #dfe7ee;
 }
 
 /* search songs panel */
