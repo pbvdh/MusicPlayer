@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist} = require('../queries/playlists.js');
+const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist} = require('../queries/playlists.js');
 
 
 //Call corresponding query based on API call method, passing parameters and handling errors
@@ -141,6 +141,32 @@ router.patch('/', (req, res, next) => {
                         type: 'GET',
                         url: `http://localhost:3000/playlists/songs/${rows.id}`
                     }
+                }
+            });
+        }
+    });
+});
+
+router.patch('/songs', (req, res, next) => {
+    const songId = req.body.songId;
+    const playlistId = req.body.playlistId;
+    const position = req.body.position;
+    updateSongInPlaylist(songId, playlistId, position, (err) => {
+        if (err) {
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "songId, playlistId, position"
+                });
+            } else {
+                res.status(500).json({error: err.message});
+            } 
+        } else {
+            res.status(200).json({
+                message: `Updated song: ${songId} in playlist: ${playlistId}$`,
+                updatedPlaylist: {
+                        type: 'GET',
+                        url: `http://localhost:3000/playlists/songs/${playlistId}`
                 }
             });
         }

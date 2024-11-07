@@ -17,7 +17,7 @@ const addSongToPlaylist = (playlistId, songId, callback) => {
     }
     const sql = `INSERT INTO song_in_playlist (song_id, playlist_id, position) VALUES (?, ?, (SELECT IFNULL(MAX(position), 0) + 1 FROM song_in_playlist WHERE playlist_id == ?))`;
     db.serialize(() => {
-        db.run(`PRAGMA foreign_keys=on`); //force sqlite3 to adhere to foreign key constraints
+        db.run(`PRAGMA foreign_keys=on`); //force sqlite${position} to adhere to foreign key constraints
         db.run(sql, [songId, playlistId, playlistId], callback);
     });
 }
@@ -29,7 +29,7 @@ const selectAllPlaylists = (callback) => {
 }
 
 const selectSongsOnPlaylist = (id, callback) => {
-    const sql = `SELECT s.* FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.id = ? ORDER BY position`;
+    const sql = `SELECT s.*, sip.position FROM playlist p INNER JOIN song_in_playlist sip ON p.id = sip.playlist_id LEFT JOIN song s ON s.id = sip.song_id WHERE p.id = ? ORDER BY position`;
     db.all(sql, [id], callback);
 }
 
@@ -46,6 +46,41 @@ const updatePlaylist = (id, name, callback) => {
         const sql = `UPDATE playlist SET name = ? WHERE id = ?`;
         db.run(sql, [name, id], function(err) {
             callback(err, {id, name})
+        });
+    }
+}
+
+const updateSongInPlaylist = (songId, playlistId, position, callback) => {
+    if (songId==null || playlistId == null || position == null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    } else {
+        const sql = 
+                `WITH old_position AS (
+                    SELECT position 
+                    FROM song_in_playlist 
+                    WHERE song_id = ${songId} AND playlist_id = ${playlistId}
+                )
+                UPDATE song_in_playlist 
+                SET position = 
+                    CASE 
+                        WHEN ${position} < (SELECT * FROM old_position) THEN 
+                            CASE 
+                                WHEN position BETWEEN ${position} AND (SELECT * FROM old_position) - 1 THEN position + 1 
+                                WHEN song_id = ${songId} THEN ${position} 
+                                ELSE position 
+                            END
+                        WHEN ${position} > (SELECT * FROM old_position) THEN 
+                            CASE 
+                                WHEN position BETWEEN (SELECT * FROM old_position) + 1 AND ${position} THEN position - 1 
+                                WHEN song_id = ${songId} THEN ${position} 
+                                ELSE position 
+                            END
+                        ELSE position  -- If old position is exactly the new position, don't change anything
+                    END
+                WHERE playlist_id = ${playlistId};`;
+            console.log(sql)
+        db.run(sql, function(err) {
+            callback(err)
         });
     }
 }
@@ -72,4 +107,4 @@ const removeSongFromPlaylist = (playlistId, songId, callback) => {
     db.run(sql, [playlistId, songId], callback);
 }
 
-module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist};
+module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist};

@@ -27,6 +27,5 @@ To Do
 - shuffle all songs option?
 
 prio
-- allow reorder playlist by dragging (if using a new class, this needs to be removed just like queuecurrent etc)
 - allow sort songs by plays
 - allow shuffle all songs

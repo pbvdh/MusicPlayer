@@ -117,9 +117,9 @@ async function init() {
   playlistWindowHeader = document.querySelector("#playlists .windowheader h1");
 
   //handle a song getting dragged within the song queue
-  queueList.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    const afterElement = getDragAfterElement(queueList, e.clientY);
+  queueList.addEventListener('dragover', function (event) {
+    event.preventDefault();
+    const afterElement = getDragAfterElement(queueList, event.clientY);
     const draggable = document.querySelector('.dragging');
     if (afterElement == null) {
       queueList.appendChild(draggable);
@@ -466,10 +466,11 @@ function addPlaylistEventListeners() {
         //add event listeners to the newly generated html
         let songNameLinks = playlistSongList.querySelectorAll('.songname');
         let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+        let playlistDraggables = playlistSongList.querySelectorAll(".draggablePlaylist");
 
         addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
         addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-
+        addPlaylistDraggableEventListeners(playlistDraggables);
       });
     });
 }
@@ -492,6 +493,45 @@ function addSongAndArtistEventListeners(songNames, songSearchLinks) {
     });
 }
 
+//allow songs on a playlist to be dragged
+function addPlaylistDraggableEventListeners(playlistDraggables) {
+    //handle a song getting dragged within a playlist
+    playlistSongList.addEventListener('dragover', function(event) {
+      event.preventDefault();
+      const afterElement = getDragAfterElement(playlistSongList, event.clientY);
+      const draggable = document.querySelector('.dragging');
+      if (afterElement == null) {
+        playlistSongList.appendChild(draggable);
+      } else {
+        playlistSongList.insertBefore(draggable, afterElement);
+      }
+    });
+
+
+    playlistDraggables.forEach(draggable => {
+      //add dragging class to an item when you start dragging it, after a delay
+      draggable.addEventListener('dragstart', () => {
+        setTimeout(() => draggable.classList.add('dragging'), 0);
+      });
+
+      //remove dragging class when you let go
+      draggable.addEventListener('dragend', () => {
+        draggable.classList.remove('dragging');
+        //update position in DB
+        let songId = draggable.querySelector(".songname").getAttribute("songid");
+        let playlistId = playlistWindowHeader.getAttribute("playlistid");
+        let newPosition = Array.prototype.indexOf.call(playlistSongList.querySelectorAll("li"), draggable);
+        updatePlaylistSongPosition(songId, playlistId, newPosition);
+      });
+
+      draggable.addEventListener('dragenter', () => {
+        draggable.classList.add('over');
+      });
+
+      draggable.addEventListener('dragleave', () => {
+        draggable.classList.remove('over');
+      });});
+}
 
 
 
@@ -574,7 +614,7 @@ const sortList = list => [...list].sort((a, b) => {
 
 //allow placement of draggable object in correct order among other draggables
 function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.draggableQueue:not(.dragging)')];
+  const draggableElements = [...container.querySelectorAll('.draggableQueue:not(.dragging), .draggablePlaylist:not(.dragging)')];
 
   return draggableElements.reduce((closest, child) => {
     const box = child.getBoundingClientRect();
@@ -998,7 +1038,7 @@ async function loadPlaylistSongs(playlistId) {
   data.songs.forEach(song => {
     //add each to the block of html we will add
     listItems +=
-              `<li>
+              `<li class="draggablePlaylist" draggable="true">
                 <div class="tracklistitem">
                   <div class="trackdetailscontainer">
                     <div class="overflowwrapper">
@@ -1123,8 +1163,6 @@ async function actionMenuRevealPlaylists() {
   }
   playlistPopup.style.transform = `translate(${hoz}px, ${vert}px)`;
   
-
-
   playlistPopup.querySelectorAll(".playlistoption").forEach(option => {
     option.addEventListener('click', async function (event) {
       let playlistId = event.currentTarget.getAttribute('playlistid');
@@ -1179,7 +1217,23 @@ async function addSongToPlaylist(songId, playlistId) {
   return await fetch(addToPlaylistUrl, options);
 }
 
+async function updatePlaylistSongPosition(songId, playlistId, position) {
+  position += 1; //array position to regular numeric order
+  const updateSongInPlaylistUrl = "http://localhost:3000/playlists/songs";
+  const options = { 
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      songId: songId,
+      playlistId: playlistId,
+      position: position
+    }),
+  };
 
+  await fetch(updateSongInPlaylistUrl, options);
+}
 
 
 
