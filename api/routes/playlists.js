@@ -163,7 +163,7 @@ router.patch('/songs', (req, res, next) => {
             } 
         } else {
             res.status(200).json({
-                message: `Updated song: ${songId} in playlist: ${playlistId}$`,
+                message: `Updated song: ${songId} in playlist: ${playlistId}`,
                 updatedPlaylist: {
                         type: 'GET',
                         url: `http://localhost:3000/playlists/songs/${playlistId}`

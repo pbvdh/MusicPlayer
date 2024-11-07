@@ -22,7 +22,6 @@ CREATE TABLE "song_in_playlist" (
 	"song_id"	INTEGER,
 	"playlist_id"	INTEGER,
 	"position"	INTEGER NOT NULL,
-	UNIQUE("position","playlist_id"),
 	PRIMARY KEY("song_id","playlist_id"),
 	FOREIGN KEY("playlist_id") REFERENCES "playlist"("id"),
 	FOREIGN KEY("song_id") REFERENCES "song"("id")

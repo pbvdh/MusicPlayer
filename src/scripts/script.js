@@ -115,10 +115,16 @@ async function init() {
   nowPlayingSong = document.getElementById('nowplayingsongname').querySelector('.songsearchlink');
   nowPlayingArtist = document.getElementById('nowplayingartistname').querySelector('.songsearchlink');
   playlistWindowHeader = document.querySelector("#playlists .windowheader h1");
-
+  
   //handle a song getting dragged within the song queue
   queueList.addEventListener('dragover', function (event) {
     event.preventDefault();
+
+    // Throttle scroll event using requestAnimationFrame or setTimeout
+    setTimeout(() => {
+      handleScroll(queueList, event);
+    }, 10); // Delay the scroll update to avoid overwhelming the browser
+
     const afterElement = getDragAfterElement(queueList, event.clientY);
     const draggable = document.querySelector('.dragging');
     if (afterElement == null) {
@@ -498,6 +504,12 @@ function addPlaylistDraggableEventListeners(playlistDraggables) {
     //handle a song getting dragged within a playlist
     playlistSongList.addEventListener('dragover', function(event) {
       event.preventDefault();
+
+      // Throttle scroll event using requestAnimationFrame or setTimeout
+      setTimeout(() => {
+        handleScroll(playlistSongList, event);
+      }, 10); // Delay the scroll update to avoid overwhelming the browser
+
       const afterElement = getDragAfterElement(playlistSongList, event.clientY);
       const draggable = document.querySelector('.dragging');
       if (afterElement == null) {
@@ -940,6 +952,36 @@ function toggleLibrary(toSongs = false) {
     artistList.style.display = "initial";
   }
 }
+
+  // Function to scroll the container based on mouse position
+  function handleScroll(container, event) {
+    const containerRect = container.getBoundingClientRect();
+    const buffer = 50; // Distance from the edges to trigger scrolling
+    const maxScrollSpeed = 30; // Max scroll speed
+    const minScrollSpeed = 5;  // Min scroll speed
+
+    // Calculate scroll speed based on the distance to the top or bottom edge
+    const distanceFromTop = event.clientY - containerRect.top;
+    const distanceFromBottom = containerRect.bottom - event.clientY;
+
+    let scrollSpeed = 0;
+
+    // If near the top of the container
+    if (distanceFromTop < buffer) {
+      scrollSpeed = (buffer - distanceFromTop) / buffer * maxScrollSpeed;
+    }
+    // If near the bottom of the container
+    else if (distanceFromBottom < buffer) {
+      scrollSpeed = (buffer - distanceFromBottom) / buffer * maxScrollSpeed;
+    }
+
+    // Apply scroll if speed is greater than a minimum threshold
+    if (scrollSpeed > minScrollSpeed) {
+      container.scrollTop += (distanceFromTop < buffer ? -scrollSpeed : scrollSpeed);
+    }
+  }
+
+
 
 
 
