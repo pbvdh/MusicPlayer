@@ -1443,7 +1443,6 @@ const APP = (function () {
 					<path d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"></path>
 					<path d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"></path>
 			</svg>`;
-
     const muted =
       `<svg role="presentation" id="volume-icon" viewBox="0 0 16 16" class="tracknavicon">
         <path d="M13.86 5.47a.75.75 0 0 0-1.061 0l-1.47 1.47-1.47-1.47A.75.75 0 0 0 8.8 6.53L10.269 8l-1.47 1.47a.75.75 0 1 0 1.06 1.06l1.47-1.47 1.47 1.47a.75.75 0 0 0 1.06-1.06L12.39 8l1.47-1.47a.75.75 0 0 0 0-1.06z"></path>
@@ -1516,18 +1515,19 @@ const APP = (function () {
           }
         }
         //make the html element array match the queue representation
-        for(let j = 0; j < trimmedUnshuffledQueue.length; j++) {
-          if (trimmedUnshuffledQueue[j] == null) {
-            nowPlayingInfo.unshuffledQueueList.splice(j,1);
+        for(let i = 0; i < trimmedUnshuffledQueue.length; i++) {
+          if (trimmedUnshuffledQueue[i] == null) {
+            nowPlayingInfo.unshuffledQueueList.splice(i,1);
           }
         }
         //remove empty slots - i.e. an element was removed on the original queue, so it didnt get copied over
-        trimmedUnshuffledQueue = trimmedUnshuffledQueue.filter(x => x != null);
-        nowPlayingInfo.currentSongIndex = trimmedUnshuffledQueue.indexOf(currentSongId);
+        nowPlayingInfo.unshuffledQueue = trimmedUnshuffledQueue.filter(x => x != null);
+        nowPlayingInfo.currentSongIndex = nowPlayingInfo.unshuffledQueue.indexOf(currentSongId);
 
+        //use our unshuffled queue (after processing) to replace the existing shuffled queue
         queueList.innerHTML = "";
         queueList.append(...nowPlayingInfo.unshuffledQueueList);
-        nowPlayingInfo.queue = trimmedUnshuffledQueue;
+        nowPlayingInfo.queue = nowPlayingInfo.unshuffledQueue;
         let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
         nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueList.children, currentSongListItem);
         updateQueueAppearance(currentSongListItem);
@@ -1549,10 +1549,12 @@ const APP = (function () {
 
       //if queue and list represenation are synced up, shuffle both in parallel
       if (queueIndex == queueListIndex && queueListIndex > 0) {
+        //set aside current song
         let currentSongElement = queueListItems.splice(nowPlayingInfo.currentSongIndex, 1);
         nowPlayingInfo.queue.splice(nowPlayingInfo.currentSongIndex, 1);
         queueList.innerHTML = ""
 
+        //shuffle the rest of the queue
         while (queueIndex != 0) {
           randomIndex = Math.floor(Math.random() * queueIndex);
           queueIndex--;
@@ -1561,7 +1563,8 @@ const APP = (function () {
           [nowPlayingInfo.queue[queueIndex], nowPlayingInfo.queue[randomIndex]] = [nowPlayingInfo.queue[randomIndex], nowPlayingInfo.queue[queueIndex]];
           [queueListItems[queueListIndex], queueListItems[randomIndex]] = [queueListItems[randomIndex], queueListItems[queueListIndex]]
         }
-
+        
+        //recombine current song and rest of queue
         queueList.append(...currentSongElement, ...queueListItems);
         nowPlayingInfo.queue.unshift(currentSongId);
         nowPlayingInfo.currentSongIndex = 0;
