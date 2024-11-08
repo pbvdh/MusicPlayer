@@ -693,6 +693,12 @@ const APP = (function () {
         if (nowPlayingInfo.queue.length == 0) {
           queueList.appendChild(copy);
           nowPlayingInfo.queue.push(selectedSongId);
+          //if queue is currently shuffled, make sure we still have these songs when we unshuffle
+          if(nowPlayingInfo.unshuffledQueueList){
+            nowPlayingInfo.unshuffledQueueList.push(copy);
+            nowPlayingInfo.unshuffledQueue.push(selectedSongId);
+          }
+
           currentSong = queueList.querySelector("li");
           nowPlayingInfo.currentSongIndex = 0;
         } else {
@@ -721,6 +727,11 @@ const APP = (function () {
 
         queueList.appendChild(copy);
         nowPlayingInfo.queue.push(selectedSongId);
+        //if queue is currently shuffled, make sure we still have these songs when we unshuffle
+        if(nowPlayingInfo.unshuffledQueueList){
+          nowPlayingInfo.unshuffledQueueList.push(copy);
+          nowPlayingInfo.unshuffledQueue.push(selectedSongId);
+        }
 
         //only add event listeners to the 'copy' item to prevent dupes
         addQueueEventListeners(copy);
@@ -747,7 +758,11 @@ const APP = (function () {
             let newCurrentSongIndex = Math.min(nowPlayingInfo.currentSongIndex, nowPlayingInfo.queue.length - 1);
             songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.remove("queuehistory");
             songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.add("queuecurrent");
-            playSong(nowPlayingInfo.queue[newCurrentSongIndex]);
+            if(playButton.getAttribute('status') == "playing"){
+              playSong(nowPlayingInfo.queue[newCurrentSongIndex]);
+            }else{
+              playSong(nowPlayingInfo.queue[newCurrentSongIndex], false);
+            }
           }
         } else {
           currentSong = queueList.querySelector(".queuecurrent").closest("li");
@@ -814,9 +829,15 @@ const APP = (function () {
         if (nowPlayingInfo.queue.length == 0) {
           [...template.content.children].forEach(child => {
             child.classList.add("draggableQueue");
+            child.classList.remove("draggablePlaylist");
             child.setAttribute("draggable", "true");
             queueList.appendChild(child);
             nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+            //if queue is currently shuffled, make sure we still have these songs when we unshuffle
+            if(nowPlayingInfo.unshuffledQueueList){
+              nowPlayingInfo.unshuffledQueueList.push(child);
+              nowPlayingInfo.unshuffledQueue.push(child.querySelector(".songname").getAttribute("songid"));
+            }
           });
           currentSong = queueList.children[0];
           nowPlayingInfo.currentSongIndex = 0;
@@ -843,9 +864,15 @@ const APP = (function () {
         let initialLength = queueList.childElementCount;
         [...template.content.children].forEach(child => {
           child.classList.add("draggableQueue");
+          child.classList.remove("draggablePlaylist");
           child.setAttribute("draggable", "true");
           queueList.appendChild(child);
           nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+          //if queue is currently shuffled, make sure we still have these songs when we unshuffle
+          if(nowPlayingInfo.unshuffledQueueList){
+            nowPlayingInfo.unshuffledQueueList.push(child);
+            nowPlayingInfo.unshuffledQueue.push(child.querySelector(".songname").getAttribute("songid"));
+          }
         });
         if (initialLength == 0) {
           queueList.firstElementChild.querySelector(".tracklistitem").classList.add("queuecurrent");
@@ -1303,7 +1330,7 @@ const APP = (function () {
 
   //SONG CONTROLS
   //when a song needs to begin playing (due to song end, resume, new queue etc)
-  async function playSong(id) {
+  async function playSong(id, play=true) {
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -1321,16 +1348,24 @@ const APP = (function () {
     //reassign song variable to the new song that was just triggered
     nowPlayingInfo.song = new Audio(filepath);
     nowPlayingInfo.song.load();
+
     //display now playing song in browser tab
     tabTitle.innerText = data.name + " - " + data.artist_name;
     //if we are still in playing state, dont toggle to off state - we are likely in the middle of a queue.
     if (playButton.getAttribute('status') == "playing") {
       nowPlayingInfo.song.volume = volumeSlider.value;
       await nowPlayingInfo.song.play();
-    } else {
+      await incrementSongPlays(data.id, data.number_of_plays);
+    } else if (play) {
       await togglePlayButton();
+      await incrementSongPlays(data.id, data.number_of_plays);
     }
-    await incrementSongPlays(data.id, data.number_of_plays);
+
+    nowPlayingInfo.song.addEventListener('canplaythrough', function(){
+      trackSlider.max = nowPlayingInfo.song.duration;
+      playbackDurationField.innerText = Math.floor(nowPlayingInfo.song.duration / 60) + ":" + String(Math.floor(nowPlayingInfo.song.duration % 60)).padStart(2, '0');
+    });
+
     addSongEventListeners();
     trackSlider.value = 0;
     updatePlaybackPositionValue();
@@ -1463,9 +1498,36 @@ const APP = (function () {
       //check currently playing song via queuecurrent
       //return to unshuffled order but update queue appearance with currently playing song
       if (nowPlayingInfo.unshuffledQueue) {
+
+        //if the number of songs in the playlist changed (e.g. some were removed), handle this on unshuffle
+        let trimmedUnshuffledQueue = Array.apply(null, Array(nowPlayingInfo.unshuffledQueue.length));
+        let currentSongId = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
+        //set aside our currently playing song
+        trimmedUnshuffledQueue[nowPlayingInfo.unshuffledQueue.indexOf(currentSongId)] = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
+        delete nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
+        //then for songs that are still in the queue, add them from our old unshuffled list to our trimmed one. 
+        //remove from queue as we go, as there can be duplicates of songs and we want to have the same number when unshuffled
+        for (let i =0; i < nowPlayingInfo.unshuffledQueue.length; i++) {
+          let id = nowPlayingInfo.unshuffledQueue[i];
+          if(nowPlayingInfo.queue.includes(id)) {
+            trimmedUnshuffledQueue[i]=id;
+            j = nowPlayingInfo.queue.indexOf(id);
+            delete nowPlayingInfo.queue[j];
+          }
+        }
+        //make the html element array match the queue representation
+        for(let j = 0; j < trimmedUnshuffledQueue.length; j++) {
+          if (trimmedUnshuffledQueue[j] == null) {
+            nowPlayingInfo.unshuffledQueueList.splice(j,1);
+          }
+        }
+        //remove empty slots - i.e. an element was removed on the original queue, so it didnt get copied over
+        trimmedUnshuffledQueue = trimmedUnshuffledQueue.filter(x => x != null);
+        nowPlayingInfo.currentSongIndex = trimmedUnshuffledQueue.indexOf(currentSongId);
+
         queueList.innerHTML = "";
         queueList.append(...nowPlayingInfo.unshuffledQueueList);
-        nowPlayingInfo.queue = nowPlayingInfo.unshuffledQueue;
+        nowPlayingInfo.queue = trimmedUnshuffledQueue;
         let currentSongListItem = queueList.querySelector(".queuecurrent").closest("li");
         nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueList.children, currentSongListItem);
         updateQueueAppearance(currentSongListItem);

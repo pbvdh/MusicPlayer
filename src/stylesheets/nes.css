@@ -59,7 +59,6 @@ hr {
   overflow: visible;
 }
 
-
 p {
   margin-top: 0;
   margin-bottom: 1rem;
@@ -72,12 +71,6 @@ abbr[data-original-title] {
   text-decoration: underline dotted;
   cursor: help;
   border-bottom: 0;
-}
-
-address {
-  margin-bottom: 1rem;
-  font-style: normal;
-  line-height: inherit;
 }
 
 ol,
@@ -94,42 +87,9 @@ ul ol {
   margin-bottom: 0;
 }
 
-dt {
-  font-weight: 700;
-}
-
-dd {
-  margin-bottom: 0.5rem;
-  margin-left: 0;
-}
-
-blockquote {
-  margin: 0 0 1rem;
-}
-
 b,
 strong {
   font-weight: bolder;
-}
-
-small {
-  font-size: 80%;
-}
-
-sub,
-sup {
-  position: relative;
-  font-size: 75%;
-  line-height: 0;
-  vertical-align: baseline;
-}
-
-sub {
-  bottom: -0.25em;
-}
-
-sup {
-  top: -0.5em;
 }
 
 a {
@@ -155,10 +115,7 @@ button {
 }
 
 input,
-button,
-select,
-optgroup,
-textarea {
+button {
   margin: 0;
   font-family: inherit;
   font-size: inherit;
@@ -195,48 +152,12 @@ button:focus {
   outline: 5px auto -webkit-focus-ring-color;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
-  box-sizing: border-box;
-  padding: 0;
-}
-
-
-textarea {
-  overflow: auto;
-  resize: vertical;
-}
-
-fieldset {
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
-
-legend {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  padding: 0;
-  margin-bottom: 0.5rem;
-  font-size: 1.5rem;
-  line-height: inherit;
-  color: inherit;
-  white-space: normal;
-}
-
 progress {
   vertical-align: baseline;
 }
 
 output {
   display: inline-block;
-}
-
-summary {
-  display: list-item;
-  cursor: pointer;
 }
 
 template {
@@ -276,10 +197,6 @@ button {
   cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
-  outline: 0;
-}
 
 @keyframes blink {
   0% {
@@ -290,8 +207,7 @@ input[type="checkbox"] {
   }
 }
 
-.nes-balloon, .nes-balloon.is-dark, .nes-btn, .nes-container.is-rounded, .nes-container.is-rounded.is-dark, .nes-dialog.is-rounded, .nes-dialog.is-rounded.is-dark, .nes-progress, .nes-progress.is-rounded, .nes-table.is-bordered, .nes-table.is-dark.is-bordered, .nes-input,
-.nes-textarea, .nes-select select {
+.nes-btn {
   border-style: solid;
   border-width: 4px;
 }
@@ -473,7 +389,6 @@ input[type="checkbox"] {
   box-shadow: inset 4px 4px #4aa52e;
 }
 
-
 .nes-btn.is-error {
   color: #fff;
   background-color: #AC65CF;
@@ -500,7 +415,6 @@ input[type="checkbox"] {
   box-shadow: inset -6px -6px #432658;
 }
 
-
 .nes-btn.is-error:active:not(.is-disabled)::after {
   box-shadow: inset 4px 4px #432658;
 }
@@ -509,470 +423,4 @@ input[type="checkbox"] {
   position: absolute;
   pointer-events: none;
   opacity: 0;
-}
-
-.nes-container {
-  position: relative;
-  padding: 1.5rem 2rem;
-  border-color: black;
-  border-style: solid;
-  border-width: 4px;
-}
-
-.nes-container > :last-child {
-  margin-bottom: 0;
-}
-
-.nes-container.is-centered {
-  text-align: center;
-}
-
-.nes-container.is-right {
-  text-align: right;
-}
-
-.nes-container.with-title > .title {
-  display: table;
-  padding: 0 0.5rem;
-  margin: -1.8rem 0 1rem;
-  font-size: 1rem;
-  background-color: #fff;
-}
-
-.nes-container.with-title.is-centered > .title {
-  margin: -2rem auto 1rem;
-}
-
-.nes-container.with-title.is-right > .title {
-  margin: -2rem 0 1rem auto;
-}
-
-.nes-container.is-dark {
-  position: relative;
-  margin: 4px;
-  color: #fff;
-  background-color: #212529;
-  border-color: white;
-}
-
-.nes-container.is-dark::after {
-  position: absolute;
-  top: -7.2px;
-  right: -7.2px;
-  bottom: -7.2px;
-  left: -7.2px;
-  z-index: -1;
-  content: "";
-  background-color: #212529;
-}
-
-.nes-container.is-dark.with-title > .title {
-  color: #fff;
-  background-color: #212529;
-}
-
-.nes-container.is-rounded {
-  border-image-slice: 3;
-  border-image-width: 3;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="8" height="8" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 h1 v1 h-1 z M4 1 h1 v1 h-1 z M2 2 h1 v1 h-1 z M5 2 h1 v1 h-1 z M1 3 h1 v1 h-1 z M6 3 h1 v1 h-1 z M1 4 h1 v1 h-1 z M6 4 h1 v1 h-1 z M2 5 h1 v1 h-1 z M5 5 h1 v1 h-1 z M3 6 h1 v1 h-1 z M4 6 h1 v1 h-1 z" fill="rgb(33,37,41)" /></svg>');
-  border-image-outset: 2;
-  padding: 1rem 1.5rem;
-  margin: 4px;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-container.is-rounded {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-container.is-rounded {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-container.is-rounded.with-title > .title {
-  margin-top: -1.5rem;
-}
-
-.nes-container.is-rounded.with-title.is-centered > .title {
-  margin: -1.5rem auto 1rem;
-}
-
-.nes-container.is-rounded.with-title.is-right > .title {
-  margin: -1.5rem 0 1rem auto;
-}
-
-.nes-container.is-rounded.is-dark {
-  border-image-slice: 3;
-  border-image-width: 3;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="8" height="8" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 h1 v1 h-1 z M4 1 h1 v1 h-1 z M2 2 h1 v1 h-1 z M5 2 h1 v1 h-1 z M1 3 h1 v1 h-1 z M6 3 h1 v1 h-1 z M1 4 h1 v1 h-1 z M6 4 h1 v1 h-1 z M2 5 h1 v1 h-1 z M5 5 h1 v1 h-1 z M3 6 h1 v1 h-1 z M4 6 h1 v1 h-1 z" fill="rgb(255,255,255)" /></svg>');
-  border-image-outset: 0;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-container.is-rounded.is-dark {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-container.is-rounded.is-dark {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-container.is-rounded.is-dark::after {
-  content: none;
-}
-
-.nes-container.is-rounded.is-dark.with-title > .title {
-  margin-top: -1.3rem;
-}
-
-.nes-container.is-rounded.is-dark.with-title.is-centered > .title {
-  margin: -1.3rem auto 1rem;
-}
-
-.nes-container.is-rounded.is-dark.with-title.is-right > .title {
-  margin: -1.3rem 0 1rem auto;
-}
-
-.nes-dialog {
-  padding: 1.5rem 2rem;
-  border-width: 4px;
-}
-
-.nes-dialog > .backdrop, .nes-dialog::-webkit-backdrop {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.nes-dialog > .backdrop, .nes-dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.nes-dialog > :last-child {
-  margin-bottom: 0;
-}
-
-.nes-dialog.is-rounded {
-  border-image-slice: 3;
-  border-image-width: 3;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="8" height="8" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 h1 v1 h-1 z M4 1 h1 v1 h-1 z M2 2 h1 v1 h-1 z M5 2 h1 v1 h-1 z M1 3 h1 v1 h-1 z M6 3 h1 v1 h-1 z M1 4 h1 v1 h-1 z M6 4 h1 v1 h-1 z M2 5 h1 v1 h-1 z M5 5 h1 v1 h-1 z M3 6 h1 v1 h-1 z M4 6 h1 v1 h-1 z" fill="rgb(33,37,41)" /></svg>');
-  border-image-outset: 2;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-dialog.is-rounded {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-dialog.is-rounded {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-dialog.is-rounded.is-dark {
-  border-image-slice: 3;
-  border-image-width: 3;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="8" height="8" xmlns="http://www.w3.org/2000/svg"><path d="M3 1 h1 v1 h-1 z M4 1 h1 v1 h-1 z M2 2 h1 v1 h-1 z M5 2 h1 v1 h-1 z M1 3 h1 v1 h-1 z M6 3 h1 v1 h-1 z M1 4 h1 v1 h-1 z M6 4 h1 v1 h-1 z M2 5 h1 v1 h-1 z M5 5 h1 v1 h-1 z M3 6 h1 v1 h-1 z M4 6 h1 v1 h-1 z" fill="rgb(255,255,255)" /></svg>');
-  border-image-outset: 0;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-dialog.is-rounded.is-dark {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-dialog.is-rounded.is-dark {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-dialog.is-dark {
-  color: #fff;
-  background-color: #212529;
-  border-color: #fff;
-}
-
-.nes-dialog.is-dark:not(.is-rounded)::before {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  bottom: -8px;
-  left: -8px;
-  z-index: -1;
-  content: "";
-  border: 4px solid #212529;
-}
-
-.nes-input,
-.nes-textarea {
-  border-image-slice: 2;
-  border-image-width: 2;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(33,37,41)" /></svg>');
-  border-image-outset: 2;
-  width: calc(100% - 8px);
-  padding: 0.5rem 1rem;
-  margin: 4px;
-  background-clip: padding-box;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-input,
-  .nes-textarea {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-input,
-  .nes-textarea {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-input.is-dark,
-.nes-textarea.is-dark {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(255,255,255)" /></svg>');
-  outline-color: #e7e7e7;
-  color: #fff;
-  background-color: #212529;
-}
-
-.nes-input.is-success,
-.nes-textarea.is-success {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(146,204,65)" /></svg>');
-  outline-color: #76c442;
-}
-
-.nes-input.is-warning,
-.nes-textarea.is-warning {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(247,213,29)" /></svg>');
-  outline-color: #f2c409;
-}
-
-.nes-input.is-error,
-.nes-textarea.is-error {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(231,110,85)" /></svg>');
-  outline-color: #ce372b;
-}
-
-.nes-field > label {
-  display: block;
-}
-
-.nes-field .nes-input,
-.nes-field .nes-textarea {
-  display: block;
-}
-
-.nes-field.is-inline {
-  display: flex;
-  align-items: center;
-}
-
-.nes-field.is-inline > label {
-  flex-basis: 0;
-  flex-grow: 1;
-  margin: 0;
-  margin-right: 1.5rem;
-  text-align: right;
-}
-
-.nes-field.is-inline .nes-input,
-.nes-field.is-inline .nes-textarea {
-  flex-basis: 0;
-  flex-grow: 5;
-}
-
-@media screen and (max-width: 768px) {
-  .nes-field.is-inline {
-    display: block;
-  }
-  .nes-field.is-inline > label {
-    margin-bottom: 0.5rem;
-    text-align: left;
-  }
-  .nes-field.is-inline .nes-input {
-    max-width: 100%;
-  }
-}
-
-.nes-select {
-  position: relative;
-  width: calc(100% - 8px);
-  margin: 4px;
-}
-
-.nes-select select {
-  border-image-slice: 2;
-  border-image-width: 2;
-  border-image-repeat: stretch;
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(33,37,41)" /></svg>');
-  border-image-outset: 2;
-  width: 100%;
-  padding: 0.5rem 2.5rem 0.5rem 1rem;
-  cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
-  border-radius: 0;
-  outline-color: #e7e7e7;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-       appearance: none;
-}
-
-@media all and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
-  .nes-select select {
-    border-image-repeat: space;
-  }
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-select select {
-    border-image-repeat: stretch;
-  }
-}
-
-.nes-select select:invalid {
-  color: #adafbc;
-}
-
-.nes-select.is-dark select {
-  color: #fff;
-  background-color: #212529;
-}
-
-.nes-select::after {
-  width: 3px;
-  height: 3px;
-  color: #212529;
-  box-shadow: 3px 3px,6px 3px,9px 3px,12px 3px,15px 3px,18px 3px,21px 3px,3px 6px,6px 6px,9px 6px,12px 6px,15px 6px,18px 6px,21px 6px,6px 9px,9px 9px,12px 9px,15px 9px,18px 9px,6px 12px,9px 12px,12px 12px,15px 12px,18px 12px,9px 15px,12px 15px,15px 15px,12px 18px;
-  position: absolute;
-  top: calc(50% - 11px);
-  right: 36px;
-  pointer-events: none;
-  content: "";
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-select::after {
-    box-shadow: 3px 3px 0 0.020em,6px 3px 0 0.020em,9px 3px 0 0.020em,12px 3px 0 0.020em,15px 3px 0 0.020em,18px 3px 0 0.020em,21px 3px 0 0.020em,3px 6px 0 0.020em,6px 6px 0 0.020em,9px 6px 0 0.020em,12px 6px 0 0.020em,15px 6px 0 0.020em,18px 6px 0 0.020em,21px 6px 0 0.020em,6px 9px 0 0.020em,9px 9px 0 0.020em,12px 9px 0 0.020em,15px 9px 0 0.020em,18px 9px 0 0.020em,6px 12px 0 0.020em,9px 12px 0 0.020em,12px 12px 0 0.020em,15px 12px 0 0.020em,18px 12px 0 0.020em,9px 15px 0 0.020em,12px 15px 0 0.020em,15px 15px 0 0.020em,12px 18px 0 0.020em;
-  }
-}
-
-.nes-select.is-success::after {
-  color: #92cc41;
-}
-
-.nes-select.is-success select {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(146,204,65)" /></svg>');
-  outline-color: #76c442;
-}
-
-.nes-select.is-dark::after {
-  color: #fff;
-}
-
-.nes-select.is-dark select {
-  border-image-source: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8" ?><svg version="1.1" width="5" height="5" xmlns="http://www.w3.org/2000/svg"><path d="M2 1 h1 v1 h-1 z M1 2 h1 v1 h-1 z M3 2 h1 v1 h-1 z M2 3 h1 v1 h-1 z" fill="rgb(255,255,255)" /></svg>');
-  outline-color: #e7e7e7;
-}
-
-.nes-icon {
-  position: relative;
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-right: 16px;
-  margin-bottom: 16px;
-  transform: scale(2);
-  transform-origin: top left;
-}
-
-.nes-icon.is-small {
-  margin: 0;
-  transform: scale(1);
-}
-
-.nes-icon.is-medium {
-  margin-right: 32px;
-  margin-bottom: 32px;
-  transform: scale(3);
-}
-
-.nes-icon.is-large {
-  margin-right: 48px;
-  margin-bottom: 48px;
-  transform: scale(4);
-}
-
-.nes-icon::before {
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  display: block;
-  content: "";
-  background: transparent;
-}
-
-.nes-icon.heart::before {
-  width: 1px;
-  height: 1px;
-  color: #f22426;
-  box-shadow: 3px 2px #444,4px 2px #444,5px 2px #444,11px 2px #444,12px 2px #444,13px 2px #444,2px 3px #444,3px 3px,4px 3px,5px 3px,6px 3px #444,10px 3px #444,11px 3px,12px 3px,13px 3px #842300,14px 3px #444,1px 4px #444,2px 4px,3px 4px #fff,4px 4px #fff,5px 4px,6px 4px,7px 4px #444,9px 4px #444,10px 4px,11px 4px,12px 4px,13px 4px,14px 4px #842300,15px 4px #444,1px 5px #444,2px 5px,3px 5px #fff,4px 5px,5px 5px,6px 5px,7px 5px,8px 5px #444,9px 5px,10px 5px,11px 5px,12px 5px,13px 5px,14px 5px #842300,15px 5px #444,1px 6px #444,2px 6px,3px 6px,4px 6px,5px 6px,6px 6px,7px 6px,8px 6px,9px 6px,10px 6px,11px 6px,12px 6px,13px 6px,14px 6px #842300,15px 6px #444,1px 7px #444,2px 7px,3px 7px,4px 7px,5px 7px,6px 7px,7px 7px,8px 7px,9px 7px,10px 7px,11px 7px,12px 7px,13px 7px,14px 7px #842300,15px 7px #444,1px 8px #444,2px 8px,3px 8px,4px 8px,5px 8px,6px 8px,7px 8px,8px 8px,9px 8px,10px 8px,11px 8px,12px 8px,13px 8px,14px 8px #842300,15px 8px #444,2px 9px #444,3px 9px,4px 9px,5px 9px,6px 9px,7px 9px,8px 9px,9px 9px,10px 9px,11px 9px,12px 9px,13px 9px #842300,14px 9px #444,3px 10px #444,4px 10px,5px 10px,6px 10px,7px 10px,8px 10px,9px 10px,10px 10px,11px 10px,12px 10px #842300,13px 10px #444,4px 11px #444,5px 11px,6px 11px,7px 11px,8px 11px,9px 11px,10px 11px,11px 11px #842300,12px 11px #444,5px 12px #444,6px 12px,7px 12px,8px 12px,9px 12px,10px 12px #842300,11px 12px #444,6px 13px #444,7px 13px,8px 13px,9px 13px #842300,10px 13px #444,7px 14px #444,8px 14px #842300,9px 14px #444,8px 15px #444;
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-icon.heart::before {
-    box-shadow: 3px 2px 0 0.020em #444,4px 2px 0 0.020em #444,5px 2px 0 0.020em #444,11px 2px 0 0.020em #444,12px 2px 0 0.020em #444,13px 2px 0 0.020em #444,2px 3px 0 0.020em #444,3px 3px 0 0.020em,4px 3px 0 0.020em,5px 3px 0 0.020em,6px 3px 0 0.020em #444,10px 3px 0 0.020em #444,11px 3px 0 0.020em,12px 3px 0 0.020em,13px 3px 0 0.020em #842300,14px 3px 0 0.020em #444,1px 4px 0 0.020em #444,2px 4px 0 0.020em,3px 4px 0 0.020em #fff,4px 4px 0 0.020em #fff,5px 4px 0 0.020em,6px 4px 0 0.020em,7px 4px 0 0.020em #444,9px 4px 0 0.020em #444,10px 4px 0 0.020em,11px 4px 0 0.020em,12px 4px 0 0.020em,13px 4px 0 0.020em,14px 4px 0 0.020em #842300,15px 4px 0 0.020em #444,1px 5px 0 0.020em #444,2px 5px 0 0.020em,3px 5px 0 0.020em #fff,4px 5px 0 0.020em,5px 5px 0 0.020em,6px 5px 0 0.020em,7px 5px 0 0.020em,8px 5px 0 0.020em #444,9px 5px 0 0.020em,10px 5px 0 0.020em,11px 5px 0 0.020em,12px 5px 0 0.020em,13px 5px 0 0.020em,14px 5px 0 0.020em #842300,15px 5px 0 0.020em #444,1px 6px 0 0.020em #444,2px 6px 0 0.020em,3px 6px 0 0.020em,4px 6px 0 0.020em,5px 6px 0 0.020em,6px 6px 0 0.020em,7px 6px 0 0.020em,8px 6px 0 0.020em,9px 6px 0 0.020em,10px 6px 0 0.020em,11px 6px 0 0.020em,12px 6px 0 0.020em,13px 6px 0 0.020em,14px 6px 0 0.020em #842300,15px 6px 0 0.020em #444,1px 7px 0 0.020em #444,2px 7px 0 0.020em,3px 7px 0 0.020em,4px 7px 0 0.020em,5px 7px 0 0.020em,6px 7px 0 0.020em,7px 7px 0 0.020em,8px 7px 0 0.020em,9px 7px 0 0.020em,10px 7px 0 0.020em,11px 7px 0 0.020em,12px 7px 0 0.020em,13px 7px 0 0.020em,14px 7px 0 0.020em #842300,15px 7px 0 0.020em #444,1px 8px 0 0.020em #444,2px 8px 0 0.020em,3px 8px 0 0.020em,4px 8px 0 0.020em,5px 8px 0 0.020em,6px 8px 0 0.020em,7px 8px 0 0.020em,8px 8px 0 0.020em,9px 8px 0 0.020em,10px 8px 0 0.020em,11px 8px 0 0.020em,12px 8px 0 0.020em,13px 8px 0 0.020em,14px 8px 0 0.020em #842300,15px 8px 0 0.020em #444,2px 9px 0 0.020em #444,3px 9px 0 0.020em,4px 9px 0 0.020em,5px 9px 0 0.020em,6px 9px 0 0.020em,7px 9px 0 0.020em,8px 9px 0 0.020em,9px 9px 0 0.020em,10px 9px 0 0.020em,11px 9px 0 0.020em,12px 9px 0 0.020em,13px 9px 0 0.020em #842300,14px 9px 0 0.020em #444,3px 10px 0 0.020em #444,4px 10px 0 0.020em,5px 10px 0 0.020em,6px 10px 0 0.020em,7px 10px 0 0.020em,8px 10px 0 0.020em,9px 10px 0 0.020em,10px 10px 0 0.020em,11px 10px 0 0.020em,12px 10px 0 0.020em #842300,13px 10px 0 0.020em #444,4px 11px 0 0.020em #444,5px 11px 0 0.020em,6px 11px 0 0.020em,7px 11px 0 0.020em,8px 11px 0 0.020em,9px 11px 0 0.020em,10px 11px 0 0.020em,11px 11px 0 0.020em #842300,12px 11px 0 0.020em #444,5px 12px 0 0.020em #444,6px 12px 0 0.020em,7px 12px 0 0.020em,8px 12px 0 0.020em,9px 12px 0 0.020em,10px 12px 0 0.020em #842300,11px 12px 0 0.020em #444,6px 13px 0 0.020em #444,7px 13px 0 0.020em,8px 13px 0 0.020em,9px 13px 0 0.020em #842300,10px 13px 0 0.020em #444,7px 14px 0 0.020em #444,8px 14px 0 0.020em #842300,9px 14px 0 0.020em #444,8px 15px 0 0.020em #444;
-  }
-}
-
-.nes-icon.heart.is-half::before {
-  width: 1px;
-  height: 1px;
-  color: #f22426;
-  box-shadow: 3px 2px #444,4px 2px #444,5px 2px #444,11px 2px #444,12px 2px #444,13px 2px #444,2px 3px #444,3px 3px,4px 3px,5px 3px,6px 3px #444,10px 3px #444,14px 3px #444,1px 4px #444,2px 4px,3px 4px #fff,4px 4px #fff,5px 4px,6px 4px,7px 4px #444,9px 4px #444,15px 4px #444,1px 5px #444,2px 5px,3px 5px #fff,4px 5px,5px 5px,6px 5px,7px 5px,8px 5px #444,15px 5px #444,1px 6px #444,2px 6px,3px 6px,4px 6px,5px 6px,6px 6px,7px 6px,8px 6px,15px 6px #444,1px 7px #444,2px 7px,3px 7px,4px 7px,5px 7px,6px 7px,7px 7px,8px 7px,15px 7px #444,1px 8px #444,2px 8px,3px 8px,4px 8px,5px 8px,6px 8px,7px 8px,8px 8px,15px 8px #444,2px 9px #444,3px 9px,4px 9px,5px 9px,6px 9px,7px 9px,8px 9px,14px 9px #444,3px 10px #444,4px 10px,5px 10px,6px 10px,7px 10px,8px 10px,13px 10px #444,4px 11px #444,5px 11px,6px 11px,7px 11px,8px 11px,12px 11px #444,5px 12px #444,6px 12px,7px 12px,8px 12px,11px 12px #444,6px 13px #444,7px 13px,8px 13px,10px 13px #444,7px 14px #444,8px 14px #842300,9px 14px #444,8px 15px #444;
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-icon.heart.is-half::before {
-    box-shadow: 3px 2px 0 0.020em #444,4px 2px 0 0.020em #444,5px 2px 0 0.020em #444,11px 2px 0 0.020em #444,12px 2px 0 0.020em #444,13px 2px 0 0.020em #444,2px 3px 0 0.020em #444,3px 3px 0 0.020em,4px 3px 0 0.020em,5px 3px 0 0.020em,6px 3px 0 0.020em #444,10px 3px 0 0.020em #444,14px 3px 0 0.020em #444,1px 4px 0 0.020em #444,2px 4px 0 0.020em,3px 4px 0 0.020em #fff,4px 4px 0 0.020em #fff,5px 4px 0 0.020em,6px 4px 0 0.020em,7px 4px 0 0.020em #444,9px 4px 0 0.020em #444,15px 4px 0 0.020em #444,1px 5px 0 0.020em #444,2px 5px 0 0.020em,3px 5px 0 0.020em #fff,4px 5px 0 0.020em,5px 5px 0 0.020em,6px 5px 0 0.020em,7px 5px 0 0.020em,8px 5px 0 0.020em #444,15px 5px 0 0.020em #444,1px 6px 0 0.020em #444,2px 6px 0 0.020em,3px 6px 0 0.020em,4px 6px 0 0.020em,5px 6px 0 0.020em,6px 6px 0 0.020em,7px 6px 0 0.020em,8px 6px 0 0.020em,15px 6px 0 0.020em #444,1px 7px 0 0.020em #444,2px 7px 0 0.020em,3px 7px 0 0.020em,4px 7px 0 0.020em,5px 7px 0 0.020em,6px 7px 0 0.020em,7px 7px 0 0.020em,8px 7px 0 0.020em,15px 7px 0 0.020em #444,1px 8px 0 0.020em #444,2px 8px 0 0.020em,3px 8px 0 0.020em,4px 8px 0 0.020em,5px 8px 0 0.020em,6px 8px 0 0.020em,7px 8px 0 0.020em,8px 8px 0 0.020em,15px 8px 0 0.020em #444,2px 9px 0 0.020em #444,3px 9px 0 0.020em,4px 9px 0 0.020em,5px 9px 0 0.020em,6px 9px 0 0.020em,7px 9px 0 0.020em,8px 9px 0 0.020em,14px 9px 0 0.020em #444,3px 10px 0 0.020em #444,4px 10px 0 0.020em,5px 10px 0 0.020em,6px 10px 0 0.020em,7px 10px 0 0.020em,8px 10px 0 0.020em,13px 10px 0 0.020em #444,4px 11px 0 0.020em #444,5px 11px 0 0.020em,6px 11px 0 0.020em,7px 11px 0 0.020em,8px 11px 0 0.020em,12px 11px 0 0.020em #444,5px 12px 0 0.020em #444,6px 12px 0 0.020em,7px 12px 0 0.020em,8px 12px 0 0.020em,11px 12px 0 0.020em #444,6px 13px 0 0.020em #444,7px 13px 0 0.020em,8px 13px 0 0.020em,10px 13px 0 0.020em #444,7px 14px 0 0.020em #444,8px 14px 0 0.020em #842300,9px 14px 0 0.020em #444,8px 15px 0 0.020em #444;
-  }
-}
-
-.nes-icon.heart.is-transparent::before {
-  width: 1px;
-  height: 1px;
-  color: #444;
-  box-shadow: 3px 2px,4px 2px,5px 2px,11px 2px,12px 2px,13px 2px,2px 3px,6px 3px,10px 3px,14px 3px,1px 4px,7px 4px,9px 4px,15px 4px,1px 5px,8px 5px,15px 5px,1px 6px,15px 6px,1px 7px,15px 7px,1px 8px,15px 8px,2px 9px,14px 9px,3px 10px,13px 10px,4px 11px,12px 11px,5px 12px,11px 12px,6px 13px,10px 13px,7px 14px,9px 14px,8px 15px;
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-icon.heart.is-transparent::before {
-    box-shadow: 3px 2px 0 0.020em,4px 2px 0 0.020em,5px 2px 0 0.020em,11px 2px 0 0.020em,12px 2px 0 0.020em,13px 2px 0 0.020em,2px 3px 0 0.020em,6px 3px 0 0.020em,10px 3px 0 0.020em,14px 3px 0 0.020em,1px 4px 0 0.020em,7px 4px 0 0.020em,9px 4px 0 0.020em,15px 4px 0 0.020em,1px 5px 0 0.020em,8px 5px 0 0.020em,15px 5px 0 0.020em,1px 6px 0 0.020em,15px 6px 0 0.020em,1px 7px 0 0.020em,15px 7px 0 0.020em,1px 8px 0 0.020em,15px 8px 0 0.020em,2px 9px 0 0.020em,14px 9px 0 0.020em,3px 10px 0 0.020em,13px 10px 0 0.020em,4px 11px 0 0.020em,12px 11px 0 0.020em,5px 12px 0 0.020em,11px 12px 0 0.020em,6px 13px 0 0.020em,10px 13px 0 0.020em,7px 14px 0 0.020em,9px 14px 0 0.020em,8px 15px 0 0.020em;
-  }
-}
-
-.nes-icon.heart.is-empty::before {
-  width: 1px;
-  height: 1px;
-  color: #adafbb;
-  box-shadow: 3px 2px,4px 2px,5px 2px,11px 2px,12px 2px,13px 2px,2px 3px,6px 3px,10px 3px,14px 3px,1px 4px,7px 4px,9px 4px,15px 4px,1px 5px,8px 5px,15px 5px,1px 6px,15px 6px,1px 7px,15px 7px,1px 8px,15px 8px,2px 9px,14px 9px,3px 10px,13px 10px,4px 11px,12px 11px,5px 12px,11px 12px,6px 13px,10px 13px,7px 14px,9px 14px,8px 15px;
-}
-
-@supports (-moz-appearance: meterbar) {
-  .nes-icon.heart.is-empty::before {
-    box-shadow: 3px 2px 0 0.020em,4px 2px 0 0.020em,5px 2px 0 0.020em,11px 2px 0 0.020em,12px 2px 0 0.020em,13px 2px 0 0.020em,2px 3px 0 0.020em,6px 3px 0 0.020em,10px 3px 0 0.020em,14px 3px 0 0.020em,1px 4px 0 0.020em,7px 4px 0 0.020em,9px 4px 0 0.020em,15px 4px 0 0.020em,1px 5px 0 0.020em,8px 5px 0 0.020em,15px 5px 0 0.020em,1px 6px 0 0.020em,15px 6px 0 0.020em,1px 7px 0 0.020em,15px 7px 0 0.020em,1px 8px 0 0.020em,15px 8px 0 0.020em,2px 9px 0 0.020em,14px 9px 0 0.020em,3px 10px 0 0.020em,13px 10px 0 0.020em,4px 11px 0 0.020em,12px 11px 0 0.020em,5px 12px 0 0.020em,11px 12px 0 0.020em,6px 13px 0 0.020em,10px 13px 0 0.020em,7px 14px 0 0.020em,9px 14px 0 0.020em,8px 15px 0 0.020em;
-  }
 }

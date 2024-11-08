@@ -15,6 +15,7 @@ To Do
 - make it look nice in chrome, safari
 - persist current song/queue when refreshed and sensible defaults
 - stylized modal instead of alert/prompt
+- update playlist length when adding song if window is in view.
 
 Testing
 - API
