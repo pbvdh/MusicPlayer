@@ -477,6 +477,7 @@ input[type="checkbox"] {
 .nes-btn.is-error {
   color: #fff;
   background-color: #AC65CF;
+  height: 48px;
 }
 
 .nes-btn.is-error::after {

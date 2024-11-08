@@ -326,7 +326,6 @@ Some of these classes relate to dynamically generated content*/
     box-shadow: 1px 1px 1px 1px #2e3942 inset;
 }
 
-
 .windowheader {
     box-shadow: 0px 0px 5px 1px black;
     position: relative;
@@ -656,4 +655,13 @@ Some of these classes relate to dynamically generated content*/
 
 #playlistsonglist {
     display: none;
+}
+
+#shufflelibrarybutton svg{
+    fill: white;
+}
+
+#shufflelibrarybutton {
+    margin-right: 16px;
+    width: 48px;
 }
