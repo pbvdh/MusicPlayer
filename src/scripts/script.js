@@ -385,7 +385,7 @@ const APP = (function () {
     //handle when song ends
     nowPlayingInfo.song.addEventListener('ended', function () {
       //if there are more songs in the queue:
-      if (nowPlayingInfo.queue.currentSongIndex < nowPlayingInfo.queue.length - 1) {
+      if (nowPlayingInfo.currentSongIndex < nowPlayingInfo.queue.length - 1) {
         let nextSongId = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex + 1];
         nowPlayingInfo.currentSongIndex++;
         playSong(nextSongId);

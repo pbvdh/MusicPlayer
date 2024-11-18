@@ -16,6 +16,7 @@ To Do
 - persist current song/queue when refreshed and sensible defaults
 - stylized modal instead of alert/prompt
 - update playlist length when adding song if window is in view.
+- ignore capitalization in song search ordering
 
 Testing
 - API
