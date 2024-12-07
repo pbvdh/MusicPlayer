@@ -16,7 +16,7 @@ const createSong = (name, filepath, genre, duration_seconds, artist_name, callba
 
 //READ
 const selectAllSongs = (callback) => {
-    const sql = 'SELECT id, name, artist_name FROM song ORDER BY name';
+    const sql = 'SELECT id, name, artist_name FROM song ORDER BY name COLLATE NOCASE';
     db.all(sql, [], callback);
 }
 

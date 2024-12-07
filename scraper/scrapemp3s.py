@@ -13,6 +13,8 @@ for name in os.listdir(directory):
     #some songs have no title metadata, relying on filename. So if this is the case, we extract that instead
     if filename is None:
         filename = filepath[filepath.rindex("\\")+1:filepath.rindex(".")]
+    if file.artist is None:
+        file.artist = "Unknown"
     audio = {
         "name": filename,
         "filepath": filepath,

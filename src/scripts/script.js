@@ -1266,6 +1266,13 @@ const APP = (function () {
 
             addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
             addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+          //otherwise, update the playlist length
+          } else {
+              const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
+              let response = await fetch(getPlaylistUrl);
+              let data = await response.json();
+              console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
+              document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";
           }
         }
       });
@@ -1470,8 +1477,8 @@ const APP = (function () {
     nowPlayingInfo.queue = [];
     let parentSongList = songNameLink.closest("ul");
     let allSongs = parentSongList.querySelectorAll('li');
-    let currentSongIndex = Array.prototype.indexOf.call(allSongs, songNameLink.closest('li')); //how far down the list of all songs is the selected one?
-    let currentSongId = allSongs[currentSongIndex].querySelector('.songname').getAttribute("songid");
+    let songIndex = Array.prototype.indexOf.call(allSongs, songNameLink.closest('li')); //how far down the list of all songs is the selected one?
+    let currentSongId = allSongs[songIndex].querySelector('.songname').getAttribute("songid");
 
     //using all songs that are visible in the current search field, form a queue
     for (let i = 0; i < allSongs.length; i++) {

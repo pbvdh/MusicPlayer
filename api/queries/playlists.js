@@ -24,7 +24,7 @@ const addSongToPlaylist = (playlistId, songId, callback) => {
 
 //READ
 const selectAllPlaylists = (callback) => {
-    const sql = 'SELECT p.*, COUNT(song_id) AS length FROM playlist p LEFT JOIN song_in_playlist sip ON p.id = sip.playlist_id GROUP BY p.id ORDER BY name';
+    const sql = 'SELECT p.*, COUNT(song_id) AS length FROM playlist p LEFT JOIN song_in_playlist sip ON p.id = sip.playlist_id GROUP BY p.id ORDER BY name COLLATE NOCASE';
     db.all(sql, [], callback);
 }
 
