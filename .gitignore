@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+#ignore any personal songs added to /mp3_library
+*.mp3
+
 # User-specific files
 *.rsuser
 *.suo

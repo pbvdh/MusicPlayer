@@ -5,7 +5,7 @@ from tinytag import TinyTag
  #loop through mp3 files in server directory, and record the metadata we want to use to form our records in the database
 mp3Files = []
 
-directory = ("..\\mp3_library")
+directory = (".\\mp3_library")
 for name in os.listdir(directory):
     filepath = os.path.join(directory, name)
     file = TinyTag.get(filepath)

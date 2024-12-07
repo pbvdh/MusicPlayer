@@ -58,6 +58,7 @@ const APP = (function () {
   let shuffleLibraryButton;
   let shufflePlaylistButton;
   let panes;
+  let playbackPositionValue;
 
   //define DOM elements and assign event listeners. Dynamically generate content as required
   async function init() {
@@ -121,6 +122,7 @@ const APP = (function () {
     shuffleLibraryButton = document.getElementById("shufflelibrarybutton");
     shufflePlaylistButton = document.getElementById("shuffleplaylistbutton");
     panes = document.querySelectorAll(".maindivs");
+    playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
 
     //handle a song getting dragged within the song queue
     queueList.addEventListener('dragover', function (event) {
@@ -283,15 +285,8 @@ const APP = (function () {
     });
 
     //empty the current queue
-    clearQueueButton.addEventListener('click', function () {
-      if (queueList.childElementCount > 0) {
-        nowPlayingInfo.queue = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
-        let queueListItems = [...queueList.querySelectorAll(".tracklistitem:not(.queuecurrent)")];
-        queueListItems.forEach(queueListItem => {
-          queueListItem.closest("li").remove();
-        });
-        nowPlayingInfo.currentSongIndex = 0;
-      }
+    clearQueueButton.addEventListener('click', async function () {
+      await clearQueue();
     });
 
     //create new playlist
@@ -404,8 +399,13 @@ const APP = (function () {
   //add listeners to currently playing song
   function addSongEventListeners() {
     nowPlayingInfo.song.addEventListener('timeupdate', function () {
-      trackSlider.value = nowPlayingInfo.song.currentTime;
-      updatePlaybackPositionValue();
+      if (nowPlayingInfo.song) {
+        trackSlider.value = nowPlayingInfo.song.currentTime;
+        updatePlaybackPositionValue();
+      } else {
+        trackSlider.value = 0;
+        updatePlaybackPositionValue();
+      }
     })
 
     //handle when song ends
@@ -765,6 +765,8 @@ const APP = (function () {
             }else{
               playSong(nowPlayingInfo.queue[newCurrentSongIndex], false);
             }
+          } else { //if there is only one song
+            await clearQueue();
           }
         } else {
           currentSong = queueList.querySelector(".queuecurrent").closest("li");
@@ -1467,7 +1469,7 @@ const APP = (function () {
         await togglePlayButton();
       }
       nowPlayingInfo.song = null;
-    };
+    }
     //reassign song variable to the new song that was just triggered
     nowPlayingInfo.song = new Audio(filepath);
     nowPlayingInfo.song.load();
@@ -1583,7 +1585,6 @@ const APP = (function () {
 
   //Update the timestamp string
   function updatePlaybackPositionValue() {
-    let playbackPositionValue = trackSlider.parentElement.querySelector('#playbackposition');
     playbackPositionValue.innerHTML = Math.floor(trackSlider.value / 60) + ":" + String(Math.floor(trackSlider.value % 60)).padStart(2, '0');
   }
 
@@ -1744,6 +1745,31 @@ const APP = (function () {
       }
     }
     if (scroll) { songToPlay.scrollIntoView({ behavior: "smooth" }); }
+  }
+
+  async function clearQueue() {
+    if (queueList.childElementCount > 0) {
+      //stop the currently playing song
+      if (nowPlayingInfo.song) {
+        if (!nowPlayingInfo.song.paused) {
+          await togglePlayButton();
+        }
+        //remove visual indicators of playing song
+        nowPlayingSong.innerText = "";
+        nowPlayingArtist.innerText = "";
+        tabTitle.innerText = "Music Player";
+        playbackDurationField.innerText = "0:00";
+        nowPlayingInfo.song = null;
+      }
+      //clear the queue
+      nowPlayingInfo.queue = [];
+      nowPlayingInfo.currentSongIndex = undefined;
+
+      let queueListItems = [...queueList.children];
+      queueListItems.forEach(queueListItem => {
+        queueListItem.closest("li").remove();
+      });
+    }
   }
 
 
