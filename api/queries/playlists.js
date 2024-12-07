@@ -38,6 +38,11 @@ const selectPlaylist = (name, callback) => {
     db.get(sql, [name], callback);
 }
 
+const selectPlaylistsWithSong = (songId, callback) => {
+    const sql = `SELECT DISTINCT playlist_id AS id, name FROM song_in_playlist sip INNER JOIN playlist p ON p.id = sip.playlist_id WHERE song_id = ?`
+    db.all(sql, [songId], callback);
+}
+
 //UPDATE
 const updatePlaylist = (id, name, callback) => {
     if (id==null || name == null) {
@@ -107,4 +112,4 @@ const removeSongFromPlaylist = (playlistId, songId, callback) => {
     db.run(sql, [playlistId, songId], callback);
 }
 
-module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist};
+module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong};

@@ -453,7 +453,7 @@ Some of these classes relate to dynamically generated content*/
     display: none;
 }
 
-.playlistpopup {
+.allplaylistpopup, .songplaylistpopup {
     height: 200px;
     width: 300px;
     position: absolute;

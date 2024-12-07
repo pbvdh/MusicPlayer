@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist} = require('../queries/playlists.js');
+const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong} = require('../queries/playlists.js');
 
 
 //Call corresponding query based on API call method, passing parameters and handling errors
@@ -112,6 +112,27 @@ router.get('/songs/:id', (req, res, next) => {
                 songs: rows
             }
             res.status(200).json(response); 
+        }
+    });
+});
+
+router.get('/withsong/:id', (req, res, next) => {
+    const id = req.params.id;
+    selectPlaylistsWithSong(id, (err, rows) => {
+        if (err) {
+            res.status(500).json({error: err.message});
+        } else {
+            if (rows == null) {
+                res.status(404).json({
+                    message: `The song with id: ${id} is not in any playlists. Ensure you are passing the song id.`,
+                });
+            } else {
+                const response = {
+                    count: rows.length,
+                    playlists: rows
+                }
+                res.status(200).json(response);
+            }   
         }
     });
 });

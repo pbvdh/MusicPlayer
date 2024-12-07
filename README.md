@@ -15,10 +15,8 @@ To Do
 - make it look nice in chrome, safari
 - persist current song/queue when refreshed and sensible defaults
 - stylized modal instead of alert/prompt
-- view what playlists a song belongs to
 
 Testing
 - API
 - UI
 - accessibility (lighthouse?)
-- tidy and group api calls

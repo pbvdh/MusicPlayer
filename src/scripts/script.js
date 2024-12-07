@@ -57,6 +57,7 @@ const APP = (function () {
   let playlistWindowHeader;
   let shuffleLibraryButton;
   let shufflePlaylistButton;
+  let panes;
 
   //define DOM elements and assign event listeners. Dynamically generate content as required
   async function init() {
@@ -119,6 +120,7 @@ const APP = (function () {
     playlistWindowHeader = document.querySelector("#playlists .windowheader h1");
     shuffleLibraryButton = document.getElementById("shufflelibrarybutton");
     shufflePlaylistButton = document.getElementById("shuffleplaylistbutton");
+    panes = document.querySelectorAll(".maindivs");
 
     //handle a song getting dragged within the song queue
     queueList.addEventListener('dragover', function (event) {
@@ -318,6 +320,14 @@ const APP = (function () {
     document.addEventListener('click', function (event) {
       removeOpenDropDowns(event);
     });
+
+    //force panels to visible when you click within any of them
+    panes.forEach(pane => {
+      pane.addEventListener('click', function () {
+        showHidePanes(true);
+      });
+    });
+
   }
 
 
@@ -380,7 +390,7 @@ const APP = (function () {
             if (option.getAttribute("data-option").toLowerCase() == "add to playlist") {
               option.addEventListener('mouseenter', async function () {
                 //if dropdown menu isnt present yet, reveal it
-                if (!option.querySelector(".playlistpopup")) {
+                if (!option.querySelector(".allplaylistpopup") && !document.querySelector(".songplaylistpopup")) {
                   await actionMenuRevealPlaylists();
                 }
               });
@@ -589,8 +599,6 @@ const APP = (function () {
 
   //forcibly reveal or hide main panels, overriding hover effect
   function showHidePanes(forceShow = false) {  //can optionally pass value true to just show panes rather than toggle
-    let panes = document.getElementsByClassName("maindivs");
-
     if (!showQueueIcon.classList.contains("toggledon")) {
       for (let i = 0; i < panes.length; i++) {
         panes[i].style.opacity = 0.95;
@@ -653,7 +661,7 @@ const APP = (function () {
         songCard.classList.remove("activeactionmenu");
         dropdown.remove();
       } else if ((!songCard.querySelector(".actionbutton").contains(event.target) && !dropdown.contains(event.target))) {
-        if (dropdown.querySelector(".playlistpopup") && dropdown.querySelector(".playlistpopup").contains(event.target)) {
+        if (dropdown.querySelector(".allplaylistpopup") && dropdown.querySelector(".allplaylistpopup").contains(event.target)) {
           return;
         }
         songCard.style.removeProperty("background-color");
@@ -729,9 +737,12 @@ const APP = (function () {
         removeOpenDropDowns();
         break;
       case "add to playlist":
-        if (document.querySelector(".playlistpopup")) {
-          document.querySelector(".playlistpopup").remove();
+        if (document.querySelector(".allplaylistpopup")) {
+          document.querySelector(".allplaylistpopup").remove();
         } else {
+          if (document.querySelector(".songplaylistpopup")) {
+            document.querySelector(".songplaylistpopup").remove();
+          }
           await actionMenuRevealPlaylists();
         }
         break;
@@ -804,6 +815,16 @@ const APP = (function () {
           let data = await response.json();
           console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
           document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
+        }
+        break;
+      case "view playlists":
+        if (document.querySelector(".songplaylistpopup")) {
+          document.querySelector(".songplaylistpopup").remove();
+        } else {
+          if (document.querySelector(".allplaylistpopup")) {
+            document.querySelector(".allplaylistpopup").remove();
+          }
+          await actionMenuRevealPlaylistsWithSong(selectedSongId); 
         }
         break;
     }
@@ -1058,6 +1079,44 @@ const APP = (function () {
   }
 
 
+  async function actionMenuRevealPlaylistsWithSong(songId) {
+    let menuOption = document.querySelector(".actionmenuoption[data-option='View playlists']");
+    const template = document.createElement('template');
+    template.innerHTML = `<div class="songplaylistpopup"></div>`;
+    template.content.firstElementChild.innerHTML = await presentPlaylistsWithSongAsList(songId);
+    if(template.content.firstElementChild.innerHTML == ""){return}
+    menuOption.appendChild(template.content.firstElementChild);
+    let songPlaylistPopup = menuOption.querySelector(".songplaylistpopup");
+
+    orientPopUp(songPlaylistPopup);
+
+    songPlaylistPopup.querySelectorAll(".playlistoption").forEach(option => {
+      option.addEventListener('click', async function (event) {
+        openPlaylistInWindow(event.currentTarget);
+      });
+    });
+  }
+ 
+  function orientPopUp(popup) {
+     //orient popup based on where on the screen it is
+     let parentDimensions = popup.closest(".actionmenuoption").getBoundingClientRect();
+     let hoz;
+     let vert;
+     //left or right
+     if (parentDimensions.left < window.innerWidth / 2) {
+       hoz = parentDimensions.width - 15;
+     } else {
+       hoz = -(parentDimensions.width + 13);
+     }
+     //up or down
+     if (parentDimensions.bottom > window.innerHeight / 2) {
+       vert = -189;
+     } else {
+       vert = -34;
+     }
+     popup.style.transform = `translate(${hoz}px, ${vert}px)`;
+  }
+
 
 
 
@@ -1228,6 +1287,7 @@ const APP = (function () {
                 <div class="actionmenuoption" data-option="Play next"><span>Play next</span></div>
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption" data-option="View playlists"><span>View playlists</span></div>
               </div>`;
         break;
       case "playlists":
@@ -1245,6 +1305,7 @@ const APP = (function () {
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption" data-option="Remove from playlist"><span>Remove from playlist</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption" data-option="View playlists"><span>View playlists</span></div>
               </div>`;
         break;
       case "songqueue":
@@ -1253,6 +1314,7 @@ const APP = (function () {
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption queueoption" data-option="Remove from queue"><span>Remove from queue</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
+                <div class="actionmenuoption" data-option="View playlists"><span>View playlists</span></div>
               </div>`;
         break;
     }
@@ -1263,30 +1325,14 @@ const APP = (function () {
   async function actionMenuRevealPlaylists() {
     let menuOption = document.querySelector(".actionmenuoption[data-option='Add to playlist']");
     const template = document.createElement('template');
-    template.innerHTML = `<div class="playlistpopup"></div>`;
+    template.innerHTML = `<div class="allplaylistpopup"></div>`;
     menuOption.appendChild(template.content.firstElementChild);
-    let playlistPopup = menuOption.querySelector(".playlistpopup");
-    playlistPopup.innerHTML = await presentPlaylistsAsList();
+    let allPlaylistPopup = menuOption.querySelector(".allplaylistpopup");
+    allPlaylistPopup.innerHTML = await presentPlaylistsAsList();
 
-    //orient popup based on where on the screen it is
-    let parentDimensions = playlistPopup.closest(".actionmenuoption").getBoundingClientRect();
-    let hoz;
-    let vert;
-    //left or right
-    if (parentDimensions.left < window.innerWidth / 2) {
-      hoz = parentDimensions.width - 15;
-    } else {
-      hoz = -(parentDimensions.width + 13);
-    }
-    //up or down
-    if (parentDimensions.bottom > window.innerHeight / 2) {
-      vert = -189;
-    } else {
-      vert = -34;
-    }
-    playlistPopup.style.transform = `translate(${hoz}px, ${vert}px)`;
+    orientPopUp(allPlaylistPopup);
 
-    playlistPopup.querySelectorAll(".playlistoption").forEach(option => {
+    allPlaylistPopup.querySelectorAll(".playlistoption").forEach(option => {
       option.addEventListener('click', async function (event) {
         let playlistId = event.currentTarget.getAttribute('playlistid');
         let songId = document.querySelector(".activeactionmenu").querySelector(".songname").getAttribute("songid");
@@ -1321,6 +1367,20 @@ const APP = (function () {
     const getAllPlaylistsUrl = "http://localhost:3000/playlists";
     let listItems = "";
     let response = await fetch(getAllPlaylistsUrl);
+    let data = await response.json();
+    data.playlists.forEach(playlist => {
+      //add each to the block of html we will add
+      listItems +=
+        `<div class="playlistoption" playlistid="${playlist.id}">${playlist.name}</div>`;
+    });
+    return listItems;
+  }
+
+  //return all playlists that the song with this id is in
+  async function presentPlaylistsWithSongAsList(songId) {
+    const getSongPlaylistsUrl = "http://localhost:3000/playlists/withsong/" + songId;
+    let listItems = "";
+    let response = await fetch(getSongPlaylistsUrl);
     let data = await response.json();
     data.playlists.forEach(playlist => {
       //add each to the block of html we will add
@@ -1365,6 +1425,25 @@ const APP = (function () {
     };
 
     await fetch(updateSongInPlaylistUrl, options);
+  }
+
+  //increase the number of plays for a song in the database
+  async function incrementSongPlays(id, number_of_plays) {
+    const songsUrl = "http://localhost:3000/songs";
+    number_of_plays += 1;
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: id,
+        number_of_plays: number_of_plays
+      }),
+    };
+
+    await fetch(songsUrl, options);
   }
 
 
@@ -1665,25 +1744,6 @@ const APP = (function () {
       }
     }
     if (scroll) { songToPlay.scrollIntoView({ behavior: "smooth" }); }
-  }
-
-  //increase the number of plays for a song in the database
-  async function incrementSongPlays(id, number_of_plays) {
-    const songsUrl = "http://localhost:3000/songs";
-    number_of_plays += 1;
-
-    const options = {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: id,
-        number_of_plays: number_of_plays
-      }),
-    };
-
-    await fetch(songsUrl, options);
   }
 
 
