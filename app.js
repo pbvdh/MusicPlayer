@@ -8,7 +8,7 @@ const playlistRoutes = require('./api/routes/playlists');
 const artistRoutes = require('./api/routes/artists');
 
 //routes for handling files
-const webpageRoutes = require('./api/routes/webpage')
+const webpageRoutes = require('./api/routes/webpages')
 const stylesheetRoutes = require('./api/routes/stylesheets')
 const imageRoutes = require('./api/routes/images')
 const scriptRoutes = require('./api/routes/scripts')
