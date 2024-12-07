@@ -807,6 +807,12 @@ const APP = (function () {
           addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
           addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
 
+          //visually update playlist count (even if it is currently hidden)
+          const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
+          let response = await fetch(getPlaylistUrl);
+          let data = await response.json();
+          console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
+          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
         }
         break;
     }
@@ -1266,14 +1272,13 @@ const APP = (function () {
 
             addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
             addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-          //otherwise, update the playlist length
-          } else {
-              const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
-              let response = await fetch(getPlaylistUrl);
-              let data = await response.json();
-              console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
-              document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";
-          }
+          }   
+          //visually update playlist count (even if it is currently hidden)
+          const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
+          let response = await fetch(getPlaylistUrl);
+          let data = await response.json();
+          console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
+          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
         }
       });
     });
