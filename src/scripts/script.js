@@ -56,6 +56,7 @@ const APP = (function () {
   let nowPlayingSong;
   let playlistWindowHeader;
   let shuffleLibraryButton;
+  let shufflePlaylistButton;
 
   //define DOM elements and assign event listeners. Dynamically generate content as required
   async function init() {
@@ -117,6 +118,7 @@ const APP = (function () {
     nowPlayingArtist = document.getElementById('nowplayingartistname').querySelector('.songsearchlink');
     playlistWindowHeader = document.querySelector("#playlists .windowheader h1");
     shuffleLibraryButton = document.getElementById("shufflelibrarybutton");
+    shufflePlaylistButton = document.getElementById("shuffleplaylistbutton");
 
     //handle a song getting dragged within the song queue
     queueList.addEventListener('dragover', function (event) {
@@ -257,6 +259,20 @@ const APP = (function () {
       shuffleIcon.classList.remove("toggledon");
       initializeSongQueue(songName);
       shuffleSongQueue();
+    });
+
+    //shuffle playlists or playlist
+    shufflePlaylistButton.addEventListener('click', async function () {
+      if (createPlaylistButton.getAttribute("status") == "create") {
+        //pick a random playlist and shuffle it
+        let list = [...playlistList.querySelectorAll('li:not([style="display: none;"])')].filter(el => el.querySelector(".playlistlength").innerText != "0 songs");
+        let playlistName = list[Math.floor(Math.random() * list.length)].querySelector(".playlistname");
+        await shufflePlaylist(playlistName.getAttribute('playlistid'), document.createElement('template'));
+        openPlaylistInWindow(playlistName);
+      } else {
+        //shuffle the currently open playlist
+        await shufflePlaylist(playlistWindowHeader.getAttribute("playlistid"), document.createElement('template')); 
+      }
     });
 
     //switch between artist and song libraries
@@ -461,33 +477,8 @@ const APP = (function () {
     //click events, toggle to song contents
     //when clicking a playlist, reveal its contents
     playlistNames.forEach(playlistName => {
-      playlistName.addEventListener('click', async function () {
-        let playlistId = playlistName.getAttribute("playlistid");
-        //toggle create button
-        createPlaylistButton.setAttribute("status", "return");
-        createPlaylistButton.innerText = "Back";
-        playlistWindowHeader.innerText = playlistName.innerText;
-        playlistWindowHeader.setAttribute("playlistid", playlistId);
-        playlistList.style.display = "none";
-        playlistSongList.style.display = "initial";
-
-        //reset search bar
-        let searchBar = playlistPanel.querySelector(".searchbar");
-        searchBar.querySelector(".searchsongs").value = "";
-        searchSongByName(searchBar, playlistList);
-
-        //api call to fetch songs in playlist
-        playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
-
-
-        //add event listeners to the newly generated html
-        let songNameLinks = playlistSongList.querySelectorAll('.songname');
-        let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
-        let playlistDraggables = playlistSongList.querySelectorAll(".draggablePlaylist");
-
-        addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
-        addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-        addPlaylistDraggableEventListeners(playlistDraggables);
+      playlistName.addEventListener('click', async function() {
+        openPlaylistInWindow(playlistName);
       });
     });
   }
@@ -954,31 +945,7 @@ const APP = (function () {
         break;
       case "shuffle playlist":
         removeOpenDropDowns();
-        template.innerHTML = await loadPlaylistSongs(playlistId);
-        //set a random song as the first one, so when fisher yates is applied by shufflesongqueue(), we dont always end up with the same first song
-        let firstChild = template.content.firstElementChild;
-        template.content.insertBefore(firstChild, template.content.children[Math.floor(Math.random() * (nowPlayingInfo.queue.length - 1)) + 1]);
-
-        //empty queue
-        shuffleIcon.classList.remove("toggledon");
-        queueList.innerHTML = "";
-        nowPlayingInfo.queue = [];
-        nowPlayingInfo.currentSongIndex = 0;
-
-        //similar to add playlist to queue for empty queue
-        [...template.content.children].forEach(child => {
-          child.classList.add("draggableQueue");
-          child.setAttribute("draggable", "true");
-          queueList.appendChild(child);
-          nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
-        });
-        queueList.firstElementChild.querySelector(".tracklistitem").classList.add("queuecurrent");
-        addQueueEventListeners(queueList);
-
-        //shuffle the queue and start playing the first song
-        shuffleSongQueue();
-        playSong(nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex]);
-        removeOpenDropDowns();
+        await shufflePlaylist(playlistId, template);
         break;
     }
     removeOpenDropDowns();
@@ -1026,6 +993,71 @@ const APP = (function () {
       container.scrollTop += (distanceFromTop < buffer ? -scrollSpeed : scrollSpeed);
     }
   }
+
+  //function to create a shuffled queue from a playlist
+  async function shufflePlaylist(playlistId, template) {
+    template.innerHTML = await loadPlaylistSongs(playlistId);
+    //set a random song as the first one, so when fisher yates is applied by shufflesongqueue(), we dont always end up with the same first song
+    if(template.content.childElementCount == 0){
+      //if the playlist is empty, do nothing
+      return;
+    }else if (template.content.childElementCount > 1) {
+      let firstChild = template.content.firstElementChild;
+      let rand = Math.floor(Math.random() * (template.content.childElementCount - 1)) + 1;
+      template.content.insertBefore(template.content.children[rand], firstChild);
+    }
+
+    //empty queue
+    shuffleIcon.classList.remove("toggledon");
+    queueList.innerHTML = "";
+    nowPlayingInfo.queue = [];
+    nowPlayingInfo.currentSongIndex = 0;
+
+    //similar to add playlist to queue for empty queue
+    [...template.content.children].forEach(child => {
+      child.classList.add("draggableQueue");
+      child.setAttribute("draggable", "true");
+      queueList.appendChild(child);
+      nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
+    });
+    queueList.firstElementChild.querySelector(".tracklistitem").classList.add("queuecurrent");
+    addQueueEventListeners(queueList);
+
+    //shuffle the queue and start playing the first song
+    shuffleSongQueue();
+    playSong(nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex]);
+    removeOpenDropDowns();
+  }
+
+  async function openPlaylistInWindow(playlistName) {
+        let playlistId = playlistName.getAttribute("playlistid");
+        //toggle create button
+        createPlaylistButton.setAttribute("status", "return");
+        createPlaylistButton.innerText = "Back";
+        playlistWindowHeader.innerText = playlistName.innerText;
+        playlistWindowHeader.setAttribute("playlistid", playlistId);
+        playlistList.style.display = "none";
+        playlistSongList.style.display = "initial";
+
+        //reset search bar
+        let searchBar = playlistPanel.querySelector(".searchbar");
+        searchBar.querySelector(".searchsongs").value = "";
+        searchSongByName(searchBar, playlistList);
+
+        //api call to fetch songs in playlist
+        playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+
+        //add event listeners to the newly generated html
+        let songNameLinks = playlistSongList.querySelectorAll('.songname');
+        let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+        let playlistDraggables = playlistSongList.querySelectorAll(".draggablePlaylist");
+
+        addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+        addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+        addPlaylistDraggableEventListeners(playlistDraggables);
+  }
+
+
 
 
 

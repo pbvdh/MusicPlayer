@@ -657,11 +657,15 @@ Some of these classes relate to dynamically generated content*/
     display: none;
 }
 
-#shufflelibrarybutton svg{
+#shufflelibrarybutton svg, #shuffleplaylistbutton svg {
     fill: white;
 }
 
-#shufflelibrarybutton {
+#shufflelibrarybutton,  #shuffleplaylistbutton {
     margin-right: 16px;
     width: 48px;
+}
+
+#createplaylistbutton, #togglelibrarybutton {
+    min-width: 136px;
 }
