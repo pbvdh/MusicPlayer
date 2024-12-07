@@ -11,7 +11,6 @@ Additional Tools used
 
 To Do
 - add hovers for songs with long names
-- env file for port number and other variables
 - make it look nice in chrome, safari
 - persist current song/queue when refreshed and sensible defaults
 - stylized modal instead of alert/prompt
@@ -19,4 +18,4 @@ To Do
 Testing
 - API
 - UI
-- accessibility (lighthouse?)
+- accessibility 

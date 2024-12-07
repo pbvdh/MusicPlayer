@@ -10,6 +10,7 @@
   "author": "Pieter Brassey-Van Der Haas",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "morgan": "^1.10.0",
     "nes.css": "^2.3.0",
