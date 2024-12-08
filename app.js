@@ -18,7 +18,7 @@ const scriptRoutes = require('./api/routes/scripts')
 //log incoming requests
 app.use(morgan('dev'));
 //make mp3 folder publicly accessible
-app.use(express.static('../mp3_library'));
+app.use(express.static('./mp3_library'));
 //parse bodies
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
