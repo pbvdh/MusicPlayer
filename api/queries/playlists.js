@@ -83,7 +83,6 @@ const updateSongInPlaylist = (songId, playlistId, position, callback) => {
                         ELSE position  -- If old position is exactly the new position, don't change anything
                     END
                 WHERE playlist_id = ${playlistId};`;
-            console.log(sql)
         db.run(sql, function(err) {
             callback(err)
         });
