@@ -466,7 +466,7 @@ const APP = (function () {
       songNameLink.onclick = function () {
         playSong(songNameLink.getAttribute('songid')); //play song when clicked
         updateQueueAppearance(songNameLink.closest("li"));
-        nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueItems.querySelectorAll("li"), queueList.querySelector(".queuecurrent").closest("li"));
+        nowPlayingInfo.currentSongIndex = Array.prototype.indexOf.call(queueList.querySelectorAll("li"), queueList.querySelector(".queuecurrent").closest("li"));
       };
 
       let artistNameLink = draggable.querySelector('.artistname');
@@ -815,7 +815,6 @@ const APP = (function () {
           const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
           let response = await fetch(getPlaylistUrl);
           let data = await response.json();
-          console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
           document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
         }
         break;
