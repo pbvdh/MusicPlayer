@@ -199,7 +199,7 @@ const APP = (function () {
     playButton.addEventListener('click', function () {
       if (nowPlayingInfo.song) { //there is a currently playing song, but it was paused
         togglePlayButton();
-      } else if (nowPlayingInfo.queue) { //there is a song queued and ready to play
+      } else if (nowPlayingInfo.queue.length > 0) { //there is a song queued and ready to play
         let id = nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
         playSong(id);
       }
@@ -285,8 +285,15 @@ const APP = (function () {
     });
 
     //empty the current queue
-    clearQueueButton.addEventListener('click', async function () {
-      await clearQueue();
+    clearQueueButton.addEventListener('click', function () {
+      if (queueList.childElementCount > 0) {
+        nowPlayingInfo.queue = [nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex]];
+        let queueListItems = [...queueList.querySelectorAll(".tracklistitem:not(.queuecurrent)")];
+        queueListItems.forEach(queueListItem => {
+          queueListItem.closest("li").remove();
+        });
+        nowPlayingInfo.currentSongIndex = 0;
+      }
     });
 
     //create new playlist
@@ -765,8 +772,23 @@ const APP = (function () {
             }else{
               playSong(nowPlayingInfo.queue[newCurrentSongIndex], false);
             }
-          } else { //if there is only one song
-            await clearQueue();
+          } else { //if there is only one song, clear it
+              //stop the currently playing song
+              if (nowPlayingInfo.song) {
+                if (!nowPlayingInfo.song.paused) {
+                  await togglePlayButton();
+                }
+                //remove visual indicators of playing song
+                nowPlayingSong.innerText = "";
+                nowPlayingArtist.innerText = "";
+                tabTitle.innerText = "Music Player";
+                playbackDurationField.innerText = "0:00";
+                nowPlayingInfo.song = null;
+              }
+              //clear the queue
+              nowPlayingInfo.queue = [];
+              nowPlayingInfo.currentSongIndex = undefined;
+              songCard.remove();
           }
         } else {
           currentSong = queueList.querySelector(".queuecurrent").closest("li");
@@ -1107,7 +1129,7 @@ const APP = (function () {
      if (parentDimensions.left < window.innerWidth / 2) {
        hoz = parentDimensions.width - 15;
      } else {
-       hoz = -(parentDimensions.width + 13);
+       hoz = -(popup.getBoundingClientRect().width+15);
      }
      //up or down
      if (parentDimensions.bottom > window.innerHeight / 2) {
@@ -1760,31 +1782,6 @@ const APP = (function () {
       }
     }
     if (scroll) { songToPlay.scrollIntoView({ behavior: "smooth" }); }
-  }
-
-  async function clearQueue() {
-    if (queueList.childElementCount > 0) {
-      //stop the currently playing song
-      if (nowPlayingInfo.song) {
-        if (!nowPlayingInfo.song.paused) {
-          await togglePlayButton();
-        }
-        //remove visual indicators of playing song
-        nowPlayingSong.innerText = "";
-        nowPlayingArtist.innerText = "";
-        tabTitle.innerText = "Music Player";
-        playbackDurationField.innerText = "0:00";
-        nowPlayingInfo.song = null;
-      }
-      //clear the queue
-      nowPlayingInfo.queue = [];
-      nowPlayingInfo.currentSongIndex = undefined;
-
-      let queueListItems = [...queueList.children];
-      queueListItems.forEach(queueListItem => {
-        queueListItem.closest("li").remove();
-      });
-    }
   }
 
 
