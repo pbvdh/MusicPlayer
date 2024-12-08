@@ -904,10 +904,10 @@ const APP = (function () {
 
       case "rename playlist":
         //get new name
-        let newPlaylistName = prompt("Enter playlist name (up to 15 characters):");
+        let newPlaylistName = prompt("Enter playlist name (up to 20 characters):");
         if (!newPlaylistName || newPlaylistName.trim().length == 0) { return; }
-        while (newPlaylistName.length > 15) {
-          newPlaylistName = prompt(`Name too long! (${newPlaylistName.length} characters). Enter a different name with less than 15 characters:`);
+        while (newPlaylistName.length > 20) {
+          newPlaylistName = prompt(`Name too long! (${newPlaylistName.length} characters). Enter a different name with less than 20 characters:`);
         }
         if (!newPlaylistName || newPlaylistName.trim().length == 0) { return; }
 
@@ -1119,6 +1119,30 @@ const APP = (function () {
      popup.style.transform = `translate(${hoz}px, ${vert}px)`;
   }
 
+  async function insertSongIntoPlaylist(songId, playlistId) {
+    let response = await addSongToPlaylist(songId, playlistId);
+        if (response.status == 201) {
+          //if we are currently looking at the songs in this playlist, we should see it visually update to include this new one
+          if (playlistWindowHeader.getAttribute("playlistid") == playlistId) {
+
+            //api call to fetch songs in playlist
+            playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+
+            //add event listeners to the newly generated html
+            let songNameLinks = playlistSongList.querySelectorAll('.songname');
+            let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+
+            addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+            addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+          }   
+          //visually update playlist count (even if it is currently hidden)
+          const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
+          let response = await fetch(getPlaylistUrl);
+          let data = await response.json();
+          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
+        }
+  }
+
 
 
 
@@ -1243,12 +1267,12 @@ const APP = (function () {
   }
 
   //create new playlist in database
-  async function createPlaylist() {
+  async function createPlaylist(songId = null) {
 
-    let playlistName = prompt("Enter playlist name (up to 15 characters):");
+    let playlistName = prompt("Enter playlist name (up to 20 characters):");
     if (!playlistName || playlistName.trim().length == 0) { return; }
-    while (playlistName && playlistName.length > 15) {
-      playlistName = prompt(`Name too long! (${playlistName.length} characters). Enter a different name with less than 15 characters:`);
+    while (playlistName && playlistName.length > 20) {
+      playlistName = prompt(`Name too long! (${playlistName.length} characters). Enter a different name with less than 20 characters:`);
     }
     if (!playlistName || playlistName.trim().length == 0) { return; }
 
@@ -1275,8 +1299,16 @@ const APP = (function () {
       }
       //add event listeners - clicks and action menus 
       addPlaylistEventListeners();
-      //scroll to newly created
-      playlistList.querySelector(`.playlistname[playlistid="${data.createdPlaylist.id}"]`).scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+
+      if(songId) {
+        await insertSongIntoPlaylist(songId, data.createdPlaylist.id);
+      } 
+      //if playlists are on the screen
+      if(createPlaylistButton.getAttribute("status") == "create"){
+        //scroll to newly created
+        playlistList.querySelector(`.playlistname[playlistid="${data.createdPlaylist.id}"]`).scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      }
+
     }
   }
 
@@ -1328,38 +1360,22 @@ const APP = (function () {
     let menuOption = document.querySelector(".actionmenuoption[data-option='Add to playlist']");
     const template = document.createElement('template');
     template.innerHTML = `<div class="allplaylistpopup"></div>`;
+    template.content.firstElementChild.innerHTML = await presentPlaylistsAsList();
     menuOption.appendChild(template.content.firstElementChild);
     let allPlaylistPopup = menuOption.querySelector(".allplaylistpopup");
-    allPlaylistPopup.innerHTML = await presentPlaylistsAsList();
+
+    let songId = document.querySelector(".activeactionmenu").querySelector(".songname").getAttribute("songid");
 
     orientPopUp(allPlaylistPopup);
+
+    allPlaylistPopup.querySelector(".newplaylistoption").addEventListener('click', function () {
+      createPlaylist(songId);
+    });
 
     allPlaylistPopup.querySelectorAll(".playlistoption").forEach(option => {
       option.addEventListener('click', async function (event) {
         let playlistId = event.currentTarget.getAttribute('playlistid');
-        let songId = document.querySelector(".activeactionmenu").querySelector(".songname").getAttribute("songid");
-        let response = await addSongToPlaylist(songId, playlistId);
-        if (response.status == 201) {
-          //if we are currently looking at the songs in this playlist, we should see it visually update to include this new one
-          if (playlistWindowHeader.getAttribute("playlistid") == playlistId) {
-
-            //api call to fetch songs in playlist
-            playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
-
-            //add event listeners to the newly generated html
-            let songNameLinks = playlistSongList.querySelectorAll('.songname');
-            let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
-
-            addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
-            addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-          }   
-          //visually update playlist count (even if it is currently hidden)
-          const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
-          let response = await fetch(getPlaylistUrl);
-          let data = await response.json();
-          console.log(document.querySelector(`.playlistname[playlistid='${playlistId}']`));
-          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
-        }
+        await insertSongIntoPlaylist(songId, playlistId);
       });
     });
   }
@@ -1367,7 +1383,7 @@ const APP = (function () {
   //generate list of playlists for the action menu hover
   async function presentPlaylistsAsList() {
     const getAllPlaylistsUrl = "http://localhost:3000/playlists";
-    let listItems = "";
+    let listItems = `<div class="newplaylistoption">Create New Playlist</div>`;
     let response = await fetch(getAllPlaylistsUrl);
     let data = await response.json();
     data.playlists.forEach(playlist => {
