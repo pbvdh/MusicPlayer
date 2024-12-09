@@ -1,4 +1,4 @@
-const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong} = require('../queries/playlists.js');
+const {createPlaylist, addSongToPlaylist, selectAllPlaylists, updatePlaylist, selectSongsOnPlaylist, selectPlaylist, deletePlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong, decrementSongPositions, selectSongPosition} = require('../queries/playlists.js');
 
 //CREATE
 exports.playlists_create_playlist = (req, res, next) => {
@@ -131,6 +131,30 @@ exports.playlists_get_playlists_with_song = (req, res, next) => {
     });
 }
 
+exports.playlists_get_song_position = (req, res, next) => {
+    const songId = req.params.songid;
+    const playlistId = req.params.playlistid;
+    selectSongPosition(songId, playlistId, (err, rows) => {
+        if (err) {
+            res.status(500).json({error: err.message});
+        } else {   
+            if (rows == null) {
+                res.status(404).json({
+                    message: `No song with id: ${songId} found in playlist: ${playlistId}`,
+                    checkSongsInPlaylist: {
+                        type: 'GET',
+                        url: `http://localhost:3000/playlists/songs/${playlistId}`
+                    }
+                });
+            } else {
+                res.status(200).json(rows); 
+            }
+        }
+    });
+}
+
+
+
 //UPDATE
 exports.playlists_update_playlist = (req, res, next) => {
     const id = req.body.id;
@@ -178,6 +202,31 @@ exports.playlists_update_song = (req, res, next) => {
         } else {
             res.status(200).json({
                 message: `Updated song: ${songId} in playlist: ${playlistId}`,
+                updatedPlaylist: {
+                        type: 'GET',
+                        url: `http://localhost:3000/playlists/songs/${playlistId}`
+                }
+            });
+        }
+    });
+}
+
+exports.playlists_decrement_song_positions = (req, res, next) => {
+    const playlistId = req.body.playlistId;
+    const deletedPosition = req.body.deletedPosition;
+    decrementSongPositions(playlistId, deletedPosition, (err) => {
+        if (err) {
+            if(err.code=="PARAMETER_ERROR"){
+                res.status(400).json({
+                    error: err.message,
+                    requiredParameters: "playlistId, deletedPosition"
+                });
+            } else {
+                res.status(500).json({error: err.message});
+            } 
+        } else {
+            res.status(200).json({
+                message: `Decremented the positions of all songs above position: ${deletedPosition}`,
                 updatedPlaylist: {
                         type: 'GET',
                         url: `http://localhost:3000/playlists/songs/${playlistId}`

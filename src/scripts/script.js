@@ -806,20 +806,8 @@ const APP = (function () {
         removeOpenDropDowns();
         let playlistId = playlistWindowHeader.getAttribute("playlistid")
 
-        const deleteSongFromPlaylistUrl = "http://localhost:3000/playlists/song";
-
-        const options = {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            playlistId: playlistId,
-            songId: selectedSongId
-          }),
-        };
-
-        let response = await fetch(deleteSongFromPlaylistUrl, options);
+        //make api call to delete song from playlist and update the positions of the other songs
+        let response = await deleteSongFromPlaylist(selectedSongId, playlistId);
 
         //reload
         if (response.status == 200) {
@@ -832,6 +820,7 @@ const APP = (function () {
 
           addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
           addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+          addPlaylistDraggableEventListeners(playlistSongList.querySelectorAll(".draggablePlaylist"));
 
           //visually update playlist count (even if it is currently hidden)
           const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
@@ -1155,6 +1144,7 @@ const APP = (function () {
 
             addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
             addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+            addPlaylistDraggableEventListeners(playlistSongList.querySelectorAll(".draggablePlaylist"));
           }   
           //visually update playlist count (even if it is currently hidden)
           const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
@@ -1431,7 +1421,7 @@ const APP = (function () {
 
   //add song to playlist in the database
   async function addSongToPlaylist(songId, playlistId) {
-    const addToPlaylistUrl = "http://localhost:3000/playlists/addSong";
+    const addToPlaylistUrl = "http://localhost:3000/playlists/addsong";
 
     const options = {
       method: 'POST',
@@ -1483,6 +1473,47 @@ const APP = (function () {
     };
 
     await fetch(songsUrl, options);
+  }
+
+//delete a song from a playlist, and update the positions of the other songs
+  async function deleteSongFromPlaylist(songId, playlistId) {
+    //find position of song to delete
+    const getSongPositionUrl = `http://localhost:3000/playlists/position/${songId}/${playlistId}`;
+    let response = await fetch(getSongPositionUrl)
+    let data = await response.json();
+    let position = data.position
+
+    //delete song
+    const deleteSongFromPlaylistUrl = "http://localhost:3000/playlists/song";
+
+    const deleteOptions = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playlistId: playlistId,
+        songId: songId
+      }),
+    };
+    response = await fetch(deleteSongFromPlaylistUrl, deleteOptions);
+
+    //decrement the positions of all subsequent songs
+    const decrementSongPositionsUrl = "http://localhost:3000/playlists/decrementpositions"
+
+    const decrementOptions = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        playlistId: playlistId,
+        deletedPosition: position
+      }),
+    };
+
+    await fetch(decrementSongPositionsUrl, decrementOptions);
+    return response;
   }
 
 

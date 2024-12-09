@@ -34,13 +34,18 @@ const selectSongsOnPlaylist = (id, callback) => {
 }
 
 const selectPlaylist = (name, callback) => {
-    const sql = `SELECT * FROM playlist WHERE name = ?`
+    const sql = `SELECT * FROM playlist WHERE name = ?`;
     db.get(sql, [name], callback);
 }
 
 const selectPlaylistsWithSong = (songId, callback) => {
-    const sql = `SELECT DISTINCT playlist_id AS id, name FROM song_in_playlist sip INNER JOIN playlist p ON p.id = sip.playlist_id WHERE song_id = ?`
+    const sql = `SELECT DISTINCT playlist_id AS id, name FROM song_in_playlist sip INNER JOIN playlist p ON p.id = sip.playlist_id WHERE song_id = ?`;
     db.all(sql, [songId], callback);
+}
+
+const selectSongPosition = (songId, playlistId, callback) => {
+    const sql = `SELECT position FROM song_in_playlist WHERE playlist_id = ? AND song_id = ?;`;
+    db.get(sql, [playlistId, songId], callback);
 }
 
 //UPDATE
@@ -89,6 +94,15 @@ const updateSongInPlaylist = (songId, playlistId, position, callback) => {
     }
 }
 
+const decrementSongPositions = (playlistId, deletedPosition, callback) => {
+    if (playlistId == null || deletedPosition == null) {
+        return callback({message: "A required field is missing. Please check request body.", code: "PARAMETER_ERROR"});
+    } else {
+        const sql = `UPDATE song_in_playlist SET position = position -1 WHERE position > ? AND playlist_id = ?`;
+        db.run(sql, [deletedPosition, playlistId], callback);
+    }
+}
+
 //DELETE
 const deletePlaylist = (playlistId, callback) => {
     const sql = `DELETE FROM playlist WHERE id = ?;`;
@@ -111,4 +125,4 @@ const removeSongFromPlaylist = (playlistId, songId, callback) => {
     db.run(sql, [playlistId, songId], callback);
 }
 
-module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong};
+module.exports = {createPlaylist, selectAllPlaylists, selectPlaylist, selectSongsOnPlaylist, updatePlaylist, deletePlaylist, addSongToPlaylist, deleteSongsInPlaylist, removeSongFromPlaylist, updateSongInPlaylist, selectPlaylistsWithSong, decrementSongPositions, selectSongPosition};
