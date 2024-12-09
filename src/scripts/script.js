@@ -263,6 +263,7 @@ const APP = (function () {
       shuffleIcon.classList.remove("toggledon");
       initializeSongQueue(songName);
       shuffleSongQueue();
+      queueList.querySelector(`.queuecurrent`).scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     });
 
     //shuffle playlists or playlist
