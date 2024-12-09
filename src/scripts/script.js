@@ -275,7 +275,7 @@ const APP = (function () {
         openPlaylistInWindow(playlistName);
       } else {
         //shuffle the currently open playlist
-        await shufflePlaylist(playlistWindowHeader.getAttribute("playlistid"), document.createElement('template')); 
+        await shufflePlaylist(playlistWindowHeader.getAttribute("playlistid"), document.createElement('template'));
       }
     });
 
@@ -494,7 +494,7 @@ const APP = (function () {
     //click events, toggle to song contents
     //when clicking a playlist, reveal its contents
     playlistNames.forEach(playlistName => {
-      playlistName.addEventListener('click', async function() {
+      playlistName.addEventListener('click', async function () {
         openPlaylistInWindow(playlistName);
       });
     });
@@ -700,7 +700,7 @@ const APP = (function () {
           queueList.appendChild(copy);
           nowPlayingInfo.queue.push(selectedSongId);
           //if queue is currently shuffled, make sure we still have these songs when we unshuffle
-          if(nowPlayingInfo.unshuffledQueueList){
+          if (nowPlayingInfo.unshuffledQueueList) {
             nowPlayingInfo.unshuffledQueueList.push(copy);
             nowPlayingInfo.unshuffledQueue.push(selectedSongId);
           }
@@ -734,7 +734,7 @@ const APP = (function () {
         queueList.appendChild(copy);
         nowPlayingInfo.queue.push(selectedSongId);
         //if queue is currently shuffled, make sure we still have these songs when we unshuffle
-        if(nowPlayingInfo.unshuffledQueueList){
+        if (nowPlayingInfo.unshuffledQueueList) {
           nowPlayingInfo.unshuffledQueueList.push(copy);
           nowPlayingInfo.unshuffledQueue.push(selectedSongId);
         }
@@ -767,28 +767,28 @@ const APP = (function () {
             let newCurrentSongIndex = Math.min(nowPlayingInfo.currentSongIndex, nowPlayingInfo.queue.length - 1);
             songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.remove("queuehistory");
             songQueue[newCurrentSongIndex].querySelector(".tracklistitem").classList.add("queuecurrent");
-            if(playButton.getAttribute('status') == "playing"){
+            if (playButton.getAttribute('status') == "playing") {
               playSong(nowPlayingInfo.queue[newCurrentSongIndex]);
-            }else{
+            } else {
               playSong(nowPlayingInfo.queue[newCurrentSongIndex], false);
             }
           } else { //if there is only one song, clear it
-              //stop the currently playing song
-              if (nowPlayingInfo.song) {
-                if (!nowPlayingInfo.song.paused) {
-                  await togglePlayButton();
-                }
-                //remove visual indicators of playing song
-                nowPlayingSong.innerText = "";
-                nowPlayingArtist.innerText = "";
-                tabTitle.innerText = "Music Player";
-                playbackDurationField.innerText = "0:00";
-                nowPlayingInfo.song = null;
+            //stop the currently playing song
+            if (nowPlayingInfo.song) {
+              if (!nowPlayingInfo.song.paused) {
+                await togglePlayButton();
               }
-              //clear the queue
-              nowPlayingInfo.queue = [];
-              nowPlayingInfo.currentSongIndex = undefined;
-              songCard.remove();
+              //remove visual indicators of playing song
+              nowPlayingSong.innerText = "";
+              nowPlayingArtist.innerText = "";
+              tabTitle.innerText = "Music Player";
+              playbackDurationField.innerText = "0:00";
+              nowPlayingInfo.song = null;
+            }
+            //clear the queue
+            nowPlayingInfo.queue = [];
+            nowPlayingInfo.currentSongIndex = undefined;
+            songCard.remove();
           }
         } else {
           currentSong = queueList.querySelector(".queuecurrent").closest("li");
@@ -826,7 +826,7 @@ const APP = (function () {
           const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
           let response = await fetch(getPlaylistUrl);
           let data = await response.json();
-          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
+          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";
         }
         break;
       case "view playlists":
@@ -836,7 +836,7 @@ const APP = (function () {
           if (document.querySelector(".allplaylistpopup")) {
             document.querySelector(".allplaylistpopup").remove();
           }
-          await actionMenuRevealPlaylistsWithSong(selectedSongId); 
+          await actionMenuRevealPlaylistsWithSong(selectedSongId);
         }
         break;
     }
@@ -864,7 +864,7 @@ const APP = (function () {
             queueList.appendChild(child);
             nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
             //if queue is currently shuffled, make sure we still have these songs when we unshuffle
-            if(nowPlayingInfo.unshuffledQueueList){
+            if (nowPlayingInfo.unshuffledQueueList) {
               nowPlayingInfo.unshuffledQueueList.push(child);
               nowPlayingInfo.unshuffledQueue.push(child.querySelector(".songname").getAttribute("songid"));
             }
@@ -899,7 +899,7 @@ const APP = (function () {
           queueList.appendChild(child);
           nowPlayingInfo.queue.push(child.querySelector(".songname").getAttribute("songid"));
           //if queue is currently shuffled, make sure we still have these songs when we unshuffle
-          if(nowPlayingInfo.unshuffledQueueList){
+          if (nowPlayingInfo.unshuffledQueueList) {
             nowPlayingInfo.unshuffledQueueList.push(child);
             nowPlayingInfo.unshuffledQueue.push(child.querySelector(".songname").getAttribute("songid"));
           }
@@ -923,20 +923,7 @@ const APP = (function () {
 
         //if name is valid, proceed
         if (newPlaylistName != null && newPlaylistName != "" && newPlaylistName != playlistName) {
-          const playlistsUrl = "http://localhost:3000/playlists";
-
-          const options = {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              id: playlistId,
-              name: newPlaylistName
-            }),
-          };
-
-          let response = await fetch(playlistsUrl, options);
+          let response = await renamePlaylist(playlistId, newPlaylistName);
           let data = await response.json();
 
           //reload playlists
@@ -1031,10 +1018,10 @@ const APP = (function () {
   async function shufflePlaylist(playlistId, template) {
     template.innerHTML = await loadPlaylistSongs(playlistId);
     //set a random song as the first one, so when fisher yates is applied by shufflesongqueue(), we dont always end up with the same first song
-    if(template.content.childElementCount == 0){
+    if (template.content.childElementCount == 0) {
       //if the playlist is empty, do nothing
       return;
-    }else if (template.content.childElementCount > 1) {
+    } else if (template.content.childElementCount > 1) {
       let firstChild = template.content.firstElementChild;
       let rand = Math.floor(Math.random() * (template.content.childElementCount - 1)) + 1;
       template.content.insertBefore(template.content.children[rand], firstChild);
@@ -1063,31 +1050,31 @@ const APP = (function () {
   }
 
   async function openPlaylistInWindow(playlistName) {
-        let playlistId = playlistName.getAttribute("playlistid");
-        //toggle create button
-        createPlaylistButton.setAttribute("status", "return");
-        createPlaylistButton.innerText = "Back";
-        playlistWindowHeader.innerText = playlistName.innerText;
-        playlistWindowHeader.setAttribute("playlistid", playlistId);
-        playlistList.style.display = "none";
-        playlistSongList.style.display = "initial";
+    let playlistId = playlistName.getAttribute("playlistid");
+    //toggle create button
+    createPlaylistButton.setAttribute("status", "return");
+    createPlaylistButton.innerText = "Back";
+    playlistWindowHeader.innerText = playlistName.innerText;
+    playlistWindowHeader.setAttribute("playlistid", playlistId);
+    playlistList.style.display = "none";
+    playlistSongList.style.display = "initial";
 
-        //reset search bar
-        let searchBar = playlistPanel.querySelector(".searchbar");
-        searchBar.querySelector(".searchsongs").value = "";
-        searchSongByName(searchBar, playlistList);
+    //reset search bar
+    let searchBar = playlistPanel.querySelector(".searchbar");
+    searchBar.querySelector(".searchsongs").value = "";
+    searchSongByName(searchBar, playlistList);
 
-        //api call to fetch songs in playlist
-        playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+    //api call to fetch songs in playlist
+    playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
 
-        //add event listeners to the newly generated html
-        let songNameLinks = playlistSongList.querySelectorAll('.songname');
-        let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
-        let playlistDraggables = playlistSongList.querySelectorAll(".draggablePlaylist");
+    //add event listeners to the newly generated html
+    let songNameLinks = playlistSongList.querySelectorAll('.songname');
+    let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+    let playlistDraggables = playlistSongList.querySelectorAll(".draggablePlaylist");
 
-        addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
-        addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-        addPlaylistDraggableEventListeners(playlistDraggables);
+    addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+    addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+    addPlaylistDraggableEventListeners(playlistDraggables);
   }
 
 
@@ -1096,7 +1083,7 @@ const APP = (function () {
     const template = document.createElement('template');
     template.innerHTML = `<div class="songplaylistpopup"></div>`;
     template.content.firstElementChild.innerHTML = await presentPlaylistsWithSongAsList(songId);
-    if(template.content.firstElementChild.innerHTML == ""){return}
+    if (template.content.firstElementChild.innerHTML == "") { return }
     menuOption.appendChild(template.content.firstElementChild);
     let songPlaylistPopup = menuOption.querySelector(".songplaylistpopup");
 
@@ -1108,50 +1095,50 @@ const APP = (function () {
       });
     });
   }
- 
+
   function orientPopUp(popup) {
-     //orient popup based on where on the screen it is
-     let parentDimensions = popup.closest(".actionmenuoption").getBoundingClientRect();
-     let hoz;
-     let vert;
-     //left or right
-     if (parentDimensions.left < window.innerWidth / 2) {
-       hoz = parentDimensions.width - 15;
-     } else {
-       hoz = -(popup.getBoundingClientRect().width+15);
-     }
-     //up or down
-     if (parentDimensions.bottom > window.innerHeight / 2) {
-       vert = -189;
-     } else {
-       vert = -34;
-     }
-     popup.style.transform = `translate(${hoz}px, ${vert}px)`;
+    //orient popup based on where on the screen it is
+    let parentDimensions = popup.closest(".actionmenuoption").getBoundingClientRect();
+    let hoz;
+    let vert;
+    //left or right
+    if (parentDimensions.left < window.innerWidth / 2) {
+      hoz = parentDimensions.width - 15;
+    } else {
+      hoz = -(popup.getBoundingClientRect().width + 15);
+    }
+    //up or down
+    if (parentDimensions.bottom > window.innerHeight / 2) {
+      vert = -189;
+    } else {
+      vert = -34;
+    }
+    popup.style.transform = `translate(${hoz}px, ${vert}px)`;
   }
 
   async function insertSongIntoPlaylist(songId, playlistId) {
     let response = await addSongToPlaylist(songId, playlistId);
-        if (response.status == 201) {
-          //if we are currently looking at the songs in this playlist, we should see it visually update to include this new one
-          if (playlistWindowHeader.getAttribute("playlistid") == playlistId) {
+    if (response.status == 201) {
+      //if we are currently looking at the songs in this playlist, we should see it visually update to include this new one
+      if (playlistWindowHeader.getAttribute("playlistid") == playlistId) {
 
-            //api call to fetch songs in playlist
-            playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
+        //api call to fetch songs in playlist
+        playlistSongList.innerHTML = await loadPlaylistSongs(playlistId);
 
-            //add event listeners to the newly generated html
-            let songNameLinks = playlistSongList.querySelectorAll('.songname');
-            let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
+        //add event listeners to the newly generated html
+        let songNameLinks = playlistSongList.querySelectorAll('.songname');
+        let artistNameLinks = playlistSongList.querySelectorAll('.artistname');
 
-            addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
-            addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
-            addPlaylistDraggableEventListeners(playlistSongList.querySelectorAll(".draggablePlaylist"));
-          }   
-          //visually update playlist count (even if it is currently hidden)
-          const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
-          let response = await fetch(getPlaylistUrl);
-          let data = await response.json();
-          document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";   
-        }
+        addSongAndArtistEventListeners(songNameLinks, artistNameLinks);
+        addActionMenuEventListeners(playlistSongList.querySelectorAll(".actionbutton"));
+        addPlaylistDraggableEventListeners(playlistSongList.querySelectorAll(".draggablePlaylist"));
+      }
+      //visually update playlist count (even if it is currently hidden)
+      const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlistId;
+      let response = await fetch(getPlaylistUrl);
+      let data = await response.json();
+      document.querySelector(`.playlistname[playlistid='${playlistId}']`).nextElementSibling.innerText = data.count + " songs";
+    }
   }
 
 
@@ -1311,11 +1298,11 @@ const APP = (function () {
       //add event listeners - clicks and action menus 
       addPlaylistEventListeners();
 
-      if(songId) {
+      if (songId) {
         await insertSongIntoPlaylist(songId, data.createdPlaylist.id);
-      } 
+      }
       //if playlists are on the screen
-      if(createPlaylistButton.getAttribute("status") == "create"){
+      if (createPlaylistButton.getAttribute("status") == "create") {
         //scroll to newly created
         playlistList.querySelector(`.playlistname[playlistid="${data.createdPlaylist.id}"]`).scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
       }
@@ -1453,7 +1440,7 @@ const APP = (function () {
       }),
     };
 
-    await fetch(updateSongInPlaylistUrl, options);
+    return await fetch(updateSongInPlaylistUrl, options);
   }
 
   //increase the number of plays for a song in the database
@@ -1472,10 +1459,10 @@ const APP = (function () {
       }),
     };
 
-    await fetch(songsUrl, options);
+    return await fetch(songsUrl, options);
   }
 
-//delete a song from a playlist, and update the positions of the other songs
+  //delete a song from a playlist, and update the positions of the other songs
   async function deleteSongFromPlaylist(songId, playlistId) {
     //find position of song to delete
     const getSongPositionUrl = `http://localhost:3000/playlists/position/${songId}/${playlistId}`;
@@ -1516,6 +1503,22 @@ const APP = (function () {
     return response;
   }
 
+  async function renamePlaylist(playlistId, playlistName) {
+    const playlistsUrl = "http://localhost:3000/playlists";
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: playlistId,
+        name: playlistName
+      }),
+    };
+    return await fetch(playlistsUrl, options);
+  }
+
 
 
 
@@ -1523,7 +1526,7 @@ const APP = (function () {
 
   //SONG CONTROLS
   //when a song needs to begin playing (due to song end, resume, new queue etc)
-  async function playSong(id, play=true) {
+  async function playSong(id, play = true) {
     const getSongDetailsUrl = "http://localhost:3000/songs/" + id; //use song id to get details
     let response = await fetch(getSongDetailsUrl);
     let data = await response.json();
@@ -1554,7 +1557,7 @@ const APP = (function () {
       await incrementSongPlays(data.id, data.number_of_plays);
     }
 
-    nowPlayingInfo.song.addEventListener('canplaythrough', function(){
+    nowPlayingInfo.song.addEventListener('canplaythrough', function () {
       trackSlider.max = nowPlayingInfo.song.duration;
       playbackDurationField.innerText = Math.floor(nowPlayingInfo.song.duration / 60) + ":" + String(Math.floor(nowPlayingInfo.song.duration % 60)).padStart(2, '0');
     });
@@ -1698,18 +1701,18 @@ const APP = (function () {
         delete nowPlayingInfo.queue[nowPlayingInfo.currentSongIndex];
         //then for songs that are still in the queue, add them from our old unshuffled list to our trimmed one. 
         //remove from queue as we go, as there can be duplicates of songs and we want to have the same number when unshuffled
-        for (let i =0; i < nowPlayingInfo.unshuffledQueue.length; i++) {
+        for (let i = 0; i < nowPlayingInfo.unshuffledQueue.length; i++) {
           let id = nowPlayingInfo.unshuffledQueue[i];
-          if(nowPlayingInfo.queue.includes(id)) {
-            trimmedUnshuffledQueue[i]=id;
+          if (nowPlayingInfo.queue.includes(id)) {
+            trimmedUnshuffledQueue[i] = id;
             j = nowPlayingInfo.queue.indexOf(id);
             delete nowPlayingInfo.queue[j];
           }
         }
         //make the html element array match the queue representation
-        for(let i = 0; i < trimmedUnshuffledQueue.length; i++) {
+        for (let i = 0; i < trimmedUnshuffledQueue.length; i++) {
           if (trimmedUnshuffledQueue[i] == null) {
-            nowPlayingInfo.unshuffledQueueList.splice(i,1);
+            nowPlayingInfo.unshuffledQueueList.splice(i, 1);
           }
         }
         //remove empty slots - i.e. an element was removed on the original queue, so it didnt get copied over
@@ -1755,7 +1758,7 @@ const APP = (function () {
           [nowPlayingInfo.queue[queueIndex], nowPlayingInfo.queue[randomIndex]] = [nowPlayingInfo.queue[randomIndex], nowPlayingInfo.queue[queueIndex]];
           [queueListItems[queueListIndex], queueListItems[randomIndex]] = [queueListItems[randomIndex], queueListItems[queueListIndex]]
         }
-        
+
         //recombine current song and rest of queue
         queueList.append(...currentSongElement, ...queueListItems);
         nowPlayingInfo.queue.unshift(currentSongId);
