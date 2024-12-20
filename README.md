@@ -8,8 +8,9 @@ How to use
 2. Inside the "scraper" folder, run "scrapemp3s.py" to write all the information about your mp3 files (and their filepaths) to the json file.
 3. Run "writemp3s.py" to write the information in the json file to the database ("music-player.db).
 4. Now, you can run "startMusicPlayer.bat" to spin up the server (and navigate to http://localhost:3000/index). You will see that all your mp3 files should be loaded there as songs.
-5. Enjoy! Use the application to create playlists and play your music. All changes will persist in the database.
+5. Enjoy! Use the application to create playlists and play your music. Changes to playlists will persist in the database.
 
+<br/>
 
 Tools and languages used
 - Visual studio for development
@@ -23,11 +24,11 @@ Tools and languages used
 
 
 Further work
-- add hovers for songs with long names
-- improve appearance on chrome browser and support safari
-- persist current song/queue when page is refreshed
-- stylized modal instead of alert/prompt when creating a playlist
+- Add hovers for songs with long names
+- Improve appearance on chrome browser and support safari
+- Persist current song/queue when page is refreshed
+- Stylized modal instead of alert/prompt when creating a playlist
 - UI and accessibility testing
-- handle errors outside main flow (e.g. what happens if mp3 file isnt found)
+- Handle errors outside main flow (e.g. what happens if mp3 file isnt found)
 
 
