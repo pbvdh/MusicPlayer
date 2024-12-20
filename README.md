@@ -19,6 +19,7 @@ Further work to consider
 - persist current song/queue when refreshed
 - stylized modal instead of alert/prompt when creating a playlist
 - UI and accessibility testing
+- handle errors (e.g. what happens if song doesn't exist)
 
 
 How to use
