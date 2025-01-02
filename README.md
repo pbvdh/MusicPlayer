@@ -21,6 +21,7 @@ Tools and languages used
 - Python for scripts to set up music library (loading filepaths to database)
 - Git for source control
 - API endpoint for deleting all songs while preserving playlists
+- spacebar to pause/play
 
 
 Further work
