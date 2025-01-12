@@ -21,15 +21,15 @@ Tools and languages used
 - JavaScript, HTML, CSS, SQL for building the application
 - Python for scripts to set up music library (loading filepaths to database)
 - Git for source control
-- API endpoint for deleting all songs while preserving playlists
 
 
-Further work
+Further work:
 - Add hovers for songs with long names
 - Improve appearance on chrome browser and support safari
 - Persist current song/queue when page is refreshed
 - Stylized modal instead of alert/prompt when creating a playlist
 - UI and accessibility testing
 - Handle errors outside main flow (e.g. what happens if mp3 file isnt found)
+- API endpoint for deleting all songs while preserving playlists
 
 
