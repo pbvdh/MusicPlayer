@@ -840,6 +840,47 @@ const APP = (function () {
           await actionMenuRevealPlaylistsWithSong(selectedSongId);
         }
         break;
+      case "delete":
+        const getSongDetailsUrl = "http://localhost:3000/songs/" + selectedSongId; //use song id to get details
+        let res = await fetch(getSongDetailsUrl);
+        let data = await res.json();
+        //ask for confirmation
+        if (confirm(`Are you sure you want to delete song "${data.name}"?`)) {
+          removeOpenDropDowns();
+          //delete song from every playlist its in
+          const getSongPlaylistsUrl = "http://localhost:3000/playlists/withsong/" + selectedSongId;
+          res = await fetch(getSongPlaylistsUrl);
+          let data = await res.json();
+          for await (const playlist of data.playlists) {
+            res = await deleteSongFromPlaylist(selectedSongId, playlist.id);
+            if (res.status != 200) {
+              console.error("Error removing song from playlists:\n" + error);
+              return;
+            } else {
+              //visually update playlist count (even if it is currently hidden)
+              const getPlaylistUrl = "http://localhost:3000/playlists/songs/" + playlist.id;
+              let playlistCountResponse = await fetch(getPlaylistUrl);
+              let playlistCountData = await playlistCountResponse.json();
+              document.querySelector(`.playlistname[playlistid='${playlist.id}']`).nextElementSibling.innerText = playlistCountData.count + " songs";
+            }
+          }
+          //delete song from database
+          await deleteSong(selectedSongId);
+          //delete song from list/refresh list
+          songCard.remove();
+          //remove from the queue if its currently there
+          //this means find every instance of this song in the queue
+          for (i = 0; i < nowPlayingInfo.queue.length; i++) {
+            if (nowPlayingInfo.queue[i] == selectedSongId) {
+              let toDelete = queueList.children[i];
+              handleSongActionMenuOption("remove from queue", toDelete);
+            }
+          }
+        } else {
+          removeOpenDropDowns();
+        }
+
+        break;
     }
   }
 
@@ -1321,6 +1362,7 @@ const APP = (function () {
                 <div class="actionmenuoption" data-option="Add to queue"><span>Add to queue</span></div>
                 <div class="actionmenuoption" data-option="Add to playlist"><span>Add to playlist</span></div>
                 <div class="actionmenuoption" data-option="View playlists"><span>View playlists</span></div>
+                <div class="actionmenuoption" data-option="Delete"><span>Delete</span></div>
               </div>`;
         break;
       case "playlists":
@@ -1518,6 +1560,21 @@ const APP = (function () {
       }),
     };
     return await fetch(playlistsUrl, options);
+  }
+
+  async function deleteSong(songId) {
+    const deleteSongUrl = "http://localhost:3000/songs/" + songId;
+
+    const deleteOptions = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        songId: songId
+      }),
+    };
+    response = await fetch(deleteSongUrl, deleteOptions);
   }
 
 
