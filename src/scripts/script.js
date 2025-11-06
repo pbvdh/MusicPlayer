@@ -331,6 +331,17 @@ const APP = (function () {
       });
     });
 
+    document.addEventListener('keypress', function (event) {
+      //check for spacebar press
+      if(event.key == " ") {
+        let activeElement = document.activeElement.nodeName.toLowerCase()
+        if(activeElement != "input" && activeElement != "button") {
+          event.preventDefault();
+          togglePlayButton();
+        }
+      }
+    })
+
   }
 
 

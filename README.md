@@ -6,8 +6,8 @@ As the purpose of this is in part to practice my development skills, I will desi
 How to use
 1. Run "npm install" to install all necessary dependencies.
 2. Store any personal MP3 files in the folder "mp3_library". Ensure they have "Title" and "Contributing artists" properties set in the "Details" tab.
-3. Inside the "scraper" folder, run "scrapemp3s.py" to write all the information about your mp3 files (and their filepaths) to the json file.
-4. Run "writemp3s.py" to write the information in the json file to the database ("music-player.db).
+3. Inside the "scraper" folder, run "py scrapemp3s.py" to write all the information about your mp3 files (and their filepaths) to the json file.
+4. Run "py writemp3s.py" to write the information in the json file to the database ("music-player.db). The application must be running.
 5. Now, you can run "startMusicPlayer.bat" to spin up the server (and navigate to http://localhost:3000/index). You will see that all your mp3 files should be loaded there as songs.
 6. Enjoy! Use the application to create playlists and play your music. Changes to playlists will persist in the database.
 
@@ -21,16 +21,15 @@ Tools and languages used
 - JavaScript, HTML, CSS, SQL for building the application
 - Python for scripts to set up music library (loading filepaths to database)
 - Git for source control
-- API endpoint for deleting all songs while preserving playlists
-- spacebar to pause/play
 
 
-Further work
+Further work:
 - Add hovers for songs with long names
 - Improve appearance on chrome browser and support safari
 - Persist current song/queue when page is refreshed
 - Stylized modal instead of alert/prompt when creating a playlist
 - UI and accessibility testing
 - Handle errors outside main flow (e.g. what happens if mp3 file isnt found)
+- API endpoint for deleting all songs while preserving playlists
 
 
